@@ -151,7 +151,14 @@ public class formLogin extends javax.swing.JFrame {
         if (!found) {
             System.out.println("Incorrect username and/or password.");
         } else {
-                System.out.println("User ID: " + fetchedID);
+            System.out.println("User ID: " + fetchedID);
+            formMainMenu MainMenu = new formMainMenu().getFrame();
+            MainMenu.setVisible(true);
+            this.setVisible(false);
+            this.dispose();
+            
+            
+            
         }
         
         
