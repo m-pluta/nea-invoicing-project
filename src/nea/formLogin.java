@@ -1,21 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nea;
 
-/**
- *
- * @author Michal
- */
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class formLogin extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formLogin
-     */
+    static Connection conn = null;
+    
     public formLogin() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        txtPassword.setEchoChar('•');
+        connectToDB("jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT", "root", "root");
+    }
+    
+    private void connectToDB(String url, String username, String password) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, username, password);
+            // conn.close();
+        } catch (ClassNotFoundException cE) {
+            cE.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace(); 
+        }
     }
 
     /**
@@ -37,7 +48,7 @@ public class formLogin extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
 
-        btnLogin.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -45,17 +56,17 @@ public class formLogin extends javax.swing.JFrame {
             }
         });
 
-        txtUsername.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
-        lblUsername.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lblUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblUsername.setText("Username:");
 
-        lblPassword.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        lblPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblPassword.setText("Password:");
 
-        txtPassword.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtPassword.setEchoChar('•');
+        txtPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
+        cbPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         cbPassword.setText("Show Password");
         cbPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -68,43 +79,83 @@ public class formLogin extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(cbPassword)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(81, 81, 81)
+                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblPassword)
-                            .addComponent(lblUsername))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtPassword, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(31, Short.MAX_VALUE))
+                            .addComponent(cbPassword)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblPassword)
+                                    .addComponent(lblUsername))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtUsername)
+                                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(117, 117, 117)
+                .addContainerGap(127, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblUsername)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(50, 50, 50)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPassword)
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbPassword)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
+                .addGap(52, 52, 52))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        // TODO add your handling code here:
+        String inputPassword = "";
+        String inputUsername = txtUsername.getText();
+        
+        char[] passwordArray = txtPassword.getPassword();
+        for (char chr : passwordArray) {
+            inputPassword += chr;
+        }
+
+        
+        Boolean found = false;
+        int fetchedID = -1;
+        
+        String query = "SELECT id, username, password_hash FROM tblLogins WHERE username = ? AND password_hash = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, inputUsername);
+            pstmt.setString(2, inputPassword);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                found = false;
+            } else {
+                fetchedID = Integer.parseInt(rs.getString(1));
+                found = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        if (!found) {
+            System.out.println("Incorrect username and/or password.");
+        } else {
+                System.out.println("User ID: " + fetchedID);
+        }
+        
+        
+        
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed
