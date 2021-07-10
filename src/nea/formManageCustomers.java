@@ -5,6 +5,9 @@
  */
 package nea;
 
+import java.sql.SQLException;
+import static nea.formLogin.conn;
+
 /**
  *
  * @author Michal
@@ -68,6 +71,11 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         btnExit.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnExit.setText("Exit");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
 
         lblCustomerCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCount.setText("Number of customers:");
@@ -115,6 +123,18 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        try {
+            if (!conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Could not close! " + e.getMessage());
+        }
+        this.dispose();
+        System.exit(0);
+    }//GEN-LAST:event_btnExitActionPerformed
 
     /**
      * @param args the command line arguments

@@ -17,6 +17,10 @@ public class formManageEmployees extends javax.swing.JFrame {
     public formManageEmployees() {
         initComponents();
     }
+    
+    public formManageEmployees getFrame() {
+        return this;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
