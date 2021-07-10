@@ -9,14 +9,13 @@ package nea;
  *
  * @author Michal
  */
-public class formMainMenu extends javax.swing.JFrame {
+public class formManageEmployees extends javax.swing.JFrame {
 
     /**
-     * Creates new form formMainMenu
+     * Creates new form formAddNewEmployee
      */
-    public formMainMenu() {
+    public formManageEmployees() {
         initComponents();
-        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -29,7 +28,6 @@ public class formMainMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Main Menu");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -48,11 +46,6 @@ public class formMainMenu extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    
-    public formMainMenu getFrame() {
-        return this;
-    }
-    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -67,20 +60,21 @@ public class formMainMenu extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(formMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageEmployees.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(formMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageEmployees.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(formMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageEmployees.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formMainMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageEmployees.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new formMainMenu().setVisible(true);
+                new formManageEmployees().setVisible(true);
             }
         });
     }
