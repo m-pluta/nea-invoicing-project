@@ -5,6 +5,11 @@
  */
 package nea;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import static nea.formLogin.conn;
+
 /**
  *
  * @author Michal
@@ -14,10 +19,50 @@ public class formMainMenu extends javax.swing.JFrame {
     /**
      * Creates new form formMainMenu
      */
+    static int loggedIn_UserID = 0;
+    
+    
     public formMainMenu() {
         initComponents();
         this.setLocationRelativeTo(null);
     }
+    
+    public void whoLoggedIn(int UserID) {
+        String query = "SELECT title, forename, surname FROM tblEmployees WHERE employee_id = ?";
+        Boolean found = false;
+        String fetchedTitle = "", fetchedForename = "", fetchedSurname = "";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, UserID);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                found = false;
+            } else {
+                fetchedTitle = rs.getString(1);
+                fetchedForename = rs.getString(2);
+                fetchedSurname = rs.getString(3);
+                found = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        if (found) {
+            System.out.println(UserID);
+            System.out.println(fetchedTitle);
+            System.out.println(fetchedForename);
+            System.out.println(fetchedSurname);
+            lblLoggedInAs.setText("Logged in as " + fetchedTitle + ". " + fetchedForename + " " + fetchedSurname);
+        } else {
+            System.out.println("Error!");
+            
+        }
+        
+        
+        
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,6 +74,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         btnManageCustomers = new javax.swing.JButton();
+        lblLoggedInAs = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Main Menu");
@@ -41,21 +87,28 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         });
 
+        lblLoggedInAs.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblLoggedInAs.setText("Logged in as");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnManageCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnManageCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblLoggedInAs))
                 .addContainerGap(380, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(90, 90, 90)
+                .addContainerGap()
+                .addComponent(lblLoggedInAs)
+                .addGap(115, 115, 115)
                 .addComponent(btnManageCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(231, Short.MAX_VALUE))
+                .addContainerGap(176, Short.MAX_VALUE))
         );
 
         pack();
@@ -110,5 +163,6 @@ public class formMainMenu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnManageCustomers;
+    private javax.swing.JLabel lblLoggedInAs;
     // End of variables declaration//GEN-END:variables
 }
