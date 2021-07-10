@@ -184,6 +184,13 @@ public class formLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_cbPasswordActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        try {
+            if (!conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Could not close! " + e.getMessage());
+        }
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
