@@ -49,6 +49,7 @@ public class formMainMenu extends javax.swing.JFrame {
         }
         
         if (found) {
+            System.out.println("-------------------------------");
             System.out.println(UserID);
             System.out.println(fetchedTitle);
             System.out.println(fetchedForename);

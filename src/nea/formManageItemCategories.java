@@ -5,7 +5,11 @@
  */
 package nea;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
+import static nea.formLogin.conn;
 
 /**
  *
@@ -21,8 +25,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
     
     public formManageItemCategories() {
         initComponents();
-        loadCategories();
         model = (DefaultTableModel) jTable_ItemCategories.getModel();
+        
+        loadCategories();
     }
     
     public formManageItemCategories getFrame() {
@@ -30,11 +35,22 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }
     
     public void loadCategories() {
-        // #TODO
-        
-        
-        
-        
+        String query = "SELECT item_category_id, category_name, date_created FROM tblItemCategories";
+        try {
+            Statement stmt = conn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+                
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 

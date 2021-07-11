@@ -5,6 +5,8 @@
  */
 package nea;
 
+import java.sql.SQLException;
+
 /**
  *
  * @author Michal
@@ -128,8 +130,8 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         try {
-            if (!conn.isClosed()) {
-                conn.close();
+            if (!formLogin.conn.isClosed()) {
+                formLogin.conn.close();
             }
         } catch (SQLException e) {
             System.out.println("Could not close! " + e.getMessage());
