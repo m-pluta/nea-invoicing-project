@@ -42,7 +42,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         btnEdit = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
         lblCustomerCount = new javax.swing.JLabel();
-        btnManageCustomers = new javax.swing.JLabel();
+        lblManageCustomers = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Manage Customers");
@@ -78,8 +78,8 @@ public class formManageCustomers extends javax.swing.JFrame {
         lblCustomerCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCount.setText("Number of customers:");
 
-        btnManageCustomers.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        btnManageCustomers.setText("Manage Customers");
+        lblManageCustomers.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblManageCustomers.setText("Manage Customers");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -94,13 +94,13 @@ public class formManageCustomers extends javax.swing.JFrame {
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(123, 123, 123)
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(162, 162, 162)
-                                .addComponent(btnManageCustomers))
+                                .addComponent(lblManageCustomers))
                             .addComponent(lblCustomerCount))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -108,20 +108,23 @@ public class formManageCustomers extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnExit)
-                    .addComponent(btnManageCustomers))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnExit))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(lblManageCustomers)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(lblCustomerCount)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(90, 90, 90))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         pack();
@@ -180,9 +183,9 @@ public class formManageCustomers extends javax.swing.JFrame {
     private javax.swing.JButton btnAddNew;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExit;
-    private javax.swing.JLabel btnManageCustomers;
     private javax.swing.JButton btnRemove;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCustomerCount;
+    private javax.swing.JLabel lblManageCustomers;
     // End of variables declaration//GEN-END:variables
 }

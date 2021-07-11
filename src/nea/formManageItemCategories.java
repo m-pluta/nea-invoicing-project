@@ -5,6 +5,8 @@
  */
 package nea;
 
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Michal
@@ -14,12 +16,25 @@ public class formManageItemCategories extends javax.swing.JFrame {
     /**
      * Creates new form formManageCategories
      */
+    
+    DefaultTableModel model;
+    
     public formManageItemCategories() {
         initComponents();
+        loadCategories();
+        model = (DefaultTableModel) jTable_ItemCategories.getModel();
     }
     
     public formManageItemCategories getFrame() {
         return this;
+    }
+    
+    public void loadCategories() {
+        // #TODO
+        
+        
+        
+        
     }
 
 
@@ -35,7 +50,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTable_ItemCategories = new javax.swing.JTable();
         btnAddNew = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
@@ -48,7 +63,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setText("Manage Item Categories");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_ItemCategories.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -64,10 +79,15 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTable_ItemCategories);
 
         btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewActionPerformed(evt);
+            }
+        });
 
         btnEdit.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnEdit.setText("Edit");
@@ -113,6 +133,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAddNewActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -156,6 +180,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable_ItemCategories;
     // End of variables declaration//GEN-END:variables
 }
