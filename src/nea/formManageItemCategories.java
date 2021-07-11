@@ -5,10 +5,17 @@
  */
 package nea;
 
+import java.awt.Font;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import static nea.formLogin.conn;
 
 /**
@@ -20,39 +27,41 @@ public class formManageItemCategories extends javax.swing.JFrame {
     /**
      * Creates new form formManageCategories
      */
-    
-    DefaultTableModel model;
-    
+    DefaultTableModel model; // Init
+
     public formManageItemCategories() {
-        initComponents();
-        model = (DefaultTableModel) jTable_ItemCategories.getModel();
-        
-        loadCategories();
+        initComponents(); // Built in process
+        model = (DefaultTableModel) jTable_ItemCategories.getModel(); // Fetches the table model of the table component
+
+        JTableHeader header = jTable_ItemCategories.getTableHeader();
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+
+        loadCategories(); // Loads all the categories from the DB into the table component in the form
     }
-    
+
     public formManageItemCategories getFrame() {
         return this;
     }
-    
+
     public void loadCategories() {
+        model.setRowCount(0); // Empties the table
         String query = "SELECT item_category_id, category_name, date_created FROM tblItemCategories";
         try {
             Statement stmt = conn.createStatement();
-            
+
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(2));    // For debugging, shows each category that was added to the table
                 System.out.println(rs.getString(3));
-                
+
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -79,6 +88,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setText("Manage Item Categories");
 
+        jTable_ItemCategories.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_ItemCategories.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -110,6 +120,11 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
         btnRemove.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnRemove.setText("Remove");
+        btnRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -150,8 +165,143 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        // TODO add your handling code here:
+        JFrame frame = new JFrame();
+        String inputCategory = null;
+        inputCategory = JOptionPane.showInputDialog(frame, "Enter the name of the new category");
+        if (inputCategory == null) { // If the dialog window was closed    
+            System.out.println("-------------------------------");
+            System.out.println("Input window closed.");
+        } else {
+            if (inputCategory.replaceAll(" ", "").equals("")) { // Removes all whitespace characters and checks if the string is left as ""
+                System.out.println("-------------------------------");
+                System.out.println("Category name cannot be left empty");
+            } else {
+                inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
+                if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
+                    System.out.println("-------------------------------");
+                    System.out.println("Category under this name already exists");
+                } else {
+                    String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = new Date();
+                    String date_string = formatter.format(date); // Formats the current system date into 'yyyy-MM-dd HH:mm:ss'
+
+                    try {
+                        PreparedStatement pstmt = formLogin.conn.prepareStatement(query);
+                        pstmt.setInt(1, getNextPKValue("tblItemCategories", "item_category_id")); // Gets the next available PK value
+                        pstmt.setString(2, inputCategory);
+                        pstmt.setString(3, date_string);
+
+                        int rowsAffected = pstmt.executeUpdate();
+                        System.out.println("-------------------------------");
+                        System.out.println(rowsAffected + " row inserted.");
+                        loadCategories(); // Refreshes Table
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }//GEN-LAST:event_btnAddNewActionPerformed
+
+    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
+        int row = jTable_ItemCategories.getSelectedRow();
+
+        if (row == -1) { // If no row is selected
+            System.out.println("-------------------------------");
+            System.out.println("No row selected");
+        } else {
+            String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
+            String category = model.getValueAt(row, 1).toString();
+
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) { // If response is yes
+                System.out.println("-------------------------------");
+                System.out.println("Removing category " + string_id + " - " + category + ".");
+
+                int id = 0; // Init
+                try {
+                    id = Integer.parseInt(string_id); // id value from selected row is converted to int
+                } catch (NumberFormatException e) {
+                    System.out.println("-------------------------------");
+                    System.out.println("NumberFormatException: " + e);
+                }
+                if (id == 1) {
+                    System.out.println("This is the default row and cannot be removed"); // Row containing N/A cannot be removed as it is the default row.
+                } else {
+                    removeRecord("tblItemCategories", "item_category_id", id);
+                    loadCategories(); //Refreshes table since a record was removed
+                }
+
+            }
+        }
+    }//GEN-LAST:event_btnRemoveActionPerformed
+
+    private void removeRecord(String table, String PK_name, int PK) { // Removes a record from the DB in a given table with a certain attribute value
+        String query = "DELETE FROM " + table + " WHERE " + PK_name + " = ?";
+        try {
+            PreparedStatement pstmt = formLogin.conn.prepareStatement(query);
+            pstmt.setInt(1, PK);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("-------------------------------");
+            System.out.println(rowsAffected + " row affected.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private int getNextPKValue(String tableName, String PK_name) { // Gets the next available value of the primary key
+        String stringID = "";
+        try {
+            String strSQL = "SELECT max(" + PK_name + ") as nextID from " + tableName + ""; // Fetches the highest value of the PK from the table
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(strSQL);
+            if (rs.next()) {
+                stringID += (rs.getInt("nextID") + 1); // Increments the current max PK value to get the new max value
+            } else {
+                stringID = "1"; // Sets the default id to 1
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.toString());
+            e.printStackTrace();
+        }
+
+        int integerID = 1;
+        try {
+            integerID = Integer.parseInt(stringID); // Converts the PK valuer from string to int
+        } catch (NumberFormatException e) {
+            System.out.println("-------------------------------");
+            System.out.println("NumberFormatException: " + e);
+        }
+
+        return integerID;
+
+    }
+
+    private boolean CategoryExists(String inputCategoryString) { // Checks if a category under a given name already exists
+        String query = "SELECT 1 FROM tblItemCategories WHERE category_name = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, inputCategoryString);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return false; // If it doesn't exist
+            } else {
+                return true; // If it does exist
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
 
     /**
      * @param args the command line arguments
