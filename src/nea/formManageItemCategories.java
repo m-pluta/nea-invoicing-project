@@ -117,6 +117,11 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
         btnEdit.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnRemove.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnRemove.setText("Remove");
@@ -188,7 +193,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     String date_string = formatter.format(date); // Formats the current system date into 'yyyy-MM-dd HH:mm:ss'
 
                     try {
-                        PreparedStatement pstmt = formLogin.conn.prepareStatement(query);
+                        PreparedStatement pstmt = conn.prepareStatement(query);
                         pstmt.setInt(1, getNextPKValue("tblItemCategories", "item_category_id")); // Gets the next available PK value
                         pstmt.setString(2, inputCategory);
                         pstmt.setString(3, date_string);
@@ -239,10 +244,72 @@ public class formManageItemCategories extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRemoveActionPerformed
 
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        int row = jTable_ItemCategories.getSelectedRow();
+
+        if (row == -1) { // If no row is selected
+            System.out.println("-------------------------------");
+            System.out.println("No row selected");
+        } else {
+            String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
+            String category = model.getValueAt(row, 1).toString();
+
+            int id = 0; // Init
+            try {
+                id = Integer.parseInt(string_id); // id value from selected row is converted to int
+            } catch (NumberFormatException e) {
+                System.out.println("-------------------------------");
+                System.out.println("NumberFormatException: " + e);
+            }
+            if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
+                System.out.println("-------------------------------");
+                System.out.println("This is the default row and cannot be edited");
+            } else {
+                JFrame frame = new JFrame();
+                String inputCategory = null;
+                inputCategory = JOptionPane.showInputDialog(frame, "What would you like to the change the name of the category '" + category + "' to?");
+
+                if (inputCategory == null) { // If the dialog window was closed    
+                    System.out.println("-------------------------------");
+                    System.out.println("Input window closed.");
+                } else {
+                    if (inputCategory.replaceAll(" ", "").equals("")) { // Removes all whitespace characters and checks if the string is left as ""
+                        System.out.println("-------------------------------");
+                        System.out.println("Category name cannot be left empty");
+                    } else {
+                        inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
+                        if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
+                            System.out.println("-------------------------------");
+                            System.out.println("Category under this name already exists");
+                            // # TODO reopen dialog
+                            // # TODO Allow the user to merge the two categories together under the wanted name
+
+                        } else {
+
+                            String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
+                            PreparedStatement pstmt = null;
+                            try {
+                                pstmt = conn.prepareStatement(query);
+                                pstmt.setString(1, inputCategory);
+                                pstmt.setInt(2, id);
+
+                                int rowsAffected = pstmt.executeUpdate();
+                                System.out.println(rowsAffected + " row updated.");
+                                loadCategories(); //Refreshes table since a record was updated
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
     private void removeRecord(String table, String PK_name, int PK) { // Removes a record from the DB in a given table with a certain attribute value
         String query = "DELETE FROM " + table + " WHERE " + PK_name + " = ?";
         try {
-            PreparedStatement pstmt = formLogin.conn.prepareStatement(query);
+            PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, PK);
 
             int rowsAffected = pstmt.executeUpdate();
