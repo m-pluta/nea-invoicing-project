@@ -1,7 +1,6 @@
 package nea;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,19 +13,7 @@ public class formLogin extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         txtPassword.setEchoChar('•');
-        connectToDB("jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT", "root", "root");
-    }
-    
-    private void connectToDB(String url, String username, String password) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(url, username, password);
-            // conn.close();
-        } catch (ClassNotFoundException cE) {
-            cE.printStackTrace();
-        } catch (SQLException ex) {
-            ex.printStackTrace(); 
-        }
+        conn = sqlManager.connectToDB("jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT", "root", "root");
     }
 
     /**
