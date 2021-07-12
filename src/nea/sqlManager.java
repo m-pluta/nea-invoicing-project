@@ -28,5 +28,15 @@ public class sqlManager {
         return conn;
     }
     
-    
+    public static boolean closeConnection(Connection conn) {
+        try {
+            if (!conn.isClosed()) {
+                conn.close();
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println("Could not close! " + e.getMessage());
+        }
+        return false;
+    }
 }

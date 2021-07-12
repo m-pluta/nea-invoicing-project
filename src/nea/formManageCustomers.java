@@ -5,7 +5,7 @@
  */
 package nea;
 
-import java.sql.SQLException;
+import java.sql.Connection;
 
 /**
  *
@@ -16,6 +16,10 @@ public class formManageCustomers extends javax.swing.JFrame {
     /**
      * Creates new form formAddNewCustomer
      */
+    
+    Connection conn = nea.formLogin.conn;
+    
+    
     public formManageCustomers() {
         initComponents();
     }
@@ -130,13 +134,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        try {
-            if (!formLogin.conn.isClosed()) {
-                formLogin.conn.close();
-            }
-        } catch (SQLException e) {
-            System.out.println("Could not close! " + e.getMessage());
-        }
+        sqlManager.closeConnection(conn);
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
