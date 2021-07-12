@@ -21,30 +21,30 @@ import static nea.formLogin.conn;
  *
  * @author Michal
  */
-public class formManageItemCategories extends javax.swing.JFrame {
+public class formManageCustomerCategories extends javax.swing.JFrame {
 
     /**
-     * Creates new form formManageItemCategories
+     * Creates new form formManageCustomerCategories
      */
     DefaultTableModel model; // Init
 
-    public formManageItemCategories() {
+    public formManageCustomerCategories() {
         initComponents(); // Built in process
-        model = (DefaultTableModel) jTable_ItemCategories.getModel(); // Fetches the table model of the table component
+        model = (DefaultTableModel) jTable_CustomerCategories.getModel(); // Fetches the table model of the table component
 
-        JTableHeader header = jTable_ItemCategories.getTableHeader();
+        JTableHeader header = jTable_CustomerCategories.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        loadCategories(); // Loads all the categories from the DB into the table component in the form
+        loadCategories(); // Loads all the customer types from the DB into the table component in the form
     }
 
-    public formManageItemCategories getFrame() {
+    public formManageCustomerCategories getFrame() {
         return this;
     }
 
     public void loadCategories() {
         model.setRowCount(0); // Empties the table
-        String query = "SELECT item_category_id, category_name, date_created FROM tblItemCategories";
+        String query = "SELECT customer_category_id, category_name, date_created FROM tblCustomerCategories";
         try {
             Statement stmt = conn.createStatement();
 
@@ -52,7 +52,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             while (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));    // For debugging, shows each category that was added to the table
+                System.out.println(rs.getString(2));    // For debugging, shows each customer category that was added to the table
                 System.out.println(rs.getString(3));
 
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});
@@ -72,9 +72,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton4 = new javax.swing.JButton();
-        lblManageItemCategories = new javax.swing.JLabel();
+        lblManageCustomerCategories = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable_ItemCategories = new javax.swing.JTable();
+        jTable_CustomerCategories = new javax.swing.JTable();
         btnAddNew = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
@@ -82,13 +82,13 @@ public class formManageItemCategories extends javax.swing.JFrame {
         jButton4.setText("jButton4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Item Category Management");
+        setTitle("Customer Category Management");
 
-        lblManageItemCategories.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblManageItemCategories.setText("Manage Item Categories");
+        lblManageCustomerCategories.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblManageCustomerCategories.setText("Manage Customer Categories");
 
-        jTable_ItemCategories.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jTable_ItemCategories.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_CustomerCategories.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jTable_CustomerCategories.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -104,7 +104,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable_ItemCategories);
+        jScrollPane1.setViewportView(jTable_CustomerCategories);
 
         btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnAddNew.setText("Add New");
@@ -134,27 +134,27 @@ public class formManageItemCategories extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
-                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lblManageCustomerCategories)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblManageItemCategories)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblManageItemCategories)
+                .addComponent(lblManageCustomerCategories)
                 .addGap(46, 46, 46)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -170,7 +170,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         String inputCategory = null;
-        inputCategory = JOptionPane.showInputDialog(null, "What should the name of the new category be?", "Add new category", JOptionPane.INFORMATION_MESSAGE);
+        inputCategory = JOptionPane.showInputDialog(null, "What should the name of the customer category be?", "Add new customer category", JOptionPane.INFORMATION_MESSAGE);
         if (inputCategory == null) { // If the dialog window was closed    
             System.out.println("-------------------------------");
             System.out.println("Input window closed.");
@@ -184,7 +184,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     System.out.println("-------------------------------");
                     System.out.println("Category under this name already exists");
                 } else {
-                    String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+                    String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
 
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date();
@@ -192,7 +192,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
                     try {
                         PreparedStatement pstmt = conn.prepareStatement(query);
-                        pstmt.setInt(1, getNextPKValue("tblItemCategories", "item_category_id")); // Gets the next available PK value
+                        pstmt.setInt(1, getNextPKValue("tblCustomerCategories", "customer_category_id")); // Gets the next available PK value
                         pstmt.setString(2, inputCategory);
                         pstmt.setString(3, date_string);
 
@@ -210,7 +210,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        int row = jTable_ItemCategories.getSelectedRow();
+        int row = jTable_CustomerCategories.getSelectedRow();
 
         if (row == -1) { // If no row is selected
             System.out.println("-------------------------------");
@@ -235,17 +235,16 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 if (YesNo == 0) { // If response is yes
                     System.out.println("-------------------------------");
                     System.out.println("Removing category " + string_id + " - " + category + ".");
-
-                    removeRecord("tblItemCategories", "item_category_id", id);
+                    removeRecord("tblCustomerCategories", "customer_category_id", id);
                     loadCategories(); //Refreshes table since a record was removed
-                }
 
+                }
             }
         }
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        int row = jTable_ItemCategories.getSelectedRow();
+        int row = jTable_CustomerCategories.getSelectedRow();
 
         if (row == -1) { // If no row is selected
             System.out.println("-------------------------------");
@@ -285,7 +284,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
                         } else {
 
-                            String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
+                            String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE customer_category_id = ?";
                             PreparedStatement pstmt = null;
                             try {
                                 pstmt = conn.prepareStatement(query);
@@ -351,7 +350,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }
 
     private boolean CategoryExists(String inputCategoryString) { // Checks if a category under a given name already exists
-        String query = "SELECT 1 FROM tblItemCategories WHERE category_name = ?";
+        String query = "SELECT 1 FROM tblCustomerCategories WHERE category_name = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputCategoryString);
@@ -386,21 +385,27 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageCustomerCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageCustomerCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageCustomerCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageCustomerCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new formManageItemCategories().setVisible(true);
+                new formManageCustomerCategories().setVisible(true);
             }
         });
     }
@@ -411,7 +416,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     private javax.swing.JButton btnRemove;
     private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable_ItemCategories;
-    private javax.swing.JLabel lblManageItemCategories;
+    private javax.swing.JTable jTable_CustomerCategories;
+    private javax.swing.JLabel lblManageCustomerCategories;
     // End of variables declaration//GEN-END:variables
 }
