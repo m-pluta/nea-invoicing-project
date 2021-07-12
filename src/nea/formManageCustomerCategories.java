@@ -11,8 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -182,41 +180,29 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        String inputCategory = null;
-        inputCategory = JOptionPane.showInputDialog(null, "What should the name of the customer category be?", "Add new customer category", JOptionPane.INFORMATION_MESSAGE);
-        if (inputCategory == null) { // If the dialog window was closed    
-            System.out.println("-------------------------------");
-            System.out.println("Input window closed.");
-        } else {
-            if (inputCategory.replaceAll(" ", "").equals("")) { // Removes all whitespace characters and checks if the string is left as ""
+        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category");;
+        if (inputCategory != null) { // If the dialog input was valid    
+            inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
+
+            if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
-                System.out.println("Category name cannot be left empty");
+                System.out.println("Category under this name already exists");
             } else {
-                inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-                if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
+                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");
+                    pstmt.setInt(1, newID); // Gets the next available PK value
+                    pstmt.setString(2, inputCategory);
+                    pstmt.setString(3, Utility.getCurrentDate());
+
+                    int rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
-                    System.out.println("Category under this name already exists");
-                } else {
-                    String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                    System.out.println(rowsAffected + " row inserted.");
+                    loadCategories(); // Refreshes Table
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = new Date();
-                    String date_string = formatter.format(date); // Formats the current system date into 'yyyy-MM-dd HH:mm:ss'
-
-                    try {
-                        PreparedStatement pstmt = conn.prepareStatement(query);
-                        pstmt.setInt(1, getNextPKValue("tblCustomerCategories", "customer_category_id")); // Gets the next available PK value
-                        pstmt.setString(2, inputCategory);
-                        pstmt.setString(3, date_string);
-
-                        int rowsAffected = pstmt.executeUpdate();
-                        System.out.println("-------------------------------");
-                        System.out.println(rowsAffected + " row inserted.");
-                        loadCategories(); // Refreshes Table
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -232,13 +218,8 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
             String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
             String category = model.getValueAt(row, 1).toString();
 
-            int id = 0; // Init
-            try {
-                id = Integer.parseInt(string_id); // id value from selected row is converted to int
-            } catch (NumberFormatException e) {
-                System.out.println("-------------------------------");
-                System.out.println("NumberFormatException: " + e);
-            }
+            int id = Utility.StringToInt(string_id);
+
             if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be removed");
@@ -248,7 +229,8 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 if (YesNo == 0) { // If response is yes
                     System.out.println("-------------------------------");
                     System.out.println("Removing category " + string_id + " - " + category + ".");
-                    removeRecord("tblCustomerCategories", "customer_category_id", id);
+
+                    sqlManager.removeRecord(conn, "tblCustomerCategories", "customer_category_id", id);
                     loadCategories(); //Refreshes table since a record was removed
 
                 }
@@ -266,50 +248,38 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
             String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
             String category = model.getValueAt(row, 1).toString();
 
-            int id = 0; // Init
-            try {
-                id = Integer.parseInt(string_id); // id value from selected row is converted to int
-            } catch (NumberFormatException e) {
-                System.out.println("-------------------------------");
-                System.out.println("NumberFormatException: " + e);
-            }
+            int id = Utility.StringToInt(string_id);
+
             if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be edited");
             } else {
-                String inputCategory = null;
-                inputCategory = JOptionPane.showInputDialog(null, "Current name:  '" + category + "'", "Edit category name", JOptionPane.INFORMATION_MESSAGE);
+                String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
 
-                if (inputCategory == null) { // If the dialog window was closed    
-                    System.out.println("-------------------------------");
-                    System.out.println("Input window closed.");
-                } else {
-                    if (inputCategory.replaceAll(" ", "").equals("")) { // Removes all whitespace characters and checks if the string is left as ""
+                if (inputCategory != null) { // If the dialog window was closed    
+                    inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
+                    
+                    if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                        
                         System.out.println("-------------------------------");
-                        System.out.println("Category name cannot be left empty");
+                        System.out.println("Category under this name already exists");
+                        // # TODO reopen dialog
+                        // # TODO Allow the user to merge the two categories together under the wanted name
+
                     } else {
-                        inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-                        if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
-                            System.out.println("-------------------------------");
-                            System.out.println("Category under this name already exists");
-                            // # TODO reopen dialog
-                            // # TODO Allow the user to merge the two categories together under the wanted name
 
-                        } else {
+                        String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE customer_category_id = ?";
+                        PreparedStatement pstmt = null;
+                        try {
+                            pstmt = conn.prepareStatement(query);
+                            pstmt.setString(1, inputCategory);
+                            pstmt.setInt(2, id);
 
-                            String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE customer_category_id = ?";
-                            PreparedStatement pstmt = null;
-                            try {
-                                pstmt = conn.prepareStatement(query);
-                                pstmt.setString(1, inputCategory);
-                                pstmt.setInt(2, id);
-
-                                int rowsAffected = pstmt.executeUpdate();
-                                System.out.println(rowsAffected + " row updated.");
-                                loadCategories(); //Refreshes table since a record was updated
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+                            int rowsAffected = pstmt.executeUpdate();
+                            System.out.println(rowsAffected + " row updated.");
+                            loadCategories(); //Refreshes table since a record was updated
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -322,70 +292,6 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
-
-    private void removeRecord(String table, String PK_name, int PK) { // Removes a record from the DB in a given table with a certain attribute value
-        String query = "DELETE FROM " + table + " WHERE " + PK_name + " = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, PK);
-
-            int rowsAffected = pstmt.executeUpdate();
-            System.out.println("-------------------------------");
-            System.out.println(rowsAffected + " row affected.");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private int getNextPKValue(String tableName, String PK_name) { // Gets the next available value of the primary key
-        String stringID = "";
-        try {
-            String strSQL = "SELECT max(" + PK_name + ") as nextID from " + tableName + ""; // Fetches the highest value of the PK from the table
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(strSQL);
-            if (rs.next()) {
-                stringID += (rs.getInt("nextID") + 1); // Increments the current max PK value to get the new max value
-            } else {
-                stringID = "1"; // Sets the default id to 1
-            }
-
-        } catch (SQLException e) {
-            System.out.println("SQLException: " + e.toString());
-            e.printStackTrace();
-        }
-
-        int integerID = 1;
-        try {
-            integerID = Integer.parseInt(stringID); // Converts the PK valuer from string to int
-        } catch (NumberFormatException e) {
-            System.out.println("-------------------------------");
-            System.out.println("NumberFormatException: " + e);
-        }
-
-        return integerID;
-
-    }
-
-    private boolean CategoryExists(String inputCategoryString) { // Checks if a category under a given name already exists
-        String query = "SELECT 1 FROM tblCustomerCategories WHERE category_name = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, inputCategoryString);
-
-            ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                return false; // If it doesn't exist
-            } else {
-                return true; // If it does exist
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return true;
-    }
 
     /**
      * @param args the command line arguments
