@@ -233,7 +233,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     System.out.println("-------------------------------");
                     System.out.println("Removing category " + string_id + " - " + category + ".");
 
-                    removeRecord("tblItemCategories", "item_category_id", id);
+                    sqlManager.removeRecord(conn, "tblItemCategories", "item_category_id", id);
                     loadCategories(); //Refreshes table since a record was removed
                 }
 
@@ -307,22 +307,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
-
-    private void removeRecord(String table, String PK_name, int PK) { // Removes a record from the DB in a given table with a certain attribute value
-        String query = "DELETE FROM " + table + " WHERE " + PK_name + " = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, PK);
-
-            int rowsAffected = pstmt.executeUpdate();
-            System.out.println("-------------------------------");
-            System.out.println(rowsAffected + " row affected.");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     private boolean CategoryExists(String inputCategoryString) { // Checks if a category under a given name already exists
         String query = "SELECT 1 FROM tblItemCategories WHERE category_name = ?";

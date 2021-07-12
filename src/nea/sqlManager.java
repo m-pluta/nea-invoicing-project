@@ -7,6 +7,7 @@ package nea;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -70,4 +71,20 @@ public class sqlManager {
         return integerID;
     }
 
+    public static void removeRecord(Connection conn, String tableName, String PK_name, int PK_value) { // Removes a record from the DB in a given table with a certain attribute value
+        String query = "DELETE FROM " + tableName + " WHERE " + PK_name + " = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, PK_value);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("-------------------------------");
+            System.out.println(rowsAffected + " row affected.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+    
 }
