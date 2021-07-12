@@ -222,7 +222,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             String category = model.getValueAt(row, 1).toString();
 
             int id = Utility.StringToInt(string_id);
-            
+
             if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be removed");
@@ -251,50 +251,36 @@ public class formManageItemCategories extends javax.swing.JFrame {
             String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
             String category = model.getValueAt(row, 1).toString();
 
-            int id = 0; // Init
-            try {
-                id = Integer.parseInt(string_id); // id value from selected row is converted to int
-            } catch (NumberFormatException e) {
-                System.out.println("-------------------------------");
-                System.out.println("NumberFormatException: " + e);
-            }
+            int id = Utility.StringToInt(string_id);
+
             if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be edited");
             } else {
-                String inputCategory = null;
-                inputCategory = JOptionPane.showInputDialog(null, "Current name:  '" + category + "'", "Edit category name", JOptionPane.INFORMATION_MESSAGE);
+                String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
 
-                if (inputCategory == null) { // If the dialog window was closed    
-                    System.out.println("-------------------------------");
-                    System.out.println("Input window closed.");
-                } else {
-                    if (inputCategory.replaceAll(" ", "").equals("")) { // Removes all whitespace characters and checks if the string is left as ""
+                if (inputCategory != null) { // If the dialog input was valid   
+                    inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
+                    if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
                         System.out.println("-------------------------------");
-                        System.out.println("Category name cannot be left empty");
+                        System.out.println("Category under this name already exists");
+                        // # TODO reopen dialog
+                        // # TODO Allow the user to merge the two categories together under the wanted name
+
                     } else {
-                        inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-                        if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
-                            System.out.println("-------------------------------");
-                            System.out.println("Category under this name already exists");
-                            // # TODO reopen dialog
-                            // # TODO Allow the user to merge the two categories together under the wanted name
 
-                        } else {
+                        String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
+                        PreparedStatement pstmt = null;
+                        try {
+                            pstmt = conn.prepareStatement(query);
+                            pstmt.setString(1, inputCategory);
+                            pstmt.setInt(2, id);
 
-                            String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
-                            PreparedStatement pstmt = null;
-                            try {
-                                pstmt = conn.prepareStatement(query);
-                                pstmt.setString(1, inputCategory);
-                                pstmt.setInt(2, id);
-
-                                int rowsAffected = pstmt.executeUpdate();
-                                System.out.println(rowsAffected + " row updated.");
-                                loadCategories(); //Refreshes table since a record was updated
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+                            int rowsAffected = pstmt.executeUpdate();
+                            System.out.println(rowsAffected + " row updated.");
+                            loadCategories(); //Refreshes table since a record was updated
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
