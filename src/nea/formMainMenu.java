@@ -5,10 +5,10 @@
  */
 package nea;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import static nea.formLogin.conn;
 
 /**
  *
@@ -19,6 +19,7 @@ public class formMainMenu extends javax.swing.JFrame {
     /**
      * Creates new form formMainMenu
      */
+    Connection conn = nea.formLogin.conn;
     static int loggedIn_UserID = 0;
     
     
@@ -27,18 +28,16 @@ public class formMainMenu extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
     
-    public void whoLoggedIn(int UserID) {
+    public void whoLoggedIn() {
         String query = "SELECT title, forename, surname FROM tblEmployees WHERE employee_id = ?";
         Boolean found = false;
         String fetchedTitle = "", fetchedForename = "", fetchedSurname = "";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, UserID);
+            pstmt.setInt(1, loggedIn_UserID);
 
             ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                found = false;
-            } else {
+            if (rs.next()) {
                 fetchedTitle = rs.getString(1);
                 fetchedForename = rs.getString(2);
                 fetchedSurname = rs.getString(3);
@@ -50,13 +49,13 @@ public class formMainMenu extends javax.swing.JFrame {
         
         if (found) {
             System.out.println("-------------------------------");
-            System.out.println(UserID);
+            System.out.println(loggedIn_UserID);
             System.out.println(fetchedTitle);
             System.out.println(fetchedForename);
             System.out.println(fetchedSurname);
             lblLoggedInAs.setText("Logged in as " + fetchedTitle + ". " + fetchedForename + " " + fetchedSurname);
         } else {
-            System.out.println("Error!");
+            System.out.println("Error logging in.");
             
         }
   
@@ -72,7 +71,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         lblLoggedInAs = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        pManagement = new javax.swing.JPanel();
         btnManageItemCategories = new javax.swing.JButton();
         btnManageEmployees = new javax.swing.JButton();
         btnManageCustomers = new javax.swing.JButton();
@@ -84,7 +83,7 @@ public class formMainMenu extends javax.swing.JFrame {
         lblLoggedInAs.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblLoggedInAs.setText("Logged in as");
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Management", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
+        pManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Management", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
         btnManageItemCategories.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnManageItemCategories.setText("Item Categories");
@@ -118,22 +117,22 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout pManagementLayout = new javax.swing.GroupLayout(pManagement);
+        pManagement.setLayout(pManagementLayout);
+        pManagementLayout.setHorizontalGroup(
+            pManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pManagementLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnManageCustomers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnManageEmployees, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnManageItemCategories, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
                     .addComponent(btnManageCustomerCategories, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        pManagementLayout.setVerticalGroup(
+            pManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pManagementLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnManageCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -153,7 +152,7 @@ public class formMainMenu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblLoggedInAs)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(314, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -162,7 +161,7 @@ public class formMainMenu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lblLoggedInAs)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(190, Short.MAX_VALUE))
         );
 
@@ -170,30 +169,26 @@ public class formMainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManageCustomersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomersActionPerformed
-            formManageCustomers mngCustomersForm = new formManageCustomers().getFrame();
-            mngCustomersForm.setVisible(true);
-            this.setVisible(false);
+            formManageCustomers form = new formManageCustomers().getFrame();
+            form.setVisible(true);
             this.dispose();
     }//GEN-LAST:event_btnManageCustomersActionPerformed
 
     private void btnManageEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageEmployeesActionPerformed
-            formManageEmployees mngEmployeesForm = new formManageEmployees().getFrame();
-            mngEmployeesForm.setVisible(true);
-            this.setVisible(false);
+            formManageEmployees form = new formManageEmployees().getFrame();
+            form.setVisible(true);
             this.dispose();
     }//GEN-LAST:event_btnManageEmployeesActionPerformed
 
     private void btnManageItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageItemCategoriesActionPerformed
-            formManageItemCategories mngItemCategoriesForm = new formManageItemCategories().getFrame();
-            mngItemCategoriesForm.setVisible(true);
-            this.setVisible(false);
+            formManageItemCategories form = new formManageItemCategories().getFrame();
+            form.setVisible(true);
             this.dispose();
     }//GEN-LAST:event_btnManageItemCategoriesActionPerformed
 
     private void btnManageCustomerCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomerCategoriesActionPerformed
-            formManageCustomerCategories mngCustomerCategoriesForm = new formManageCustomerCategories().getFrame();
-            mngCustomerCategoriesForm.setVisible(true);
-            this.setVisible(false);
+            formManageCustomerCategories form = new formManageCustomerCategories().getFrame();
+            form.setVisible(true);
             this.dispose();
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
@@ -242,7 +237,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private javax.swing.JButton btnManageCustomers;
     private javax.swing.JButton btnManageEmployees;
     private javax.swing.JButton btnManageItemCategories;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblLoggedInAs;
+    private javax.swing.JPanel pManagement;
     // End of variables declaration//GEN-END:variables
 }

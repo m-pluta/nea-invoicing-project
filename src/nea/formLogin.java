@@ -160,7 +160,7 @@ public class formLogin extends javax.swing.JFrame {
 
             formMainMenu MainMenu = new formMainMenu().getFrame();
             MainMenu.loggedIn_UserID = fetchedID;
-            MainMenu.whoLoggedIn(MainMenu.loggedIn_UserID);
+            MainMenu.whoLoggedIn();
             MainMenu.setVisible(true);
             this.setVisible(false);
             this.dispose();
