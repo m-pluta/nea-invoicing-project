@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class formLogin extends javax.swing.JFrame {
 
     static Connection conn = null;
-    
+
     public formLogin() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -119,19 +119,24 @@ public class formLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+    private String getPassword() {
         String inputPassword = "";
-        String inputUsername = txtUsername.getText();
-        
         char[] passwordArray = txtPassword.getPassword();
         for (char chr : passwordArray) {
             inputPassword += chr;
         }
+        return inputPassword;
 
-        
+    }
+
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        String inputUsername = txtUsername.getText();
+        String inputPassword = getPassword();
+
         Boolean found = false;
         int fetchedID = -1;
-        
+
         String query = "SELECT id FROM tblLogins WHERE username = ? AND password = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -139,21 +144,20 @@ public class formLogin extends javax.swing.JFrame {
             pstmt.setString(2, inputPassword);
 
             ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                found = false;
-            } else {
+            if (rs.next()) {
                 fetchedID = Integer.parseInt(rs.getString(1));
                 found = true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         if (!found) {
             System.out.println("Incorrect username and/or password.");
         } else {
             System.out.println("-------------------------------");
             System.out.println("User ID: " + fetchedID);
+
             formMainMenu MainMenu = new formMainMenu().getFrame();
             MainMenu.loggedIn_UserID = fetchedID;
             MainMenu.whoLoggedIn(MainMenu.loggedIn_UserID);
@@ -164,10 +168,10 @@ public class formLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed
-       if (cbPassword.isSelected()) {
-            txtPassword.setEchoChar((char)0);
+        if (cbPassword.isSelected()) {
+            txtPassword.setEchoChar((char) 0);
         } else {
-        txtPassword.setEchoChar('•');
+            txtPassword.setEchoChar('•');
         }
     }//GEN-LAST:event_cbPasswordActionPerformed
 
