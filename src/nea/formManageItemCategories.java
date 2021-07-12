@@ -11,8 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -181,42 +179,33 @@ public class formManageItemCategories extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        String inputCategory = null;
-        inputCategory = JOptionPane.showInputDialog(null, "What should the name of the new category be?", "Add new category", JOptionPane.INFORMATION_MESSAGE);
-        if (inputCategory == null) { // If the dialog window was closed    
-            System.out.println("-------------------------------");
-            System.out.println("Input window closed.");
-        } else {
-            if (inputCategory.replaceAll(" ", "").equals("")) { // Removes all whitespace characters and checks if the string is left as ""
+        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category");
+        if (inputCategory != null) { // If the dialog input was valid 
+            inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
+
+            if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
-                System.out.println("Category name cannot be left empty");
+                System.out.println("Category under this name already exists");
+
             } else {
-                inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-                if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
+
+                String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "item_category_id");
+                    pstmt.setInt(1, newID); // Gets the next available PK value
+                    pstmt.setString(2, inputCategory);
+                    pstmt.setString(3, Utility.getCurrentDate());
+
+                    int rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
-                    System.out.println("Category under this name already exists");
-                } else {
-                    String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+                    System.out.println(rowsAffected + " row inserted.");
+                    loadCategories(); // Refreshes Table
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = new Date();
-                    String date_string = formatter.format(date); // Formats the current system date into 'yyyy-MM-dd HH:mm:ss'
-
-                    try {
-                        PreparedStatement pstmt = conn.prepareStatement(query);
-                        pstmt.setInt(1, getNextPKValue("tblItemCategories", "item_category_id")); // Gets the next available PK value
-                        pstmt.setString(2, inputCategory);
-                        pstmt.setString(3, date_string);
-
-                        int rowsAffected = pstmt.executeUpdate();
-                        System.out.println("-------------------------------");
-                        System.out.println(rowsAffected + " row inserted.");
-                        loadCategories(); // Refreshes Table
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -232,13 +221,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
             String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
             String category = model.getValueAt(row, 1).toString();
 
-            int id = 0; // Init
-            try {
-                id = Integer.parseInt(string_id); // id value from selected row is converted to int
-            } catch (NumberFormatException e) {
-                System.out.println("-------------------------------");
-                System.out.println("NumberFormatException: " + e);
-            }
+            int id = Utility.StringToInt(string_id);
+            
             if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be removed");
@@ -340,35 +324,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
     }
 
-    private int getNextPKValue(String tableName, String PK_name) { // Gets the next available value of the primary key
-        String stringID = "";
-        try {
-            String strSQL = "SELECT max(" + PK_name + ") as nextID from " + tableName + ""; // Fetches the highest value of the PK from the table
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(strSQL);
-            if (rs.next()) {
-                stringID += (rs.getInt("nextID") + 1); // Increments the current max PK value to get the new max value
-            } else {
-                stringID = "1"; // Sets the default id to 1
-            }
-
-        } catch (SQLException e) {
-            System.out.println("SQLException: " + e.toString());
-            e.printStackTrace();
-        }
-
-        int integerID = 1;
-        try {
-            integerID = Integer.parseInt(stringID); // Converts the PK valuer from string to int
-        } catch (NumberFormatException e) {
-            System.out.println("-------------------------------");
-            System.out.println("NumberFormatException: " + e);
-        }
-
-        return integerID;
-
-    }
-
     private boolean CategoryExists(String inputCategoryString) { // Checks if a category under a given name already exists
         String query = "SELECT 1 FROM tblItemCategories WHERE category_name = ?";
         try {
@@ -402,16 +357,24 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageItemCategories.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageItemCategories.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageItemCategories.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formManageItemCategories.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageItemCategories.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
