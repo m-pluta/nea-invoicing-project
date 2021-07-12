@@ -185,7 +185,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         if (inputCategory != null) { // If the dialog input was valid 
             inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
 
-            if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
+            if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
 
@@ -256,12 +256,15 @@ public class formManageItemCategories extends javax.swing.JFrame {
             if (id == 1) { // Checks if the user is trying to edit the first row - this is the default row
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be edited");
+                
             } else {
                 String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
 
                 if (inputCategory != null) { // If the dialog input was valid   
                     inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-                    if (CategoryExists(inputCategory)) { // Checks if category already exists in DB
+                    
+                    if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                        
                         System.out.println("-------------------------------");
                         System.out.println("Category under this name already exists");
                         // # TODO reopen dialog
@@ -293,25 +296,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
-
-    private boolean CategoryExists(String inputCategoryString) { // Checks if a category under a given name already exists
-        String query = "SELECT 1 FROM tblItemCategories WHERE category_name = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, inputCategoryString);
-
-            ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                return false; // If it doesn't exist
-            } else {
-                return true; // If it does exist
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return true;
-    }
 
     /**
      * @param args the command line arguments

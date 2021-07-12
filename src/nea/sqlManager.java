@@ -87,4 +87,21 @@ public class sqlManager {
 
     }
     
+        public static boolean RecordExists(Connection conn, String tableName, String key, String key_value) { // Checks if a category under a given name already exists
+        String query = "SELECT 1 FROM " + tableName + " WHERE " + key + " = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, key_value);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return false; // If it doesn't exist
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+    
 }
