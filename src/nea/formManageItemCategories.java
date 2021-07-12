@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -170,9 +169,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        JFrame frame = new JFrame();
         String inputCategory = null;
-        inputCategory = JOptionPane.showInputDialog(frame, "Enter the name of the new category");
+        inputCategory = JOptionPane.showInputDialog(null, "What should the name of the new category be?", "Add new category", JOptionPane.INFORMATION_MESSAGE);
         if (inputCategory == null) { // If the dialog window was closed    
             System.out.println("-------------------------------");
             System.out.println("Input window closed.");
@@ -221,7 +219,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
             String category = model.getValueAt(row, 1).toString();
 
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) { // If response is yes
                 System.out.println("-------------------------------");
                 System.out.println("Removing category " + string_id + " - " + category + ".");
@@ -265,9 +263,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be edited");
             } else {
-                JFrame frame = new JFrame();
                 String inputCategory = null;
-                inputCategory = JOptionPane.showInputDialog(frame, "What would you like to the change the name of the category '" + category + "' to?");
+                inputCategory = JOptionPane.showInputDialog(null, "Current name:  '" + category + "'", "Edit category name", JOptionPane.INFORMATION_MESSAGE);
 
                 if (inputCategory == null) { // If the dialog window was closed    
                     System.out.println("-------------------------------");
