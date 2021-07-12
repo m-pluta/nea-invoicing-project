@@ -186,26 +186,30 @@ public class formMainMenu extends javax.swing.JFrame {
 
     private void btnManageCustomersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomersActionPerformed
             formManageCustomers form = new formManageCustomers().getFrame();
+            form.previousForm = this;
+            this.setVisible(false);
             form.setVisible(true);
-            this.dispose();
     }//GEN-LAST:event_btnManageCustomersActionPerformed
 
     private void btnManageEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageEmployeesActionPerformed
             formManageEmployees form = new formManageEmployees().getFrame();
+            form.previousForm = this;
+            this.setVisible(false);
             form.setVisible(true);
-            this.dispose();
     }//GEN-LAST:event_btnManageEmployeesActionPerformed
 
     private void btnManageItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageItemCategoriesActionPerformed
             formManageItemCategories form = new formManageItemCategories().getFrame();
+            form.previousForm = this;
+            this.setVisible(false);
             form.setVisible(true);
-            this.dispose();
     }//GEN-LAST:event_btnManageItemCategoriesActionPerformed
 
     private void btnManageCustomerCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomerCategoriesActionPerformed
             formManageCustomerCategories form = new formManageCustomerCategories().getFrame();
+            form.previousForm = this;
+            this.setVisible(false);
             form.setVisible(true);
-            this.dispose();
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed

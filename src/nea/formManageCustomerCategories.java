@@ -24,6 +24,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     /**
      * Creates new form formManageCustomerCategories
      */
+    formMainMenu previousForm = null;
     Connection conn = nea.formLogin.conn;
     DefaultTableModel model; // Init
 
@@ -78,6 +79,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         btnEdit = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
 
         jButton4.setText("jButton4");
 
@@ -138,6 +140,14 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
             }
         });
 
+        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -153,10 +163,11 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(65, 65, 65)
+                        .addComponent(btnBack)
+                        .addGap(74, 74, 74)
                         .addComponent(lblManageCustomerCategories)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -165,7 +176,8 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblManageCustomerCategories)
-                    .addComponent(btnExit))
+                    .addComponent(btnExit)
+                    .addComponent(btnBack))
                 .addGap(41, 41, 41)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -258,9 +270,9 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
                 if (inputCategory != null) { // If the dialog window was closed    
                     inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-                    
+
                     if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                        
+
                         System.out.println("-------------------------------");
                         System.out.println("Category under this name already exists");
                         // # TODO reopen dialog
@@ -292,6 +304,12 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        previousForm.setVisible(true);
+        this.dispose();
+
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -337,6 +355,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddNew;
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnRemove;
