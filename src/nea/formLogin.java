@@ -137,7 +137,7 @@ public class formLogin extends javax.swing.JFrame {
         Boolean found = false;
         int fetchedID = -1;
 
-        String query = "SELECT id FROM tblLogins WHERE username = ? AND password = ?";
+        String query = "SELECT id, username, password FROM tblLogins WHERE username = ? AND password = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputUsername);
@@ -145,8 +145,11 @@ public class formLogin extends javax.swing.JFrame {
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
+                if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {
+                
                 fetchedID = Integer.parseInt(rs.getString(1));
                 found = true;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
