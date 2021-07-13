@@ -5,7 +5,13 @@
  */
 package nea;
 
+import java.awt.Font;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -18,13 +24,44 @@ public class formManageCustomers extends javax.swing.JFrame {
      */
     formMainMenu previousForm = null;
     Connection conn = nea.formLogin.conn;
+    DefaultTableModel model; // Init
 
     public formManageCustomers() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        model = (DefaultTableModel) jTable_Customers.getModel(); // Fetches the table model of the table component
+
+        JTableHeader header = jTable_Customers.getTableHeader();
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+
+        loadCustomers(); // Loads all the customer types from the DB into the table component in the form
     }
 
     public formManageCustomers getFrame() {
         return this;
+    }
+
+    public void loadCustomers() {
+        model.setRowCount(0); // Empties the table
+        String query = "SELECT customer_id, title, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
+        try {
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                String FullName = rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4);
+                System.out.println(FullName);    // For debugging, shows each customer category that was added to the table
+                System.out.println(rs.getString(5));
+                System.out.println(rs.getString(6));
+                System.out.println(rs.getString(7));
+
+                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(5), rs.getString(6), rs.getString(7)});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -37,7 +74,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        JTable1 = new javax.swing.JTable();
+        jTable_Customers = new javax.swing.JTable();
         btnAddNew = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
@@ -49,8 +86,8 @@ public class formManageCustomers extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Manage Customers");
 
-        JTable1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        JTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_Customers.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jTable_Customers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -58,7 +95,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                 "ID", "Full Name", "Postcode", "Phone Number", "Email Address"
             }
         ));
-        jScrollPane1.setViewportView(JTable1);
+        jScrollPane1.setViewportView(jTable_Customers);
 
         btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnAddNew.setText("Add New");
@@ -192,13 +229,13 @@ public class formManageCustomers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable JTable1;
     private javax.swing.JButton btnAddNew;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnRemove;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable_Customers;
     private javax.swing.JLabel lblCustomerCount;
     private javax.swing.JLabel lblManageCustomers;
     // End of variables declaration//GEN-END:variables

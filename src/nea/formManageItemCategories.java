@@ -30,6 +30,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
     public formManageItemCategories() {
         initComponents(); // Built in process
+        this.setLocationRelativeTo(null);
         model = (DefaultTableModel) jTable_ItemCategories.getModel(); // Fetches the table model of the table component
 
         JTableHeader header = jTable_ItemCategories.getTableHeader();

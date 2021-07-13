@@ -21,6 +21,7 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     public formManageEmployees() {
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     public formManageEmployees getFrame() {

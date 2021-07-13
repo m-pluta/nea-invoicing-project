@@ -30,6 +30,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
     public formManageCustomerCategories() {
         initComponents(); // Built in process
+        this.setLocationRelativeTo(null);
         model = (DefaultTableModel) jTable_CustomerCategories.getModel(); // Fetches the table model of the table component
 
         JTableHeader header = jTable_CustomerCategories.getTableHeader();
