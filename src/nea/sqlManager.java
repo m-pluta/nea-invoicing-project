@@ -111,7 +111,7 @@ public class sqlManager {
             pstmt.setInt(1, catID);
 
             ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
+            if (rs.next()) {
                 return rs.getString(1);
             } else {
                 System.out.println("-------------------------------");

@@ -66,6 +66,19 @@ public class formOneCustomer extends javax.swing.JFrame {
                 System.out.println(rs.getString(9));
                 System.out.println(rs.getString(10));
                 System.out.println(rs.getString(11));
+                
+                String FullName = rs.getString(1) + ". " + rs.getString(2) + " " + rs.getString(3);
+                lblFullName.setText(FullName);
+                txtTitle.setText(rs.getString(1));
+                txtForename.setText(rs.getString(2));
+                txtSurname.setText(rs.getString(3));
+                txtAddress.setText(rs.getString(4) + "\n" + rs.getString(5) + "\n" + rs.getString(6));
+                txtCounty.setText(rs.getString(7));
+                txtPostcode.setText(rs.getString(8));
+                txtPhoneNumber.setText(rs.getString(9));
+                txtEmailAddress.setText(rs.getString(10));
+                txtCategory.setText(sqlManager.getCategory(conn, "tblCustomerCategories", "customer_category_id", rs.getInt(11)));
+                
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error occurred fetching customer data");
