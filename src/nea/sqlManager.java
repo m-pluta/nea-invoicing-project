@@ -86,8 +86,8 @@ public class sqlManager {
         }
 
     }
-    
-        public static boolean RecordExists(Connection conn, String tableName, String key, String key_value) { // Checks if a category under a given name already exists
+
+    public static boolean RecordExists(Connection conn, String tableName, String key, String key_value) { // Checks if a category under a given name already exists
         String query = "SELECT 1 FROM " + tableName + " WHERE " + key + " = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -103,5 +103,24 @@ public class sqlManager {
 
         return true;
     }
-    
+
+    public static String getCategory(Connection conn, String tableName, String key, int catID) {
+        String query = "SELECT category_name FROM " + tableName + " WHERE " + key + " = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, catID);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return rs.getString(1);
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error fetching category");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
 }
