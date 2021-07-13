@@ -180,8 +180,8 @@ public class formManageCustomers extends javax.swing.JFrame {
                             .addComponent(btnBack)
                             .addComponent(btnExit))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(lblCustomerCount)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -189,7 +189,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnTest))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -210,16 +210,34 @@ public class formManageCustomers extends javax.swing.JFrame {
     formOneCustomer Customer_in_view = null;
 
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
-        if (Customer_in_view != null) {
-            Customer_in_view.dispose();
+        int selectedID = getSelectedCustomer();
+        if (selectedID != -1) {
+            if (Customer_in_view != null) {
+                Customer_in_view.dispose();
+            }
+
+            formOneCustomer form = new formOneCustomer().getFrame();
+            form.setLocation(1630, 420);
+            form.setVisible(true);
+            form.CustomerID = selectedID;
+            form.loadCustomer();
+            Customer_in_view = form;
+
         }
-        formOneCustomer form = new formOneCustomer().getFrame();
-        form.setLocation(1630, 420);
-        form.setVisible(true);
-        Customer_in_view = form;
-
-
     }//GEN-LAST:event_btnTestActionPerformed
+
+    public int getSelectedCustomer() {
+        int selectedRow = jTable_Customers.getSelectedRow();
+        if (selectedRow == -1) {
+            System.out.println("-------------------------------");
+            System.out.println("No row selected");
+        } else {
+            String string_id = model.getValueAt(selectedRow, 0).toString();
+            int id = Utility.StringToInt(string_id);
+            return id;
+        }
+        return -1;
+    }
 
     /**
      * @param args the command line arguments
