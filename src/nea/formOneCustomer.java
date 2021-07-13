@@ -6,6 +6,10 @@
 package nea;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JFrame;
 
 /**
  *
@@ -21,7 +25,7 @@ public class formOneCustomer extends javax.swing.JFrame {
 
     public formOneCustomer() {
         initComponents();
-        txtCustomerID.setEditable(false);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     public formOneCustomer getFrame() {
@@ -29,13 +33,47 @@ public class formOneCustomer extends javax.swing.JFrame {
     }
     
     public void EnableEditing() {
-        
-    
-    
+        txtTitle.setEditable(true);
+        txtForename.setEditable(true);
+        txtSurname.setEditable(true);
+        txtAddress.setEditable(true);
+        txtCounty.setEditable(true);
+        txtPostcode.setEditable(true);
+        txtPhoneNumber.setEditable(true);
+        txtEmailAddress.setEditable(true);
+        txtCategory.setEditable(true);
     }
     
     public void loadCustomer() {
         txtCustomerID.setText(String.valueOf(CustomerID));
+        
+        String query = "SELECT title, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, CustomerID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));    // For debugging, shows each category that was added to the table
+                System.out.println(rs.getString(3));
+                System.out.println(rs.getString(4));
+                System.out.println(rs.getString(5));
+                System.out.println(rs.getString(6));
+                System.out.println(rs.getString(7));
+                System.out.println(rs.getString(8));
+                System.out.println(rs.getString(9));
+                System.out.println(rs.getString(10));
+                System.out.println(rs.getString(11));
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error occurred fetching customer data");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
     }
 
     /**
@@ -68,7 +106,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtPostcode = new javax.swing.JTextField();
         txtPhoneNumber = new javax.swing.JTextField();
         txtEmailAddress = new javax.swing.JTextField();
-        jTextField9 = new javax.swing.JTextField();
+        txtCategory = new javax.swing.JTextField();
         lblFullName = new javax.swing.JLabel();
         btnSetInvoice = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
@@ -115,9 +153,28 @@ public class formOneCustomer extends javax.swing.JFrame {
         lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCategory.setText("Category:");
 
+        txtCustomerID.setEditable(false);
+
+        txtTitle.setEditable(false);
+
+        txtForename.setEditable(false);
+
+        txtSurname.setEditable(false);
+
+        txtAddress.setEditable(false);
         txtAddress.setColumns(20);
         txtAddress.setRows(3);
         jScrollPane3.setViewportView(txtAddress);
+
+        txtCounty.setEditable(false);
+
+        txtPostcode.setEditable(false);
+
+        txtPhoneNumber.setEditable(false);
+
+        txtEmailAddress.setEditable(false);
+
+        txtCategory.setEditable(false);
 
         lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblFullName.setText("Full name here");
@@ -127,6 +184,11 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         btnEdit.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnEdit.setText("Edit details");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -158,7 +220,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                                         .addComponent(txtPostcode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                                         .addComponent(txtCounty, javax.swing.GroupLayout.Alignment.LEADING))
                                     .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -226,7 +288,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblCustomerCategory)
-                            .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(16, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -242,8 +304,11 @@ public class formOneCustomer extends javax.swing.JFrame {
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         sqlManager.closeConnection(conn);
         this.dispose();
-        System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        EnableEditing();
+    }//GEN-LAST:event_btnEditActionPerformed
 
     /**
      * @param args the command line arguments
@@ -285,7 +350,6 @@ public class formOneCustomer extends javax.swing.JFrame {
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnSetInvoice;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JLabel lblAddress;
     private javax.swing.JLabel lblCounty;
     private javax.swing.JLabel lblCustomerCategory;
@@ -298,6 +362,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     private javax.swing.JLabel lblSurname;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JTextArea txtAddress;
+    private javax.swing.JTextField txtCategory;
     private javax.swing.JTextField txtCounty;
     private javax.swing.JTextField txtCustomerID;
     private javax.swing.JTextField txtEmailAddress;
