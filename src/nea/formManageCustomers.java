@@ -34,7 +34,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        // loadCustomers(); // Loads all the customer types from the DB into the table component in the form
+        loadCustomers(); // Loads all the customer types from the DB into the table component in the form
     }
 
     public formManageCustomers getFrame() {
@@ -65,7 +65,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     /**
@@ -207,13 +207,18 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnBackActionPerformed
 
+    formOneCustomer Customer_in_view = null;
+
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
+        if (Customer_in_view != null) {
+            Customer_in_view.dispose();
+        }
         formOneCustomer form = new formOneCustomer().getFrame();
-        form.setLocation(1630,420);
+        form.setLocation(1630, 420);
         form.setVisible(true);
-        form.previousForm = this;
-        
-        
+        Customer_in_view = form;
+
+
     }//GEN-LAST:event_btnTestActionPerformed
 
     /**
