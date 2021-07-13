@@ -34,7 +34,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        loadCustomers(); // Loads all the customer types from the DB into the table component in the form
+        // loadCustomers(); // Loads all the customer types from the DB into the table component in the form
     }
 
     public formManageCustomers getFrame() {
@@ -86,6 +86,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         lblCustomerCount = new javax.swing.JLabel();
         lblManageCustomers = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
+        btnTest = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Manage Customers");
@@ -132,6 +133,13 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
         });
 
+        btnTest.setText("jButton1");
+        btnTest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTestActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -143,7 +151,9 @@ public class formManageCustomers extends javax.swing.JFrame {
                         .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123)
+                        .addGap(28, 28, 28)
+                        .addComponent(btnTest)
+                        .addGap(18, 18, 18)
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -177,7 +187,8 @@ public class formManageCustomers extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTest))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
 
@@ -195,6 +206,15 @@ public class formManageCustomers extends javax.swing.JFrame {
         this.dispose();
 
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
+        formOneCustomer form = new formOneCustomer().getFrame();
+        form.setLocation(1630,420);
+        form.setVisible(true);
+        form.previousForm = this;
+        
+        
+    }//GEN-LAST:event_btnTestActionPerformed
 
     /**
      * @param args the command line arguments
@@ -238,6 +258,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnRemove;
+    private javax.swing.JButton btnTest;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Customers;
     private javax.swing.JLabel lblCustomerCount;
