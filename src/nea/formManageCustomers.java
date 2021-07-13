@@ -30,7 +30,8 @@ public class formManageCustomers extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         model = (DefaultTableModel) jTable_Customers.getModel(); // Fetches the table model of the table component
-
+        jTable_Customers.setDefaultEditor(Object.class, null);
+        
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
@@ -217,7 +218,7 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
 
             formOneCustomer form = new formOneCustomer().getFrame();
-            form.setLocation(1630, 420);
+            form.setLocation(1630, 422);
             form.setVisible(true);
             form.CustomerID = selectedID;
             form.loadCustomer();
