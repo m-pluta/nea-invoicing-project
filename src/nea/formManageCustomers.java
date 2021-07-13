@@ -48,6 +48,7 @@ public class formManageCustomers extends javax.swing.JFrame {
             Statement stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(query);
+            int customerCounter = 0;
             while (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
@@ -57,11 +58,14 @@ public class formManageCustomers extends javax.swing.JFrame {
                 System.out.println(rs.getString(6));
                 System.out.println(rs.getString(7));
 
+                customerCounter++;
                 model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(5), rs.getString(6), rs.getString(7)});
             }
+            lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter));
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
     }
 
     /**
