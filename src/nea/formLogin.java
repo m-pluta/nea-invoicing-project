@@ -13,7 +13,7 @@ public class formLogin extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         txtPassword.setEchoChar('•');
-        conn = sqlManager.connectToDB("jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT", "root", "root");
+        conn = sqlManager.openConnection("jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT", "root", "root");
     }
 
     /**

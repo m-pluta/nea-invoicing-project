@@ -18,7 +18,7 @@ import java.sql.Statement;
  */
 public class sqlManager {
 
-    public static Connection connectToDB(String url, String username, String password) {
+    public static Connection openConnection(String url, String username, String password) {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
