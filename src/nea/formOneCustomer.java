@@ -336,7 +336,14 @@ public class formOneCustomer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        // TODO add your handling code here:
+        conn = sqlManager.openConnection();
+        int NoInvoices = sqlManager.countInvoices(conn, CustomerID);
+        int NoQuotations = sqlManager.countQuotations(conn, CustomerID);
+        sqlManager.closeConnection(conn);
+        System.out.println("-------------------------------");
+        System.out.println("Customer ID: " + CustomerID);
+        System.out.println("No. of invoices: " + NoInvoices);
+        System.out.println("No. of quotations: " + NoQuotations);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     /**

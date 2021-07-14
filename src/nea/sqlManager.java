@@ -135,4 +135,35 @@ public class sqlManager {
 
         return null;
     }
+
+    public static int countInvoices(Connection conn, int id) {
+        try {
+            String query = "SELECT COUNT(customer_id) FROM tblInvoices WHERE customer_id = " + id;
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            return rs.getInt(1);
+
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.toString());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static int countQuotations(Connection conn, int id) {
+        try {
+            String query = "SELECT COUNT(customer_id) FROM tblQuotations WHERE customer_id = " + id;
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            return rs.getInt(1);
+
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.toString());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 }
