@@ -31,9 +31,7 @@
                       <Component id="btnAddNew" min="-2" pref="150" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="btnEdit" min="-2" pref="147" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                      <Component id="btnTest" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="btnRemove" min="-2" pref="147" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jScrollPane1" alignment="0" pref="688" max="32767" attributes="0"/>
@@ -78,7 +76,6 @@
                   <Component id="btnAddNew" alignment="3" min="-2" pref="60" max="-2" attributes="0"/>
                   <Component id="btnRemove" alignment="3" min="-2" pref="60" max="-2" attributes="0"/>
                   <Component id="btnEdit" alignment="3" min="-2" pref="60" max="-2" attributes="0"/>
-                  <Component id="btnTest" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -171,14 +168,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBackActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btnTest">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jButton1"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTestActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

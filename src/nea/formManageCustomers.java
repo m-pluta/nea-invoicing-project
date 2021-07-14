@@ -6,6 +6,8 @@
 package nea;
 
 import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,11 +33,51 @@ public class formManageCustomers extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         model = (DefaultTableModel) jTable_Customers.getModel(); // Fetches the table model of the table component
         jTable_Customers.setDefaultEditor(Object.class, null);
-        
+
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
         loadCustomers(); // Loads all the customer types from the DB into the table component in the form
+
+        jTable_Customers.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedID = getSelectedCustomer();
+                if (selectedID != -1) {
+                    if (Customer_in_view != null) {
+                        Customer_in_view.dispose();
+                    }
+
+                    formOneCustomer form = new formOneCustomer().getFrame();
+                    form.setLocation(1630, 422);
+                    form.setVisible(true);
+                    form.CustomerID = selectedID;
+                    form.loadCustomer();
+                    Customer_in_view = form;
+
+                } else {
+                    System.out.println("i dont know how you got here but leave, this should not be happening pls ty x");
+                }
+
+            }
+        });
+
     }
 
     public formManageCustomers getFrame() {
@@ -87,7 +129,6 @@ public class formManageCustomers extends javax.swing.JFrame {
         lblCustomerCount = new javax.swing.JLabel();
         lblManageCustomers = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
-        btnTest = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Manage Customers");
@@ -134,13 +175,6 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
         });
 
-        btnTest.setText("jButton1");
-        btnTest.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTestActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -152,9 +186,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                         .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
-                        .addComponent(btnTest)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -188,8 +220,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnTest))
+                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -209,23 +240,6 @@ public class formManageCustomers extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     formOneCustomer Customer_in_view = null;
-
-    private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
-        int selectedID = getSelectedCustomer();
-        if (selectedID != -1) {
-            if (Customer_in_view != null) {
-                Customer_in_view.dispose();
-            }
-
-            formOneCustomer form = new formOneCustomer().getFrame();
-            form.setLocation(1630, 422);
-            form.setVisible(true);
-            form.CustomerID = selectedID;
-            form.loadCustomer();
-            Customer_in_view = form;
-
-        }
-    }//GEN-LAST:event_btnTestActionPerformed
 
     public int getSelectedCustomer() {
         int selectedRow = jTable_Customers.getSelectedRow();
@@ -282,7 +296,6 @@ public class formManageCustomers extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnRemove;
-    private javax.swing.JButton btnTest;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Customers;
     private javax.swing.JLabel lblCustomerCount;
