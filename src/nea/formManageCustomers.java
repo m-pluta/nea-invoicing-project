@@ -109,7 +109,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         model.setRowCount(0); // Empties the table
         conn = sqlManager.openConnection();
         String query = "SELECT customer_id, title, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
-        
+
         if (!sp.equals("")) {
             query += " WHERE";
             query += " customer_id LIKE '%" + sp + "%'";
