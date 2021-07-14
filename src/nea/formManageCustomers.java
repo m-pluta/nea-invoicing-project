@@ -25,7 +25,7 @@ public class formManageCustomers extends javax.swing.JFrame {
      * Creates new form formAddNewCustomer
      */
     formMainMenu previousForm = null;
-    Connection conn = nea.formLogin.conn;
+    Connection conn = null;
     DefaultTableModel model; // Init
     formOneCustomer Customer_in_view = null;
 
@@ -87,6 +87,7 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     public void loadCustomers() {
         model.setRowCount(0); // Empties the table
+        conn = sqlManager.openConnection();
         String query = "SELECT customer_id, title, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
         try {
             Statement stmt = conn.createStatement();
@@ -109,6 +110,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+       sqlManager.closeConnection(conn);
 
     }
 

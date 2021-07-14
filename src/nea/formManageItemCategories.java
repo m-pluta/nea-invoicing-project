@@ -25,7 +25,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
      * Creates new form formManageItemCategories
      */
     formMainMenu previousForm = null;
-    Connection conn = nea.formLogin.conn;
+    Connection conn = null;
     DefaultTableModel model; // Init
 
     public formManageItemCategories() {
@@ -44,6 +44,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }
 
     public void loadCategories() {
+        conn = sqlManager.openConnection();
         model.setRowCount(0); // Empties the table
         String query = "SELECT item_category_id, category_name, date_created FROM tblItemCategories";
         try {
@@ -61,6 +62,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -197,7 +199,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category");
         if (inputCategory != null) { // If the dialog input was valid 
             inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
-
+            
+            conn = sqlManager.openConnection();
             if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
@@ -221,6 +224,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
             }
+            sqlManager.closeConnection(conn);
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 
@@ -246,7 +250,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     System.out.println("-------------------------------");
                     System.out.println("Removing category " + string_id + " - " + category + ".");
 
+                    conn = sqlManager.openConnection();
                     sqlManager.removeRecord(conn, "tblItemCategories", "item_category_id", id);
+                    sqlManager.closeConnection(conn);
+                    
                     loadCategories(); //Refreshes table since a record was removed
                 }
 
@@ -276,6 +283,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 if (inputCategory != null) { // If the dialog input was valid   
                     inputCategory = inputCategory.trim(); // Removes all leading and trailing whitespace characters
                     
+                    
+                    conn = sqlManager.openConnection();
                     if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                         
                         System.out.println("-------------------------------");
@@ -299,6 +308,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                             e.printStackTrace();
                         }
                     }
+                    sqlManager.closeConnection(conn);
                 }
             }
         }

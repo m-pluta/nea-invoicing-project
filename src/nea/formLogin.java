@@ -13,7 +13,7 @@ public class formLogin extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         txtPassword.setEchoChar('•');
-        conn = sqlManager.openConnection("jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT", "root", "root");
+        conn = sqlManager.openConnection();
     }
 
     /**
@@ -137,6 +137,7 @@ public class formLogin extends javax.swing.JFrame {
         Boolean found = false;
         int fetchedID = -1;
 
+        conn = sqlManager.openConnection();
         String query = "SELECT id, username, password FROM tblLogins WHERE username = ? AND password = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -154,6 +155,7 @@ public class formLogin extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
 
         if (!found) {
             System.out.println("Incorrect username and/or password.");

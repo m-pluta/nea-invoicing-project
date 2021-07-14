@@ -21,7 +21,7 @@ public class formOneCustomer extends javax.swing.JFrame {
      * Creates new form formOneCustomer
      */
     int CustomerID = 0;
-    Connection conn = nea.formLogin.conn;
+    Connection conn = null;
 
     public formOneCustomer() {
         initComponents();
@@ -46,6 +46,8 @@ public class formOneCustomer extends javax.swing.JFrame {
     
     public void loadCustomer() {
         txtCustomerID.setText(String.valueOf(CustomerID));
+        
+        conn = sqlManager.openConnection();
         
         String query = "SELECT title, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
         try {
@@ -86,6 +88,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
         
     }
 

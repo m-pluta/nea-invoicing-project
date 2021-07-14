@@ -19,7 +19,7 @@ public class formMainMenu extends javax.swing.JFrame {
     /**
      * Creates new form formMainMenu
      */
-    Connection conn = nea.formLogin.conn;
+    Connection conn = null;
     static int loggedIn_UserID = 0;
     
     
@@ -29,6 +29,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }
     
     public void whoLoggedIn() {
+        conn = sqlManager.openConnection();
         String query = "SELECT title, forename, surname FROM tblEmployees WHERE employee_id = ?";
         Boolean found = false;
         String fetchedTitle = "", fetchedForename = "", fetchedSurname = "";
@@ -46,6 +47,7 @@ public class formMainMenu extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
         
         if (found) {
             System.out.println("-------------------------------");

@@ -17,7 +17,7 @@ public class formManageEmployees extends javax.swing.JFrame {
      * Creates new form formAddNewEmployee
      */
     formMainMenu previousForm = null;
-    Connection conn = nea.formLogin.conn;
+    Connection conn = null;
 
     public formManageEmployees() {
         initComponents();
