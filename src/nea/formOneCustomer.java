@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JFrame;
 
 /**
@@ -26,12 +27,33 @@ public class formOneCustomer extends javax.swing.JFrame {
     public formOneCustomer() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        loadCustomerCategoriesIntoCB();
     }
 
     public formOneCustomer getFrame() {
         return this;
     }
-    
+
+    public void loadCustomerCategoriesIntoCB() {
+        conn = sqlManager.openConnection();
+        String query = "SELECT category_name FROM tblCustomerCategories";
+        try {
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(query);
+            System.out.println("-------------------------------");
+            while (rs.next()) {
+                System.out.println(rs.getString(1));
+
+                cbCategory.addItem(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);
+    }
+
     public void EnableEditing() {
         txtForename.setEditable(true);
         txtSurname.setEditable(true);
@@ -40,14 +62,13 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtPostcode.setEditable(true);
         txtPhoneNumber.setEditable(true);
         txtEmailAddress.setEditable(true);
-        cbCategory.setEditable(true);
     }
-    
+
     public void loadCustomer() {
         txtCustomerID.setText(String.valueOf(CustomerID));
-        
+
         conn = sqlManager.openConnection();
-        
+
         String query = "SELECT forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -66,7 +87,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                 System.out.println(rs.getString(8));
                 System.out.println(rs.getString(9));
                 System.out.println(rs.getString(10));
-                
+
                 String FullName = rs.getString(1) + " " + rs.getString(2);
                 lblFullName.setText(FullName);
                 txtForename.setText(rs.getString(1));
@@ -75,14 +96,12 @@ public class formOneCustomer extends javax.swing.JFrame {
                 address += "\n" + (rs.getString(4) == null ? "" : rs.getString(4));
                 address += "\n" + (rs.getString(5) == null ? "" : rs.getString(5));
 
-                
                 txtAddress.setText(address);
                 txtCounty.setText(rs.getString(6));
                 txtPostcode.setText(rs.getString(7));
                 txtPhoneNumber.setText(rs.getString(8));
                 txtEmailAddress.setText(rs.getString(9));
-                // txtCategory.setText(sqlManager.getCategory(conn, "tblCustomerCategories", "customer_category_id", rs.getInt(10)));
-                
+                cbCategory.setSelectedIndex(rs.getInt(10) - 1);
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error occurred fetching customer data");
@@ -91,7 +110,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
-        
+
     }
 
     /**
