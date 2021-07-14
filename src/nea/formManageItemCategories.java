@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -31,6 +32,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     public formManageItemCategories() {
         initComponents(); // Built in process
         this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         model = (DefaultTableModel) jTable_ItemCategories.getModel(); // Fetches the table model of the table component
 
         JTableHeader header = jTable_ItemCategories.getTableHeader();
@@ -81,7 +83,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
         btnAddNew = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
-        btnExit = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
 
         jButton4.setText("jButton4");
@@ -135,14 +136,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
             }
         });
 
-        btnExit.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        btnExit.setText("Exit");
-        btnExit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExitActionPerformed(evt);
-            }
-        });
-
         btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
@@ -167,10 +160,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(86, 86, 86)
                         .addComponent(lblManageItemCategories)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -179,7 +171,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblManageItemCategories)
-                    .addComponent(btnExit)
                     .addComponent(btnBack))
                 .addGap(41, 41, 41)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -314,12 +305,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
-    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        sqlManager.closeConnection(conn);
-        this.dispose();
-        System.exit(0);
-    }//GEN-LAST:event_btnExitActionPerformed
-
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         previousForm.setVisible(true);
         this.dispose();
@@ -374,7 +359,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
     private javax.swing.JButton btnAddNew;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnExit;
     private javax.swing.JButton btnRemove;
     private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
