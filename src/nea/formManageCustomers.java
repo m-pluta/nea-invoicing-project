@@ -218,6 +218,10 @@ public class formManageCustomers extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        if (Customer_in_view != null) {
+            Customer_in_view.dispose();
+        } 
+        
         previousForm.setVisible(true);
         this.dispose();
 
