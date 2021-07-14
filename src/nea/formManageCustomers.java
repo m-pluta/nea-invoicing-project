@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -40,7 +42,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        loadCustomers(); // Loads all the customer types from the DB into the table component in the form
+        loadCustomers(""); // Loads all the customer types from the DB into the table component in the form
 
         jTable_Customers.addMouseListener(new MouseListener() {
             @Override
@@ -81,16 +83,46 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
         });
 
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                loadCustomers(txtSearch.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                loadCustomers(txtSearch.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+        });
     }
 
     public formManageCustomers getFrame() {
         return this;
     }
 
-    public void loadCustomers() {
+    public void loadCustomers(String sp) {
         model.setRowCount(0); // Empties the table
         conn = sqlManager.openConnection();
         String query = "SELECT customer_id, title, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
+        
+        if (!sp.equals("")) {
+            query += " WHERE";
+            query += " customer_id LIKE '%" + sp + "%'";
+            query += " OR title LIKE '%" + sp + "%'";
+            query += " OR forename LIKE '%" + sp + "%'";
+            query += " OR surname LIKE '%" + sp + "%'";
+            query += " OR postcode LIKE '%" + sp + "%'";
+            query += " OR phone_number LIKE '%" + sp + "%'";
+            query += " OR email_address LIKE '%" + sp + "%'";
+        }
+
+        System.out.println(query);
+
         try {
             Statement stmt = conn.createStatement();
 
@@ -100,19 +132,20 @@ public class formManageCustomers extends javax.swing.JFrame {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
                 String FullName = rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4);
-                System.out.println(FullName);    // For debugging, shows each customer category that was added to the table
+                System.out.println(FullName);    // For debugging, shows each customer that was added to the table
                 System.out.println(rs.getString(5));
                 System.out.println(rs.getString(6));
                 System.out.println(rs.getString(7));
 
                 customerCounter++;
                 model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(5), rs.getString(6), rs.getString(7)});
+
             }
             lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-       sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);
 
     }
 
@@ -172,6 +205,11 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         txtSearch.setName(""); // NOI18N
+        txtSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSearchActionPerformed(evt);
+            }
+        });
 
         lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblSearch.setText("Search");
@@ -230,13 +268,16 @@ public class formManageCustomers extends javax.swing.JFrame {
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         if (Customer_in_view != null) {
             Customer_in_view.dispose();
-        } 
-        
+        }
+
         previousForm.setVisible(true);
         this.dispose();
 
     }//GEN-LAST:event_btnBackActionPerformed
 
+    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
+        System.out.println(txtSearch.getText());
+    }//GEN-LAST:event_txtSearchActionPerformed
 
     public int getSelectedCustomer() {
         int selectedRow = jTable_Customers.getSelectedRow();
