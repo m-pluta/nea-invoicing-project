@@ -27,6 +27,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     formMainMenu previousForm = null;
     Connection conn = nea.formLogin.conn;
     DefaultTableModel model; // Init
+    formOneCustomer Customer_in_view = null;
 
     public formManageCustomers() {
         initComponents();
@@ -72,7 +73,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                     Customer_in_view = form;
 
                 } else {
-                    System.out.println("i dont know how you got here but leave, this should not be happening pls ty x");
+                    System.out.println("Something is truly wrong");
                 }
 
             }
@@ -239,7 +240,6 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnBackActionPerformed
 
-    formOneCustomer Customer_in_view = null;
 
     public int getSelectedCustomer() {
         int selectedRow = jTable_Customers.getSelectedRow();
