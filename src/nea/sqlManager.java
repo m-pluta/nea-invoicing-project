@@ -18,6 +18,10 @@ import java.sql.Statement;
  */
 public class sqlManager {
 
+    static String DEFAULT_url = "jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT";
+    static String DEFAULT_username = "root";
+    static String DEFAULT_password = "root";
+
     public static Connection openConnection(String url, String username, String password) {
         Connection conn = null;
         try {
@@ -29,6 +33,14 @@ public class sqlManager {
             ex.printStackTrace();
         }
         return conn;
+    }
+
+    public static Connection openConnection(String username, String password) {
+        return openConnection(DEFAULT_url, username, password);
+    }
+
+    public static Connection openConnection() {
+        return openConnection(DEFAULT_url, DEFAULT_username, DEFAULT_password);
     }
 
     public static boolean closeConnection(Connection conn) {
@@ -120,7 +132,7 @@ public class sqlManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return null;
     }
 }
