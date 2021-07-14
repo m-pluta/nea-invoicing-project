@@ -33,7 +33,6 @@ public class formOneCustomer extends javax.swing.JFrame {
     }
     
     public void EnableEditing() {
-        txtTitle.setEditable(true);
         txtForename.setEditable(true);
         txtSurname.setEditable(true);
         txtAddress.setEditable(true);
@@ -41,7 +40,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtPostcode.setEditable(true);
         txtPhoneNumber.setEditable(true);
         txtEmailAddress.setEditable(true);
-        txtCategory.setEditable(true);
+        cbCategory.setEditable(true);
     }
     
     public void loadCustomer() {
@@ -49,7 +48,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         
         conn = sqlManager.openConnection();
         
-        String query = "SELECT title, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
+        String query = "SELECT forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
 
@@ -67,24 +66,22 @@ public class formOneCustomer extends javax.swing.JFrame {
                 System.out.println(rs.getString(8));
                 System.out.println(rs.getString(9));
                 System.out.println(rs.getString(10));
-                System.out.println(rs.getString(11));
                 
-                String FullName = rs.getString(1) + ". " + rs.getString(2) + " " + rs.getString(3);
+                String FullName = rs.getString(1) + " " + rs.getString(2);
                 lblFullName.setText(FullName);
-                txtTitle.setText(rs.getString(1));
-                txtForename.setText(rs.getString(2));
-                txtSurname.setText(rs.getString(3));
-                String address = rs.getString(4);
+                txtForename.setText(rs.getString(1));
+                txtSurname.setText(rs.getString(2));
+                String address = rs.getString(3);
+                address += "\n" + (rs.getString(4) == null ? "" : rs.getString(4));
                 address += "\n" + (rs.getString(5) == null ? "" : rs.getString(5));
-                address += "\n" + (rs.getString(6) == null ? "" : rs.getString(6));
 
                 
                 txtAddress.setText(address);
-                txtCounty.setText(rs.getString(7));
-                txtPostcode.setText(rs.getString(8));
-                txtPhoneNumber.setText(rs.getString(9));
-                txtEmailAddress.setText(rs.getString(10));
-                txtCategory.setText(sqlManager.getCategory(conn, "tblCustomerCategories", "customer_category_id", rs.getInt(11)));
+                txtCounty.setText(rs.getString(6));
+                txtPostcode.setText(rs.getString(7));
+                txtPhoneNumber.setText(rs.getString(8));
+                txtEmailAddress.setText(rs.getString(9));
+                // txtCategory.setText(sqlManager.getCategory(conn, "tblCustomerCategories", "customer_category_id", rs.getInt(10)));
                 
             } else {
                 System.out.println("-------------------------------");
@@ -107,7 +104,6 @@ public class formOneCustomer extends javax.swing.JFrame {
     private void initComponents() {
 
         lblCustomerID = new javax.swing.JLabel();
-        lblTitle = new javax.swing.JLabel();
         lblForename = new javax.swing.JLabel();
         lblSurname = new javax.swing.JLabel();
         lblAddress = new javax.swing.JLabel();
@@ -117,7 +113,6 @@ public class formOneCustomer extends javax.swing.JFrame {
         lblEmailAddress = new javax.swing.JLabel();
         lblCustomerCategory = new javax.swing.JLabel();
         txtCustomerID = new javax.swing.JTextField();
-        txtTitle = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
         txtSurname = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -126,21 +121,18 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtPostcode = new javax.swing.JTextField();
         txtPhoneNumber = new javax.swing.JTextField();
         txtEmailAddress = new javax.swing.JTextField();
-        txtCategory = new javax.swing.JTextField();
         lblFullName = new javax.swing.JLabel();
         btnSetInvoice = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnSetQuotation = new javax.swing.JButton();
+        cbCategory = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Customer");
 
         lblCustomerID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerID.setText("Customer ID:");
-
-        lblTitle.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblTitle.setText("Title: ");
 
         lblForename.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblForename.setText("Forename:");
@@ -169,8 +161,6 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         txtCustomerID.setEditable(false);
 
-        txtTitle.setEditable(false);
-
         txtForename.setEditable(false);
 
         txtSurname.setEditable(false);
@@ -187,8 +177,6 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtPhoneNumber.setEditable(false);
 
         txtEmailAddress.setEditable(false);
-
-        txtCategory.setEditable(false);
 
         lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblFullName.setText("Full name here");
@@ -223,31 +211,6 @@ public class formOneCustomer extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(52, 52, 52)
-                                .addComponent(lblAddress)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(lblFullName)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(lblForename)
-                                    .addComponent(lblSurname)
-                                    .addComponent(lblTitle)
-                                    .addComponent(lblCustomerID))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtForename, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                                    .addComponent(txtSurname))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnRemove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(lblPhoneNumber)
                             .addComponent(lblEmailAddress)
@@ -261,19 +224,41 @@ public class formOneCustomer extends javax.swing.JFrame {
                                 .addComponent(txtPostcode, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(txtCounty, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnSetInvoice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnSetQuotation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(lblFullName)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(lblCustomerID)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(lblAddress)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblForename)
+                            .addComponent(lblSurname))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtSurname, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnRemove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSetQuotation, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnSetInvoice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
                         .addComponent(lblFullName)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -281,25 +266,20 @@ public class formOneCustomer extends javax.swing.JFrame {
                             .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblTitle)
-                            .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblForename)
                             .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblSurname)
-                            .addComponent(txtSurname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtSurname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblAddress)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblAddress)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
@@ -321,7 +301,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblCustomerCategory)
-                            .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnSetQuotation, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -380,6 +360,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     private javax.swing.JButton btnRemove;
     private javax.swing.JButton btnSetInvoice;
     private javax.swing.JButton btnSetQuotation;
+    private javax.swing.JComboBox<String> cbCategory;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblAddress;
     private javax.swing.JLabel lblCounty;
@@ -391,9 +372,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     private javax.swing.JLabel lblPhoneNumber;
     private javax.swing.JLabel lblPostcode;
     private javax.swing.JLabel lblSurname;
-    private javax.swing.JLabel lblTitle;
     private javax.swing.JTextArea txtAddress;
-    private javax.swing.JTextField txtCategory;
     private javax.swing.JTextField txtCounty;
     private javax.swing.JTextField txtCustomerID;
     private javax.swing.JTextField txtEmailAddress;
@@ -401,6 +380,5 @@ public class formOneCustomer extends javax.swing.JFrame {
     private javax.swing.JTextField txtPhoneNumber;
     private javax.swing.JTextField txtPostcode;
     private javax.swing.JTextField txtSurname;
-    private javax.swing.JTextField txtTitle;
     // End of variables declaration//GEN-END:variables
 }

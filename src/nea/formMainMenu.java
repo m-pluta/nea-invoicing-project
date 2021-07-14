@@ -32,18 +32,17 @@ public class formMainMenu extends javax.swing.JFrame {
     
     public void whoLoggedIn() {
         conn = sqlManager.openConnection();
-        String query = "SELECT title, forename, surname FROM tblEmployees WHERE employee_id = ?";
+        String query = "SELECT forename, surname FROM tblEmployees WHERE employee_id = ?";
         Boolean found = false;
-        String fetchedTitle = "", fetchedForename = "", fetchedSurname = "";
+        String fetchedForename = "", fetchedSurname = "";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, loggedIn_UserID);
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                fetchedTitle = rs.getString(1);
-                fetchedForename = rs.getString(2);
-                fetchedSurname = rs.getString(3);
+                fetchedForename = rs.getString(1);
+                fetchedSurname = rs.getString(2);
                 found = true;
             }
         } catch (SQLException e) {
@@ -54,10 +53,9 @@ public class formMainMenu extends javax.swing.JFrame {
         if (found) {
             System.out.println("-------------------------------");
             System.out.println(loggedIn_UserID);
-            System.out.println(fetchedTitle);
             System.out.println(fetchedForename);
             System.out.println(fetchedSurname);
-            lblLoggedInAs.setText("Logged in as " + fetchedTitle + ". " + fetchedForename + " " + fetchedSurname);
+            lblLoggedInAs.setText("Logged in as " + fetchedForename + " " + fetchedSurname);
         } else {
             System.out.println("Error logging in.");
             

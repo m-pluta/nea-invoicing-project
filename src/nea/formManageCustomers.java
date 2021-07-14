@@ -108,12 +108,11 @@ public class formManageCustomers extends javax.swing.JFrame {
     public void loadCustomers(String sp) {
         model.setRowCount(0); // Empties the table
         conn = sqlManager.openConnection();
-        String query = "SELECT customer_id, title, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
+        String query = "SELECT customer_id, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
 
         if (!sp.equals("")) {
             query += " WHERE";
             query += " customer_id LIKE '%" + sp + "%'";
-            query += " OR title LIKE '%" + sp + "%'";
             query += " OR forename LIKE '%" + sp + "%'";
             query += " OR surname LIKE '%" + sp + "%'";
             query += " OR postcode LIKE '%" + sp + "%'";
@@ -131,14 +130,14 @@ public class formManageCustomers extends javax.swing.JFrame {
             while (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                String FullName = rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4);
+                String FullName = rs.getString(2) + " " + rs.getString(3);
                 System.out.println(FullName);    // For debugging, shows each customer that was added to the table
+                System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));
                 System.out.println(rs.getString(6));
-                System.out.println(rs.getString(7));
 
                 customerCounter++;
-                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(5), rs.getString(6), rs.getString(7)});
+                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)});
 
             }
             lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter));
