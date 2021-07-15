@@ -135,8 +135,8 @@ public class formManageEmployees extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        previousForm.setVisible(true);
-        this.dispose();
+        previousForm.setVisible(true);                              // Makes previous form visible
+        this.dispose();                                             // Closes the Employee management form (current form)
 
     }//GEN-LAST:event_btnBackActionPerformed
 
