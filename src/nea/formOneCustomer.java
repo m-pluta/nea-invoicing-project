@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -394,12 +395,25 @@ public class formOneCustomer extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);                           // Closes the connection to the DB
     }//GEN-LAST:event_btnRemoveActionPerformed
 
+    // Counts how many of the input fields is empty and returns the integer value
+    public int countEmptyFields(JTextField[] fields) {
+        int emptyFields = 0;
+        for (JTextField field : fields) {
+            if (field.getText().equals("")) {
+                emptyFields++;
+            }
+        }
+        return emptyFields;
+    }
+
+
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
+        JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
-        if (txtForename.getText().equals("") || txtSurname.getText().equals("") || txtAddress1.getText().equals("") || txtCounty.getText().equals("") || txtPostcode.getText().equals("") || txtPhoneNumber.getText().equals("") || txtEmailAddress.getText().equals("")) {
+        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
             System.out.println("-------------------------------");
             System.out.println("One of the required input fields is empty");
-        } else {                                                    // If all of the fields are filled
+        } else {                                                    // If none of the fields are empty
             // Asks user whether they really want to edit this customer's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
@@ -417,7 +431,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, cbCategory.getSelectedIndex()+1);  // Gets the index of the selected customer category
+                    pstmt.setInt(10, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();
