@@ -12,7 +12,7 @@ public class formLogin extends javax.swing.JFrame {
 
     public formLogin() {
         initComponents();
-        this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         txtPassword.setEchoChar('•');
     }
@@ -106,11 +106,12 @@ public class formLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Fetches password from the password field and returns the string equivalent since the JPasswordField.getPassword() returns a char array and not a string
     private String getPassword() {
         String inputPassword = "";
         char[] passwordArray = txtPassword.getPassword();
-        for (char chr : passwordArray) {
-            inputPassword += chr;
+        for (char chr : passwordArray) {                            // Loops through each element in char array
+            inputPassword += chr;                                   // Concatenates char to string
         }
         return inputPassword;
 
@@ -119,12 +120,12 @@ public class formLogin extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         String inputUsername = txtUsername.getText();
-        String inputPassword = getPassword();
+        String inputPassword = getPassword();                       // User Input into variables
 
-        Boolean found = false;
-        int fetchedID = -1;
+        Boolean found = false;                                      // Whether a user exists under the given login details
+        int fetchedID = -1;                                         // Init
 
-        conn = sqlManager.openConnection();
+        conn = sqlManager.openConnection();                         // Opens a connection to the DB
         String query = "SELECT id, username, password FROM tblLogins WHERE username = ? AND password = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -132,38 +133,37 @@ public class formLogin extends javax.swing.JFrame {
             pstmt.setString(2, inputPassword);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {
+            if (rs.next()) {                                        // If any results were fetched from the DB
+                if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
                 
-                fetchedID = Integer.parseInt(rs.getString(1));
+                fetchedID = Integer.parseInt(rs.getString(1));      // Gets the id of whoever logged in
                 found = true;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Closes connection to DB
 
-        if (!found) {
+        if (!found) {                                               // If a user was not found
             System.out.println("Incorrect username and/or password.");
-        } else {
+        } else {                                                    // If a user was found with those login details
             System.out.println("-------------------------------");
             System.out.println("User ID: " + fetchedID);
 
-            formMainMenu MainMenu = new formMainMenu().getFrame();
-            MainMenu.loggedIn_UserID = fetchedID;
-            MainMenu.whoLoggedIn();
-            MainMenu.setVisible(true);
-            this.setVisible(false);
-            this.dispose();
+            formMainMenu MainMenu = new formMainMenu().getFrame();  // Creates a new instance of the main menu form
+            MainMenu.loggedIn_UserID = fetchedID;                   // The employee_id of whoever is logged in
+            MainMenu.whoLoggedIn();                                 // Updates label in Main Menu form to show who logged in
+            MainMenu.setVisible(true);                              // Makes the main menu visible
+            this.dispose();                                         // Closes login form and disposes instance from system memory pool
         }
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed
         if (cbPassword.isSelected()) {
-            txtPassword.setEchoChar((char) 0);
+            txtPassword.setEchoChar((char) 0);                      // If the user wants to see their password
         } else {
-            txtPassword.setEchoChar('•');
+            txtPassword.setEchoChar('•');       
         }
     }//GEN-LAST:event_cbPasswordActionPerformed
 
