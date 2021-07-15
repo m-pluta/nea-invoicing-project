@@ -20,45 +20,46 @@ public class formMainMenu extends javax.swing.JFrame {
     /**
      * Creates new form formMainMenu
      */
-    Connection conn = null;
-    static int loggedIn_UserID = 0;
+    Connection conn = null;                                         // Stores the connection object
+    static int loggedIn_UserID = 0;                                 // id of whoever is currently logged in
     
     
     public formMainMenu() {
         initComponents();
-        this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
+    // Fetches the full name of whoever is currently logged in and updates label
     public void whoLoggedIn() {
-        conn = sqlManager.openConnection();
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
         String query = "SELECT forename, surname FROM tblEmployees WHERE employee_id = ?";
-        Boolean found = false;
-        String fetchedForename = "", fetchedSurname = "";
+        Boolean found = false;                                      //
+        String fetchedForename = "", fetchedSurname = "";           // Init
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, loggedIn_UserID);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                fetchedForename = rs.getString(1);
-                fetchedSurname = rs.getString(2);
+            if (rs.next()) {                                        // Once the user under the id is found
+                fetchedForename = rs.getString(1);                  //
+                fetchedSurname = rs.getString(2);                   // Stores the full name into variables
                 found = true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Closes connection to DB
         
         if (found) {
             System.out.println("-------------------------------");
-            System.out.println(loggedIn_UserID);
+            System.out.println(loggedIn_UserID);                    // Debug code
             System.out.println(fetchedForename);
             System.out.println(fetchedSurname);
-            lblLoggedInAs.setText("Logged in as " + fetchedForename + " " + fetchedSurname);
+            lblLoggedInAs.setText("Logged in as " + fetchedForename + " " + fetchedSurname);    // Updates label to say who is currently logged in
         } else {
             System.out.println("Error logging in.");
-            
+            // This point should theoretically not be reachable as the user would not be able to login if the user's name data didnt exist
         }
   
     }
@@ -171,33 +172,33 @@ public class formMainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManageCustomersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomersActionPerformed
-            formManageCustomers form = new formManageCustomers().getFrame();
-            form.previousForm = this;
-            form.sp = "";
-            form.loadCustomers();
-            this.setVisible(false);
-            form.setVisible(true);
+            formManageCustomers form = new formManageCustomers().getFrame();                    // Opens new Customer Management form
+            form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+            form.sp = "";                                                       // Empties search parameter in next form
+            form.loadCustomers();                                               // Load all the customers into the table
+            this.setVisible(false);                                             // Makes main menu invisible
+            form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageCustomersActionPerformed
 
     private void btnManageEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageEmployeesActionPerformed
-            formManageEmployees form = new formManageEmployees().getFrame();
-            form.previousForm = this;
-            this.setVisible(false);
-            form.setVisible(true);
+            formManageEmployees form = new formManageEmployees().getFrame();                    // Opens new Employee Management form
+            form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+            this.setVisible(false);                                             // Makes main menu invisible
+            form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageEmployeesActionPerformed
 
     private void btnManageItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageItemCategoriesActionPerformed
-            formManageItemCategories form = new formManageItemCategories().getFrame();
-            form.previousForm = this;
-            this.setVisible(false);
-            form.setVisible(true);
+            formManageItemCategories form = new formManageItemCategories().getFrame();          // Opens new Item Category Management form
+            form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+            this.setVisible(false);                                             // Makes main menu invisible
+            form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageItemCategoriesActionPerformed
 
     private void btnManageCustomerCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomerCategoriesActionPerformed
-            formManageCustomerCategories form = new formManageCustomerCategories().getFrame();
-            form.previousForm = this;
-            this.setVisible(false);
-            form.setVisible(true);
+            formManageCustomerCategories form = new formManageCustomerCategories().getFrame();  // Opens new Customer Category Management form
+            form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+            this.setVisible(false);                                             // Makes main menu invisible
+            form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
     /**
