@@ -15,7 +15,6 @@ public class formLogin extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         txtPassword.setEchoChar('•');
-        conn = sqlManager.openConnection();
     }
 
     /**
