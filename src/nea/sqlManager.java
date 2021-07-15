@@ -165,5 +165,13 @@ public class sqlManager {
         }
         return -1;
     }
+    
+    
+    // This method might be implemented later on since im unsure if a full removal should even be allowed
+    public static void removeCustomer(Connection conn, boolean fullRemoval, int customerID) {
+        removeRecord(conn, "tblCustomers", "customer_id", customerID);
+        
+        
+    }
 
 }

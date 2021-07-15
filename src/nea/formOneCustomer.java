@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -339,11 +340,21 @@ public class formOneCustomer extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         int NoInvoices = sqlManager.countInvoices(conn, CustomerID);
         int NoQuotations = sqlManager.countQuotations(conn, CustomerID);
-        sqlManager.closeConnection(conn);
         System.out.println("-------------------------------");
         System.out.println("Customer ID: " + CustomerID);
         System.out.println("No. of invoices: " + NoInvoices);
         System.out.println("No. of quotations: " + NoQuotations);
+        if (NoInvoices == 0 && NoQuotations == 0) {
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?", "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) { // If response is yes
+                sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);
+                this.dispose();
+                
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "This customer has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove customer", JOptionPane.WARNING_MESSAGE);
+        }
+        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     /**
