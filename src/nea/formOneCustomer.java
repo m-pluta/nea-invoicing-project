@@ -383,7 +383,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             if (YesNo == 0) { // If response is yes
                 sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);
                 this.dispose();
-                previousForm.loadCustomers("");
+                previousForm.loadCustomers();
 
             }
         } else {
@@ -424,7 +424,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                 sqlManager.closeConnection(conn);
                 setEditable(false);
                 btnConfirmEdit.setVisible(false);
-                previousForm.loadCustomers("");
+                previousForm.loadCustomers();
             }
         }
     }//GEN-LAST:event_btnConfirmEditActionPerformed

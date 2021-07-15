@@ -31,6 +31,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     Connection conn = null;
     DefaultTableModel model; // Init
     formOneCustomer Customer_in_view = null;
+    public static String sp = ""; // SearchParameter
 
     public formManageCustomers() {
         initComponents();
@@ -41,8 +42,6 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
-
-        loadCustomers(""); // Loads all the customer types from the DB into the table component in the form
 
         jTable_Customers.addMouseListener(new MouseListener() {
             @Override
@@ -87,12 +86,14 @@ public class formManageCustomers extends javax.swing.JFrame {
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                loadCustomers(txtSearch.getText());
+                sp = txtSearch.getText();
+                loadCustomers();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                loadCustomers(txtSearch.getText());
+                sp = txtSearch.getText();
+                loadCustomers();
             }
 
             @Override
@@ -106,7 +107,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         return this;
     }
 
-    public void loadCustomers(String sp) {
+    public void loadCustomers() {
         model.setRowCount(0); // Empties the table
         conn = sqlManager.openConnection();
         String query = "SELECT customer_id, forename, surname, postcode, phone_number, email_address FROM tblCustomers";

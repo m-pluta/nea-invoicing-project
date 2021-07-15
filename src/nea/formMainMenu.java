@@ -173,6 +173,8 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnManageCustomersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomersActionPerformed
             formManageCustomers form = new formManageCustomers().getFrame();
             form.previousForm = this;
+            form.sp = "";
+            form.loadCustomers();
             this.setVisible(false);
             form.setVisible(true);
     }//GEN-LAST:event_btnManageCustomersActionPerformed
