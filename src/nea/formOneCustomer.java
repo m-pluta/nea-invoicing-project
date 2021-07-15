@@ -24,6 +24,7 @@ public class formOneCustomer extends javax.swing.JFrame {
      */
     int CustomerID = 0;
     Connection conn = null;
+    formManageCustomers previousForm = null;
 
     public formOneCustomer() {
         initComponents();
@@ -349,6 +350,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             if (YesNo == 0) { // If response is yes
                 sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);
                 this.dispose();
+                previousForm.loadCustomers("");
                 
             }
         } else {

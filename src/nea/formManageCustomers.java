@@ -73,6 +73,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                     form.setLocation(1630, 422);
                     form.setVisible(true);
                     form.CustomerID = selectedID;
+                    form.previousForm = formManageCustomers.this;
                     form.loadCustomer();
                     Customer_in_view = form;
 
