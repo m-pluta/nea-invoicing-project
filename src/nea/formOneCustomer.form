@@ -40,48 +40,43 @@
                           <Component id="txtAddress3" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="lblPhoneNumber" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblEmailAddress" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblPostcode" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblCounty" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblCustomerCategory" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="txtEmailAddress" alignment="0" min="-2" pref="250" max="-2" attributes="0"/>
-                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                      <Component id="txtPostcode" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="txtCounty" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="txtPhoneNumber" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
-                                  <Component id="cbCategory" min="-2" pref="136" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Component id="lblFullName" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                              <Component id="lblCustomerID" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txtCustomerID" min="-2" pref="50" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="lblForename" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblSurname" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtForename" pref="150" max="32767" attributes="0"/>
-                                  <Component id="txtSurname" max="32767" attributes="0"/>
-                              </Group>
-                          </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="lblPhoneNumber" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblEmailAddress" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblPostcode" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblCounty" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblCustomerCategory" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="txtEmailAddress" alignment="0" min="-2" pref="250" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="txtPostcode" alignment="0" max="32767" attributes="0"/>
+                              <Component id="txtCounty" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="txtPhoneNumber" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                          <Component id="cbCategory" min="-2" pref="136" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Component id="lblFullName" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      <Component id="lblCustomerID" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="txtCustomerID" min="-2" pref="50" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="lblForename" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblSurname" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="txtForename" pref="150" max="32767" attributes="0"/>
+                          <Component id="txtSurname" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>

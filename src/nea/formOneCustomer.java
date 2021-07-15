@@ -22,17 +22,17 @@ public class formOneCustomer extends javax.swing.JFrame {
     /**
      * Creates new form formOneCustomer
      */
-    int CustomerID = 0;
-    Connection conn = null;
-    formManageCustomers previousForm = null;
+    int CustomerID = 0;                                             // customer_id of currently loaded customer
+    Connection conn = null;                                         // Stores the connection object
+    formManageCustomers previousForm = null;                        // Stores the previous Form object
 
     public formOneCustomer() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        loadCustomerCategoriesIntoCB();
+        loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
 
-        btnConfirmEdit.setVisible(false);
+        btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
     }
 
     public formOneCustomer getFrame() {
@@ -40,7 +40,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     }
 
     public void loadCustomerCategoriesIntoCB() {
-        conn = sqlManager.openConnection();
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
         String query = "SELECT category_name FROM tblCustomerCategories";
         try {
             Statement stmt = conn.createStatement();
@@ -48,16 +48,16 @@ public class formOneCustomer extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
-                System.out.println(rs.getString(1));
-
-                cbCategory.addItem(rs.getString(1));
+                System.out.println(rs.getString(1));                // For debugging
+                cbCategory.addItem(rs.getString(1));                // Ads the category to the combo box
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
     }
 
+    // Sets these components to either visible or invisible depending on the boolean state
     public void setEditable(boolean state) {
         txtForename.setEditable(state);
         txtSurname.setEditable(state);
@@ -70,6 +70,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtEmailAddress.setEditable(state);
     }
 
+    // Loads the customer data into the form
     public void loadCustomer() {
         txtCustomerID.setText(String.valueOf(CustomerID));
 
@@ -84,7 +85,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             if (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));    // For debugging, shows each category that was added to the table
+                System.out.println(rs.getString(2));    // For debugging, shows customer data
                 System.out.println(rs.getString(3));
                 System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));
@@ -94,7 +95,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                 System.out.println(rs.getString(9));
                 System.out.println(rs.getString(10));
 
-                String FullName = rs.getString(1) + " " + rs.getString(2);
+                String FullName = rs.getString(1) + " " + rs.getString(2); // Formats the name components into one full name
                 lblFullName.setText(FullName);
                 txtForename.setText(rs.getString(1));
                 txtSurname.setText(rs.getString(2));
@@ -113,7 +114,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
 
     }
 
@@ -365,41 +366,44 @@ public class formOneCustomer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        setEditable(true);
-        btnConfirmEdit.setVisible(true);
+        setEditable(true);                                          // Makes all the fields editable
+        btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
 
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        conn = sqlManager.openConnection();
-        int NoInvoices = sqlManager.countInvoices(conn, CustomerID);
-        int NoQuotations = sqlManager.countQuotations(conn, CustomerID);
+        conn = sqlManager.openConnection();                         // Opens the connection to the DB
+        int NoInvoices = sqlManager.countInvoices(conn, CustomerID);        // Counts how many invoices the customer has
+        int NoQuotations = sqlManager.countQuotations(conn, CustomerID);    // Counts how many quotations the custome has    
         System.out.println("-------------------------------");
         System.out.println("Customer ID: " + CustomerID);
         System.out.println("No. of invoices: " + NoInvoices);
         System.out.println("No. of quotations: " + NoQuotations);
-        if (NoInvoices == 0 && NoQuotations == 0) {
+        if (NoInvoices == 0 && NoQuotations == 0) {                 // If the customer has no invoices or quotations stored under their name
+            // Asks user whether they really want to remove this customer
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?", "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) { // If response is yes
-                sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);
-                this.dispose();
-                previousForm.loadCustomers();
+            if (YesNo == 0) {                                       // If response is yes
+                sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);   // Removes the customer
+                this.dispose();                                     // Closes this form since the customer no longer exists
+                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer was removed
 
             }
-        } else {
+        } else {                                                    // If the customer had any invoices or quotations associated with them then the user is informed
             JOptionPane.showMessageDialog(null, "This customer has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove customer", JOptionPane.WARNING_MESSAGE);
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Closes the connection to the DB
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
+        // Checks if any of the input fields are empty
         if (txtForename.getText().equals("") || txtSurname.getText().equals("") || txtAddress1.getText().equals("") || txtCounty.getText().equals("") || txtPostcode.getText().equals("") || txtPhoneNumber.getText().equals("") || txtEmailAddress.getText().equals("")) {
             System.out.println("-------------------------------");
             System.out.println("One of the required input fields is empty");
-        } else {
+        } else {                                                    // If all of the fields are filled
+            // Asks user whether they really want to edit this customer's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) { // If response is yes
-                conn = sqlManager.openConnection();
+            if (YesNo == 0) {                                       // If response is yes
+                conn = sqlManager.openConnection();                 // Opens connection to the DB
                 String query = "UPDATE tblCustomers SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, type_id = ? WHERE customer_id = ?";
                 PreparedStatement pstmt = null;
                 try {
@@ -407,13 +411,13 @@ public class formOneCustomer extends javax.swing.JFrame {
                     pstmt.setString(1, txtForename.getText());
                     pstmt.setString(2, txtSurname.getText());
                     pstmt.setString(3, txtAddress1.getText());
-                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));
+                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
                     pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
                     pstmt.setString(6, txtCounty.getText());
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, cbCategory.getSelectedIndex()+1);
+                    pstmt.setInt(10, cbCategory.getSelectedIndex()+1);  // Gets the index of the selected customer category
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();
@@ -421,10 +425,10 @@ public class formOneCustomer extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);
-                setEditable(false);
-                btnConfirmEdit.setVisible(false);
-                previousForm.loadCustomers();
+                sqlManager.closeConnection(conn);                   // Closes connection to the DB
+                setEditable(false);                                 // Makes all the fields no longer editable
+                btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
+                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
             }
         }
     }//GEN-LAST:event_btnConfirmEditActionPerformed
