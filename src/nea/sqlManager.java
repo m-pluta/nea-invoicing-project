@@ -62,15 +62,15 @@ public class sqlManager {
 
     // Fetches the next available value of the primary key in the DB 
     public static int getNextPKValue(Connection conn, String tableName, String PK_name) {
-        String stringID = "";
+        int id = 0;
         try {
             String strSQL = "SELECT max(" + PK_name + ") as nextID from " + tableName + ""; // Fetches the current max value
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(strSQL);
             if (rs.next()) {
-                stringID += (rs.getInt("nextID") + 1);              // Increments the current max PK value to get the new max value
+                id = rs.getInt("nextID") + 1;              // Increments the current max PK value to get the new max value
             } else {
-                stringID = "1";                                     // If there are not records in the table then the default value is 1
+                id = 1;                                     // If there are not records in the table then the default value is 1
             }
 
         } catch (SQLException e) {
@@ -78,15 +78,7 @@ public class sqlManager {
             e.printStackTrace();
         }
 
-        int integerID = 1;
-        try {
-            integerID = Integer.parseInt(stringID); // Converts the PK value from string to int
-        } catch (NumberFormatException e) {
-            System.out.println("-------------------------------");
-            System.out.println("NumberFormatException: " + e);
-        }
-
-        return integerID;
+        return id;
     }
 
     // Removes a record from a given table with a specfic primary key value
