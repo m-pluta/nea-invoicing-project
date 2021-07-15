@@ -393,8 +393,40 @@ public class formOneCustomer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
-        setEditable(false);
-        btnConfirmEdit.setVisible(false);
+        if (txtForename.getText().equals("") || txtSurname.getText().equals("") || txtAddress1.getText().equals("") || txtCounty.getText().equals("") || txtPostcode.getText().equals("") || txtPhoneNumber.getText().equals("") || txtEmailAddress.getText().equals("")) {
+            System.out.println("-------------------------------");
+            System.out.println("One of the required input fields is empty");
+        } else {
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) { // If response is yes
+                conn = sqlManager.openConnection();
+                String query = "UPDATE tblCustomers SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, type_id = ? WHERE customer_id = ?";
+                PreparedStatement pstmt = null;
+                try {
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, txtForename.getText());
+                    pstmt.setString(2, txtSurname.getText());
+                    pstmt.setString(3, txtAddress1.getText());
+                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));
+                    pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
+                    pstmt.setString(6, txtCounty.getText());
+                    pstmt.setString(7, txtPostcode.getText());
+                    pstmt.setString(8, txtPhoneNumber.getText());
+                    pstmt.setString(9, txtEmailAddress.getText());
+                    pstmt.setInt(10, cbCategory.getSelectedIndex()+1);
+                    pstmt.setInt(11, CustomerID);
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    System.out.println(rowsAffected + " row updated.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                sqlManager.closeConnection(conn);
+                setEditable(false);
+                btnConfirmEdit.setVisible(false);
+                previousForm.loadCustomers("");
+            }
+        }
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
     /**
