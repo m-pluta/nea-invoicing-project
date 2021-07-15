@@ -273,7 +273,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 if (inputCategory != null) {                        // If the dialog window was closed    
                     inputCategory = inputCategory.trim();           // Removes all leading and trailing whitespace characters
 
-                    conn = sqlManager.openConnection();
+                    conn = sqlManager.openConnection();             // Opens connection to the DB
                     if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
 
                         System.out.println("-------------------------------");
