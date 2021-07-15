@@ -18,10 +18,12 @@ import java.sql.Statement;
  */
 public class sqlManager {
 
+    // The default connection details for the database
     static String DEFAULT_url = "jdbc:mysql://localhost:3306/dbNEA?serverTimezone=GMT";
     static String DEFAULT_username = "root";
     static String DEFAULT_password = "root";
 
+    // Opens a connection to the database
     public static Connection openConnection(String url, String username, String password) {
         Connection conn = null;
         try {
@@ -35,17 +37,20 @@ public class sqlManager {
         return conn;
     }
 
+    // Opens connection to db, no specific url given so the default url is used.
     public static Connection openConnection(String username, String password) {
         return openConnection(DEFAULT_url, username, password);
     }
 
+    // Opens connection to db, no specific url, username or password given so a default connection is opened
     public static Connection openConnection() {
         return openConnection(DEFAULT_url, DEFAULT_username, DEFAULT_password);
     }
 
+    // Closes the connection to the database
     public static boolean closeConnection(Connection conn) {
         try {
-            if (!conn.isClosed()) {
+            if (!conn.isClosed()) {                                 // Checks if the connection is already closed to prevent an exception from happening
                 conn.close();
                 return true;
             }
@@ -55,16 +60,17 @@ public class sqlManager {
         return false;
     }
 
+    // Fetches the next available value of the primary key in the DB 
     public static int getNextPKValue(Connection conn, String tableName, String PK_name) {
         String stringID = "";
         try {
-            String strSQL = "SELECT max(" + PK_name + ") as nextID from " + tableName + ""; // Fetches the highest value of the PK from the table
+            String strSQL = "SELECT max(" + PK_name + ") as nextID from " + tableName + ""; // Fetches the current max value
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(strSQL);
             if (rs.next()) {
-                stringID += (rs.getInt("nextID") + 1); // Increments the current max PK value to get the new max value
+                stringID += (rs.getInt("nextID") + 1);              // Increments the current max PK value to get the new max value
             } else {
-                stringID = "1"; // Sets the default id to 1
+                stringID = "1";                                     // If there are not records in the table then the default value is 1
             }
 
         } catch (SQLException e) {
@@ -83,6 +89,7 @@ public class sqlManager {
         return integerID;
     }
 
+    // Removes a record from a given table with a specfic primary key value
     public static void removeRecord(Connection conn, String tableName, String PK_name, int PK_value) { // Removes a record from the DB in a given table with a certain attribute value
         String query = "DELETE FROM " + tableName + " WHERE " + PK_name + " = ?";
         try {
@@ -99,23 +106,25 @@ public class sqlManager {
 
     }
 
-    public static boolean RecordExists(Connection conn, String tableName, String key, String key_value) { // Checks if a category under a given name already exists
+    // Check if a specific record with a specific primary key value exists in a table returning a boolean of the result
+    public static boolean RecordExists(Connection conn, String tableName, String key, String key_value) {
         String query = "SELECT 1 FROM " + tableName + " WHERE " + key + " = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, key_value);
 
             ResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                return false; // If it doesn't exist
+            if (!rs.next()) {                                       // If no results were fetched then the record doesn't exist
+                return false; 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return true;
+        return true;                                                // In the event of an error, it returns that the row DOES exist
     }
 
+    // Gets the category name of any category given its' category_id
     public static String getCategory(Connection conn, String tableName, String key, int catID) {
         String query = "SELECT category_name FROM " + tableName + " WHERE " + key + " = ?";
         try {
@@ -123,7 +132,7 @@ public class sqlManager {
             pstmt.setInt(1, catID);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
+            if (rs.next()) {                                        // If a category with the provided PK value was found
                 return rs.getString(1);
             } else {
                 System.out.println("-------------------------------");
@@ -136,13 +145,14 @@ public class sqlManager {
         return null;
     }
 
+    // Counts how many invoices a given customer_id has
     public static int countInvoices(Connection conn, int id) {
         try {
             String query = "SELECT COUNT(customer_id) FROM tblInvoices WHERE customer_id = " + id;
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            return rs.getInt(1);
+            rs.next();                                              // Gets the next result from query
+            return rs.getInt(1);                                    // Returns the number of invoices
 
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.toString());
@@ -151,13 +161,14 @@ public class sqlManager {
         return -1;
     }
 
+    // Counts how many quotations a given customer_id has
     public static int countQuotations(Connection conn, int id) {
         try {
             String query = "SELECT COUNT(customer_id) FROM tblQuotations WHERE customer_id = " + id;
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            return rs.getInt(1);
+            rs.next();                                              // Gets the next result from query
+            return rs.getInt(1);                                    // Returns the number of quotations
 
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.toString());
