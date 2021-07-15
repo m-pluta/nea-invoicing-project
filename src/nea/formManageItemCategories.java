@@ -27,7 +27,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
      */
     formMainMenu previousForm = null;                               // Stores the previous Form object
     Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model = null;                                 // The table
+    DefaultTableModel model = null;                                 // The table model
 
     public formManageItemCategories() {
         initComponents();
@@ -306,7 +306,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the customer category management form (current form)
+        this.dispose();                                             // Closes the item category management form (current form)
 
     }//GEN-LAST:event_btnBackActionPerformed
 

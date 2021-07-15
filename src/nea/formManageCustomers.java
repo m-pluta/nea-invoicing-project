@@ -27,23 +27,23 @@ public class formManageCustomers extends javax.swing.JFrame {
     /**
      * Creates new form formAddNewCustomer
      */
-    formMainMenu previousForm = null;
-    Connection conn = null;
-    DefaultTableModel model; // Init
-    formOneCustomer Customer_in_view = null;
-    public static String sp = ""; // SearchParameter
+    formMainMenu previousForm = null;                               // Stores the previously open form
+    Connection conn = null;                                         // Stores the connection object
+    DefaultTableModel model;                                        // The table model
+    formOneCustomer Customer_in_view = null;                        // could be null or could store whichever customer the user is currently viewing
+    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
 
     public formManageCustomers() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_Customers.getModel(); // Fetches the table model of the table component
-        jTable_Customers.setDefaultEditor(Object.class, null);
+        model = (DefaultTableModel) jTable_Customers.getModel();    // Fetches the table model of the table
+        jTable_Customers.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
 
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        jTable_Customers.addMouseListener(new MouseListener() {
+        jTable_Customers.addMouseListener(new MouseListener() {     // Mouse listener for when the customer clicks on a row in the customer table
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -62,38 +62,38 @@ public class formManageCustomers extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedID = getSelectedCustomer();
-                if (selectedID != -1) {
-                    if (Customer_in_view != null) {
+                int selectedID = getSelectedCustomer();             // Gets the id of the customer which is currently selected in the table
+                if (selectedID != -1) {                             // id of the customer is no '-1', this is the default return value from getSelectedCustomer()
+                    if (Customer_in_view != null) {                 // If there is another customer in view then it closes it
                         Customer_in_view.dispose();
                     }
 
-                    formOneCustomer form = new formOneCustomer().getFrame();
-                    form.setLocation(1630, 422);
-                    form.setVisible(true);
-                    form.CustomerID = selectedID;
-                    form.previousForm = formManageCustomers.this;
-                    form.loadCustomer();
-                    Customer_in_view = form;
+                    formOneCustomer form = new formOneCustomer().getFrame();    // Opens a new instance of the formOneCustomer() form
+                    form.setLocation(1630, 422);                    // Sets the location of the customer view to the right of the current customer management form
+                    form.setVisible(true);                          // Makes the new customer view visible
+                    form.CustomerID = selectedID;                   // Tells the customer view form which customer to load
+                    form.previousForm = formManageCustomers.this;   // Informs the customer view what the previous form is 
+                    form.loadCustomer();                            // Runs the loadCustomer() method which will load all of the specified customer's details
+                    Customer_in_view = form;                        // Sets the customer in view to this
 
                 } else {
-                    System.out.println("Something is truly wrong");
+                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
                 }
 
             }
         });
 
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                sp = txtSearch.getText();
-                loadCustomers();
+            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+                loadCustomers();                                    // Refreshes the customer table as the search term has changed
             }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                sp = txtSearch.getText();
-                loadCustomers();
+            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+                loadCustomers();                                    // Refreshes the customer table as the search term has changed
             }
 
             @Override
@@ -107,46 +107,45 @@ public class formManageCustomers extends javax.swing.JFrame {
         return this;
     }
 
+    // Loads all the customers in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
     public void loadCustomers() {
-        model.setRowCount(0); // Empties the table
-        conn = sqlManager.openConnection();
+        model.setRowCount(0);                                       // Empties the table
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
         String query = "SELECT customer_id, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
 
-        if (!sp.equals("")) {
+        if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";
-            query += " customer_id LIKE '%" + sp + "%'";
-            query += " OR forename LIKE '%" + sp + "%'";
-            query += " OR surname LIKE '%" + sp + "%'";
-            query += " OR postcode LIKE '%" + sp + "%'";
-            query += " OR phone_number LIKE '%" + sp + "%'";
-            query += " OR email_address LIKE '%" + sp + "%'";
+            query += " customer_id LIKE '%" + sp + "%'";            // \
+            query += " OR forename LIKE '%" + sp + "%'";            //  |
+            query += " OR surname LIKE '%" + sp + "%'";             //  |
+            query += " OR postcode LIKE '%" + sp + "%'";            //  |-- Check whether a column value contains the searchParameter
+            query += " OR phone_number LIKE '%" + sp + "%'";        //  |
+            query += " OR email_address LIKE '%" + sp + "%'";       // /
         }
-
-        System.out.println(query);
 
         try {
             Statement stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(query);
-            int customerCounter = 0;
-            while (rs.next()) {
+            int customerCounter = 0;                                // variable for counting how many customers are being shown in the table
+            while (rs.next()) {                                     // If there is another result from the DBMS
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
                 String FullName = rs.getString(2) + " " + rs.getString(3);
-                System.out.println(FullName);    // For debugging, shows each customer that was added to the table
+                System.out.println(FullName);                       // For debugging, shows each customer's data
                 System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));
                 System.out.println(rs.getString(6));
 
-                customerCounter++;
-                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)});
-
+                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)}); // Adds the customer to the table
+                customerCounter++;                                  // Increments customer counter as a new customer was added to the table
+                
             }
-            lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter));
+            lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter)); // Updates customer counter label
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
 
     }
 
@@ -206,11 +205,6 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         txtSearch.setName(""); // NOI18N
-        txtSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtSearchActionPerformed(evt);
-            }
-        });
 
         lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblSearch.setText("Search");
@@ -266,31 +260,29 @@ public class formManageCustomers extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (Customer_in_view != null) {
-            Customer_in_view.dispose();
+        if (Customer_in_view != null) {                             // Checks whether there is another form opened showing the selected customer
+            Customer_in_view.dispose();                             // If there is another form then it gets rid of it
         }
-
-        previousForm.setVisible(true);
-        this.dispose();
+        previousForm.setVisible(true);                              // Makes main previous form visible
+        this.dispose();                                             // Closes the customer management form (current form)
 
     }//GEN-LAST:event_btnBackActionPerformed
 
-    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
-        System.out.println(txtSearch.getText());
-    }//GEN-LAST:event_txtSearchActionPerformed
-
+    // Returns the customer_id of the selected customer in the customer table
     public int getSelectedCustomer() {
-        int selectedRow = jTable_Customers.getSelectedRow();
-        if (selectedRow == -1) {
+        int selectedRow = jTable_Customers.getSelectedRow();        // Gets the selected row in the table
+        if (selectedRow == -1) {                                    // If no row is selected in the table
             System.out.println("-------------------------------");
             System.out.println("No row selected");
-        } else {
-            String string_id = model.getValueAt(selectedRow, 0).toString();
-            int id = Utility.StringToInt(string_id);
+        } else {                                                    // If there is a row selected in the table
+            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
+            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
             return id;
         }
-        return -1;
+        return -1;                                                  //  Returns -1 if there were to be an error somewhere
     }
 
     /**

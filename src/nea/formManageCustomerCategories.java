@@ -27,7 +27,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
      */
     formMainMenu previousForm = null;                               // Stores the previous Form object
     Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model = null;                                 // The table
+    DefaultTableModel model = null;                                 // The table model
 
     public formManageCustomerCategories() {
         initComponents();
