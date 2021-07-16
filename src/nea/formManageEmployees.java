@@ -7,6 +7,7 @@ package nea;
 
 import java.sql.Connection;
 import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -17,8 +18,11 @@ public class formManageEmployees extends javax.swing.JFrame {
     /**
      * Creates new form formAddNewEmployee
      */
-    formMainMenu previousForm = null;
-    Connection conn = null;
+    formMainMenu previousForm = null;                               // Stores the previously open form
+    Connection conn = null;                                         // Stores the connection object
+    DefaultTableModel model;                                        // The table model
+    formOneCustomer Employee_in_view = null;                        // could be null or could store whichever employee the user is currently viewing
+    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
 
     public formManageEmployees() {
         initComponents();
@@ -39,43 +43,27 @@ public class formManageEmployees extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblManageEmployees = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        JTable1 = new javax.swing.JTable();
         lblEmployeeCount = new javax.swing.JLabel();
-        btnAddNew = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
-        btnRemove = new javax.swing.JButton();
+        txtSearch = new javax.swing.JTextField();
+        lblManageEmployees = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
+        lblSearch = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable_Employees = new javax.swing.JTable();
+        btnAddNew = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Employee Management");
 
-        lblManageEmployees.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblManageEmployees.setText("Manage Employees");
-
-        JTable1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        JTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "Full Name", "Postcode", "Phone Number", "Email Address"
-            }
-        ));
-        jScrollPane1.setViewportView(JTable1);
-
         lblEmployeeCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblEmployeeCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblEmployeeCount.setText("Number of employees:");
 
-        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnAddNew.setText("Add New");
+        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        txtSearch.setName(""); // NOI18N
 
-        btnEdit.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnEdit.setText("Edit");
-
-        btnRemove.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnRemove.setText("Remove");
+        lblManageEmployees.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblManageEmployees.setText("Manage Employees");
 
         btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnBack.setText("Back");
@@ -85,6 +73,23 @@ public class formManageEmployees extends javax.swing.JFrame {
             }
         });
 
+        lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblSearch.setText("Search");
+
+        jTable_Employees.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jTable_Employees.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Full Name", "Phone Number", "Email Address", "Last Logged In"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable_Employees);
+
+        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnAddNew.setText("Add New");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -92,52 +97,58 @@ public class formManageEmployees extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblSearch)
+                            .addComponent(btnBack))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblEmployeeCount)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnBack)
-                                .addGap(177, 177, 177)
-                                .addComponent(lblManageEmployees)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123)
-                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE))
+                                .addGap(179, 179, 179)
+                                .addComponent(lblManageEmployees)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblEmployeeCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)))))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btnBack))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(lblManageEmployees)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(lblEmployeeCount)
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(29, Short.MAX_VALUE))
+                    .addComponent(btnBack)
+                    .addComponent(lblManageEmployees))
+                .addGap(40, 40, 40)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSearch)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblEmployeeCount))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
+
+        lblManageEmployees.getAccessibleContext().setAccessibleName("Manage Employees");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        previousForm.setVisible(true);                              // Makes previous form visible
-        this.dispose();                                             // Closes the Employee management form (current form)
-
+        if (Employee_in_view != null) {                             // Checks whether there is another form opened showing the selected employee
+            Employee_in_view.dispose();                             // If there is another form then it gets rid of it
+        }
+        previousForm.setVisible(true);                              // Makes main previous form visible
+        this.dispose();                                             // Closes the employee management form (current form)
     }//GEN-LAST:event_btnBackActionPerformed
 
     /**
@@ -177,13 +188,13 @@ public class formManageEmployees extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable JTable1;
     private javax.swing.JButton btnAddNew;
     private javax.swing.JButton btnBack;
-    private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnRemove;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable_Employees;
     private javax.swing.JLabel lblEmployeeCount;
     private javax.swing.JLabel lblManageEmployees;
+    private javax.swing.JLabel lblSearch;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
