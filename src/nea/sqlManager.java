@@ -173,8 +173,26 @@ public class sqlManager {
     // This method might be implemented later on since im unsure if a full removal should even be allowed
     public static void removeCustomer(Connection conn, boolean fullRemoval, int customerID) {
         removeRecord(conn, "tblCustomers", "customer_id", customerID);
-        
-        
+           
     }
+    
+    // Returns the last time a given employee (id) was logged in
+    public static String getLastLogin(Connection conn, int employee_id) {
+        String query = "SELECT date_last_logged_in FROM tblLogins WHERE employee_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, employee_id);
 
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If a employee with the given id was found
+                return rs.getString(1);
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error fetching last login date");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
