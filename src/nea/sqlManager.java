@@ -137,10 +137,10 @@ public class sqlManager {
         return null;
     }
 
-    // Counts how many invoices a given customer_id has
-    public static int countInvoices(Connection conn, int id) {
+    // Counts how many invoices a given customer_id or employee_id has
+    public static int countInvoices(Connection conn, String user_key, int id) {
         try {
-            String query = "SELECT COUNT(customer_id) FROM tblInvoices WHERE customer_id = " + id;
+            String query = "SELECT COUNT(" + user_key + ") FROM tblInvoices WHERE " + user_key + " = " + id;
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query
@@ -153,10 +153,10 @@ public class sqlManager {
         return -1;
     }
 
-    // Counts how many quotations a given customer_id has
-    public static int countQuotations(Connection conn, int id) {
+    // Counts how many quotations a given customer_id or employee_id has
+    public static int countQuotations(Connection conn, String user_key, int id) {
         try {
-            String query = "SELECT COUNT(customer_id) FROM tblQuotations WHERE customer_id = " + id;
+            String query = "SELECT COUNT(" + user_key + ") FROM tblQuotations WHERE " + user_key + " = " + id;
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query

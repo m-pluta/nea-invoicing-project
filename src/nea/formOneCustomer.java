@@ -349,8 +349,8 @@ public class formOneCustomer extends javax.swing.JFrame {
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         conn = sqlManager.openConnection();                         // Opens the connection to the DB
-        int NoInvoices = sqlManager.countInvoices(conn, CustomerID);        // Counts how many invoices the customer has
-        int NoQuotations = sqlManager.countQuotations(conn, CustomerID);    // Counts how many quotations the custome has    
+        int NoInvoices = sqlManager.countInvoices(conn, "customer_id", CustomerID);        // Counts how many invoices the customer has
+        int NoQuotations = sqlManager.countQuotations(conn, "customer_id", CustomerID);    // Counts how many quotations the customer has    
         System.out.println("-------------------------------");
         System.out.println("Customer ID: " + CustomerID);
         System.out.println("No. of invoices: " + NoInvoices);
