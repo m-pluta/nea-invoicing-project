@@ -195,4 +195,26 @@ public class sqlManager {
         }
         return null;
     }
+    
+    // Returns true/false whether an employee has admin permissions
+    public static boolean isAdmin(Connection conn, int employee_id) {
+        String query = "SELECT admin FROM tblLogins WHERE employee_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, employee_id);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If a employee with the given id was found
+                if (rs.getString(1).equals("Y")) {
+                    return true;
+                }
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error fetching admin status");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
