@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
@@ -315,7 +316,6 @@ public class formOneEmployee extends javax.swing.JFrame {
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         setEditable(fields, true);                                  // Makes all the fields editable
-        cbAdmin.setEnabled(true);
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
     }//GEN-LAST:event_btnEditActionPerformed
 
@@ -354,44 +354,44 @@ public class formOneEmployee extends javax.swing.JFrame {
     }
 
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
-//        JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-//        // Checks if any of the input fields are empty
-//        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
-//            System.out.println("-------------------------------");
-//            System.out.println("One of the required input fields is empty");
-//        } else {                                                    // If none of the fields are empty
-//            // Asks user whether they really want to edit this customer's details
-//            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-//            if (YesNo == 0) {                                       // If response is yes
-//                conn = sqlManager.openConnection();                 // Opens connection to the DB
-//                String query = "UPDATE tblCustomers SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, type_id = ? WHERE customer_id = ?";
-//                PreparedStatement pstmt = null;
-//                try {
-//                    pstmt = conn.prepareStatement(query);
-//                    pstmt.setString(1, txtForename.getText());
-//                    pstmt.setString(2, txtSurname.getText());
-//                    pstmt.setString(3, txtAddress1.getText());
-//                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
-//                    pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
-//                    pstmt.setString(6, txtCounty.getText());
-//                    pstmt.setString(7, txtPostcode.getText());
-//                    pstmt.setString(8, txtPhoneNumber.getText());
-//                    pstmt.setString(9, txtEmailAddress.getText());
-//                    pstmt.setInt(10, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
-//                    pstmt.setInt(11, CustomerID);
-//
-//                    int rowsAffected = pstmt.executeUpdate();
-//                    System.out.println(rowsAffected + " row updated.");
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//                sqlManager.closeConnection(conn);                   // Closes connection to the DB
-//                setEditable(false);                                 // Makes all the fields no longer editable
-//                btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
-//                cbAdmin.setEnabled(false);
-//                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
-//            }
-//        }
+        JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+        // Checks if any of the input fields are empty
+        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
+            System.out.println("-------------------------------");
+            System.out.println("One of the required input fields is empty");
+        } else {                                                    // If none of the fields are empty
+            // Asks user whether they really want to edit this employee's details
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?", "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) {                                       // If response is yes
+                conn = sqlManager.openConnection();                 // Opens connection to the DB
+                String query = "UPDATE tblEmployees SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ? WHERE employee_id = ?";
+                PreparedStatement pstmt = null;
+                try {
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, txtForename.getText());
+                    pstmt.setString(2, txtSurname.getText());
+                    pstmt.setString(3, txtAddress1.getText());
+                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
+                    pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
+                    pstmt.setString(6, txtCounty.getText());
+                    pstmt.setString(7, txtPostcode.getText());
+                    pstmt.setString(8, txtPhoneNumber.getText());
+                    pstmt.setString(9, txtEmailAddress.getText());
+                    pstmt.setInt(10, EmployeeID);
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    System.out.println(rowsAffected + " row updated.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                sqlManager.closeConnection(conn);                   // Closes connection to the DB
+                setEditable(inputFields, false);                    // Makes all the fields no longer editable
+                txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
+                txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
+                btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
+                previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed
+            }
+        }
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
     /**
