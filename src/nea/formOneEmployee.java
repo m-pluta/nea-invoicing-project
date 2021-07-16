@@ -27,7 +27,6 @@ public class formOneEmployee extends javax.swing.JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
-        txtEmployeeID.setEditable(false);                           //
         JTextField[] fields = {txtEmployeeID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress, txtLastLogin};
         setEditable(fields, false);                                 // Makes all the fields uneditable
     }
