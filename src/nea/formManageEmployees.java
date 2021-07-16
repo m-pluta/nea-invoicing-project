@@ -87,13 +87,13 @@ public class formManageEmployees extends javax.swing.JFrame {
             @Override
             public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
                 sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-//                loadCustomers();                                    // Refreshes the customer table as the search term has changed
+                loadEmployees();                                    // Refreshes the employee table as the search term has changed
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
                 sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-//                loadCustomers();                                    // Refreshes the customer table as the search term has changed
+                loadEmployees();                                    // Refreshes the employee table as the search term has changed
             }
 
             @Override
@@ -265,8 +265,8 @@ public class formManageEmployees extends javax.swing.JFrame {
         this.dispose();                                             // Closes the employee management form (current form)
     }//GEN-LAST:event_btnBackActionPerformed
 
-        // Returns the Employee_id of the selected employee in the employee table
-    public int getSelectedCustomer() {
+    // Returns the Employee_id of the selected employee in the employee table
+    public int getSelectedEmployee() {
         int selectedRow = jTable_Employees.getSelectedRow();        // Gets the selected row in the table
         if (selectedRow == -1) {                                    // If no row is selected in the table
             System.out.println("-------------------------------");
