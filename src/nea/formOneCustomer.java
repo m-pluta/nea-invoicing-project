@@ -34,6 +34,8 @@ public class formOneCustomer extends javax.swing.JFrame {
         loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
 
         btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
+        txtCustomerID.setEditable(false);                           //
+        setEditable(false);                                         // Makes all the fields uneditable
     }
 
     public formOneCustomer getFrame() {
@@ -186,20 +188,6 @@ public class formOneCustomer extends javax.swing.JFrame {
         lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCategory.setText("Category:");
 
-        txtCustomerID.setEditable(false);
-
-        txtForename.setEditable(false);
-
-        txtSurname.setEditable(false);
-
-        txtCounty.setEditable(false);
-
-        txtPostcode.setEditable(false);
-
-        txtPhoneNumber.setEditable(false);
-
-        txtEmailAddress.setEditable(false);
-
         lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblFullName.setText("Full name here");
 
@@ -225,12 +213,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         btnSetQuotation.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnSetQuotation.setText("Set a Quotation");
 
-        txtAddress1.setEditable(false);
         txtAddress1.setToolTipText("");
-
-        txtAddress2.setEditable(false);
-
-        txtAddress3.setEditable(false);
 
         btnConfirmEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnConfirmEdit.setText("Confirm Edit");
@@ -258,38 +241,35 @@ public class formOneCustomer extends javax.swing.JFrame {
                             .addComponent(txtAddress2)
                             .addComponent(txtAddress3)))
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblPhoneNumber)
+                            .addComponent(lblEmailAddress)
+                            .addComponent(lblPostcode)
+                            .addComponent(lblCounty)
+                            .addComponent(lblCustomerCategory))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(lblPhoneNumber)
-                                    .addComponent(lblEmailAddress)
-                                    .addComponent(lblPostcode)
-                                    .addComponent(lblCounty)
-                                    .addComponent(lblCustomerCategory))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(txtPostcode, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(txtCounty, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(lblFullName)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(lblCustomerID)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(36, 36, 36)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(lblForename)
-                                    .addComponent(lblSurname))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtForename, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                                    .addComponent(txtSurname))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtPostcode, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtCounty, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(lblFullName)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(lblCustomerID)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblForename)
+                            .addComponent(lblSurname))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtForename, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                            .addComponent(txtSurname))))
                 .addGap(63, 63, 63)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
