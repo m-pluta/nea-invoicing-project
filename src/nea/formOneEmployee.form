@@ -45,7 +45,7 @@
                           <Component id="lblEmailAddress" alignment="1" min="-2" max="-2" attributes="0"/>
                           <Component id="lblPostcode" alignment="1" min="-2" max="-2" attributes="0"/>
                           <Component id="lblCounty" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblEmployeeCategory" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblLastLogin" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -55,7 +55,7 @@
                               <Component id="txtCounty" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                           </Group>
                           <Component id="txtPhoneNumber" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
-                          <Component id="cbCategory" alignment="0" min="-2" pref="136" max="-2" attributes="0"/>
+                          <Component id="txtLastLogin" alignment="0" min="-2" pref="200" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="lblFullName" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -151,12 +151,12 @@
                   <Component id="lblEmailAddress" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtEmailAddress" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblEmployeeCategory" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="cbCategory" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblLastLogin" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtLastLogin" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -227,48 +227,19 @@
         <Property name="text" type="java.lang.String" value="Email address:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="lblEmployeeCategory">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="18" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Category:"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JTextField" name="txtEmployeeID">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtForename">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtSurname">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtCounty">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtPostcode">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtPhoneNumber">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtEmailAddress">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblFullName">
       <Properties>
@@ -300,31 +271,14 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoveActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JComboBox" name="cbCategory">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
-    </Component>
     <Component class="javax.swing.JTextField" name="txtAddress1">
       <Properties>
-        <Property name="editable" type="boolean" value="false"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtAddress2">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtAddress3">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnConfirmEdit">
       <Properties>
@@ -336,6 +290,16 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfirmEditActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblLastLogin">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="18" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Last Login:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtLastLogin">
     </Component>
   </SubComponents>
 </Form>

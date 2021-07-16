@@ -6,6 +6,7 @@
 package nea;
 
 import java.sql.Connection;
+import javax.swing.JFrame;
 
 /**
  *
@@ -22,15 +23,33 @@ public class formOneEmployee extends javax.swing.JFrame {
 
     public formOneEmployee() {
         initComponents();
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
+        txtEmployeeID.setEditable(false);                           //
+        setEditable(false);                                         // Makes all the fields uneditable
     }
 
     public formOneEmployee getFrame() {
         return this;
     }
     
+    // Sets these components to either visible or invisible depending on the boolean state
+    public void setEditable(boolean state) {
+        txtForename.setEditable(state);
+        txtSurname.setEditable(state);
+        txtAddress1.setEditable(state);
+        txtAddress2.setEditable(state);
+        txtAddress3.setEditable(state);
+        txtCounty.setEditable(state);
+        txtPostcode.setEditable(state);
+        txtPhoneNumber.setEditable(state);
+        txtEmailAddress.setEditable(state);
+        txtLastLogin.setEditable(state);
+    }
+
     public void loadEmployee() {
-    
-    
+
     }
 
     /**
@@ -50,7 +69,6 @@ public class formOneEmployee extends javax.swing.JFrame {
         lblPostcode = new javax.swing.JLabel();
         lblPhoneNumber = new javax.swing.JLabel();
         lblEmailAddress = new javax.swing.JLabel();
-        lblEmployeeCategory = new javax.swing.JLabel();
         txtEmployeeID = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
         txtSurname = new javax.swing.JTextField();
@@ -61,11 +79,12 @@ public class formOneEmployee extends javax.swing.JFrame {
         lblFullName = new javax.swing.JLabel();
         btnEdit = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
-        cbCategory = new javax.swing.JComboBox<>();
         txtAddress1 = new javax.swing.JTextField();
         txtAddress2 = new javax.swing.JTextField();
         txtAddress3 = new javax.swing.JTextField();
         btnConfirmEdit = new javax.swing.JButton();
+        lblLastLogin = new javax.swing.JLabel();
+        txtLastLogin = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,23 +113,6 @@ public class formOneEmployee extends javax.swing.JFrame {
         lblEmailAddress.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmailAddress.setText("Email address:");
 
-        lblEmployeeCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblEmployeeCategory.setText("Category:");
-
-        txtEmployeeID.setEditable(false);
-
-        txtForename.setEditable(false);
-
-        txtSurname.setEditable(false);
-
-        txtCounty.setEditable(false);
-
-        txtPostcode.setEditable(false);
-
-        txtPhoneNumber.setEditable(false);
-
-        txtEmailAddress.setEditable(false);
-
         lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblFullName.setText("Full name here");
 
@@ -130,12 +132,7 @@ public class formOneEmployee extends javax.swing.JFrame {
             }
         });
 
-        txtAddress1.setEditable(false);
         txtAddress1.setToolTipText("");
-
-        txtAddress2.setEditable(false);
-
-        txtAddress3.setEditable(false);
 
         btnConfirmEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnConfirmEdit.setText("Confirm Edit");
@@ -144,6 +141,9 @@ public class formOneEmployee extends javax.swing.JFrame {
                 btnConfirmEditActionPerformed(evt);
             }
         });
+
+        lblLastLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblLastLogin.setText("Last Login:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -168,7 +168,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                             .addComponent(lblEmailAddress)
                             .addComponent(lblPostcode)
                             .addComponent(lblCounty)
-                            .addComponent(lblEmployeeCategory))
+                            .addComponent(lblLastLogin))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -176,7 +176,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                                 .addComponent(txtPostcode, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(txtCounty, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtLastLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(lblFullName)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
@@ -250,19 +250,19 @@ public class formOneEmployee extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEmailAddress)
                     .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEmployeeCategory)
-                    .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(lblLastLogin)
+                    .addComponent(txtLastLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-//        setEditable(true);                                          // Makes all the fields editable
-//        btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
+        setEditable(true);                                          // Makes all the fields editable
+        btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
@@ -367,14 +367,13 @@ public class formOneEmployee extends javax.swing.JFrame {
     private javax.swing.JButton btnConfirmEdit;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnRemove;
-    private javax.swing.JComboBox<String> cbCategory;
     private javax.swing.JLabel lblAddress;
     private javax.swing.JLabel lblCounty;
     private javax.swing.JLabel lblEmailAddress;
-    private javax.swing.JLabel lblEmployeeCategory;
     private javax.swing.JLabel lblEmployeeID;
     private javax.swing.JLabel lblForename;
     private javax.swing.JLabel lblFullName;
+    private javax.swing.JLabel lblLastLogin;
     private javax.swing.JLabel lblPhoneNumber;
     private javax.swing.JLabel lblPostcode;
     private javax.swing.JLabel lblSurname;
@@ -385,6 +384,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     private javax.swing.JTextField txtEmailAddress;
     private javax.swing.JTextField txtEmployeeID;
     private javax.swing.JTextField txtForename;
+    private javax.swing.JTextField txtLastLogin;
     private javax.swing.JTextField txtPhoneNumber;
     private javax.swing.JTextField txtPostcode;
     private javax.swing.JTextField txtSurname;
