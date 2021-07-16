@@ -78,6 +78,7 @@ public class formMainMenu extends javax.swing.JFrame {
         btnManageEmployees = new javax.swing.JButton();
         btnManageCustomers = new javax.swing.JButton();
         btnManageCustomerCategories = new javax.swing.JButton();
+        btnChangeLoginDetails = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Main Menu");
@@ -146,6 +147,14 @@ public class formMainMenu extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
+        btnChangeLoginDetails.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnChangeLoginDetails.setText("Change Login details");
+        btnChangeLoginDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangeLoginDetailsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -153,18 +162,25 @@ public class formMainMenu extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblLoggedInAs)
-                    .addComponent(pManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(314, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblLoggedInAs)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnChangeLoginDetails))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(pManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 308, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLoggedInAs)
-                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblLoggedInAs)
+                    .addComponent(btnChangeLoginDetails))
+                .addGap(23, 23, 23)
                 .addComponent(pManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(179, Short.MAX_VALUE))
+                .addContainerGap(174, Short.MAX_VALUE))
         );
 
         pack();
@@ -201,6 +217,67 @@ public class formMainMenu extends javax.swing.JFrame {
         this.setVisible(false);                                             // Makes main menu invisible
         form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
+
+    private void btnChangeLoginDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeLoginDetailsActionPerformed
+        String[] inputDetails = Utility.JOptionPaneMultiInput(new String[]{"Current username", "Current password", "New username", "Confirm username", "New password", "Confirm password"});
+        if (inputDetails != null) {
+
+            Boolean found = false;                                      // Whether a user exists under the given login details
+            int fetchedID = -1;                                         // Init
+
+            conn = sqlManager.openConnection();                         // Opens a connection to the DB
+            String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
+            try {
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1, inputDetails[0]);
+                pstmt.setString(2, inputDetails[1]);
+
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {                                        // If any results were fetched from the DB
+                    if (inputDetails[0].equals(rs.getString(2)) && inputDetails[1].equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
+
+                        fetchedID = rs.getInt(1);                       // Gets the id of whoever logged in
+                        found = true;
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            sqlManager.closeConnection(conn);                           // Closes connection to DB
+
+            if (found) {                                               // If a user was not found
+                System.out.println("-------------------------------");
+                System.out.println("User ID: " + fetchedID);
+                if (inputDetails[2].equals(inputDetails[3]) && inputDetails[4].equals(inputDetails[5])) {
+                    System.out.println("-------------------------------");
+                    System.out.println("User ID: " + fetchedID);
+                    updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
+                } else {
+                    System.out.println("Make sure you have entered your new username and password correctly");
+                }
+            } else {                                                    // If a user was found with those login details
+                System.out.println("Incorrect username and/or password.");
+            }
+        }
+    }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
+
+    public void updateLoginDetails(int id, String newUsername, String newPassword) {
+        conn = sqlManager.openConnection();                 // Opens connection to the DB
+        String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = " + id;
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, newUsername);
+            pstmt.setString(2, newPassword);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println(rowsAffected + " row updated.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);                   // Closes connection to the DB
+
+    }
 
     /**
      * @param args the command line arguments
@@ -242,6 +319,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnChangeLoginDetails;
     private javax.swing.JButton btnManageCustomerCategories;
     private javax.swing.JButton btnManageCustomers;
     private javax.swing.JButton btnManageEmployees;
