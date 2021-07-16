@@ -63,7 +63,7 @@ public class formManageEmployees extends javax.swing.JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int selectedID = getSelectedEmployee();             // Gets the id of the employee which is currently selected in the table
-                if (selectedID != -1) {                             // id of the employee is not '-1', this is the default return value from getSelectedCustomer()
+                if (selectedID != -1) {                             // id of the employee is not '-1', this is the default return value from getSelectedEmployee()
                     if (Employee_in_view != null) {                 // If there is another employee in view then it closes it
                         Employee_in_view.dispose();
                     }
