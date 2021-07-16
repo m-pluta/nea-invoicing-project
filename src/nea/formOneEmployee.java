@@ -6,6 +6,9 @@
 package nea;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
@@ -43,6 +46,48 @@ public class formOneEmployee extends javax.swing.JFrame {
     }
 
     public void loadEmployee() {
+        txtEmployeeID.setText(String.valueOf(EmployeeID));
+
+        conn = sqlManager.openConnection();
+
+        String query = "SELECT forename, surname, address1, address2, address3, county, postcode, phone_number, email_address FROM tblEmployees WHERE employee_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, EmployeeID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));    // For debugging, shows employee data
+                System.out.println(rs.getString(3));
+                System.out.println(rs.getString(4));
+                System.out.println(rs.getString(5));
+                System.out.println(rs.getString(6));
+                System.out.println(rs.getString(7));
+                System.out.println(rs.getString(8));
+                System.out.println(rs.getString(9));
+
+                String FullName = rs.getString(1) + " " + rs.getString(2); // Formats the name components into one full name
+                lblFullName.setText(FullName);
+                txtForename.setText(rs.getString(1));
+                txtSurname.setText(rs.getString(2));
+                txtAddress1.setText(rs.getString(3));
+                txtAddress2.setText(rs.getString(4));
+                txtAddress3.setText(rs.getString(5));
+                txtCounty.setText(rs.getString(6));
+                txtPostcode.setText(rs.getString(7));
+                txtPhoneNumber.setText(rs.getString(8));
+                txtEmailAddress.setText(rs.getString(9));
+                txtLastLogin.setText(sqlManager.getLastLogin(conn, EmployeeID));
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error occurred fetching employee data");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
 
     }
 
@@ -244,11 +289,11 @@ public class formOneEmployee extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEmailAddress)
                     .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblLastLogin)
-                    .addComponent(txtLastLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6))
+                    .addComponent(txtLastLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblLastLogin))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
