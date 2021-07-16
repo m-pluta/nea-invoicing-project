@@ -136,7 +136,7 @@ public class formLogin extends javax.swing.JFrame {
             if (rs.next()) {                                        // If any results were fetched from the DB
                 if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
                 
-                fetchedID = Integer.parseInt(rs.getString(1));      // Gets the id of whoever logged in
+                fetchedID = rs.getInt(1);      // Gets the id of whoever logged in
                 found = true;
                 }
             }
