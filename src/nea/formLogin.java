@@ -126,7 +126,7 @@ public class formLogin extends javax.swing.JFrame {
         int fetchedID = -1;                                         // Init
 
         conn = sqlManager.openConnection();                         // Opens a connection to the DB
-        String query = "SELECT id, username, password FROM tblLogins WHERE username = ? AND password = ?";
+        String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputUsername);
