@@ -320,26 +320,27 @@ public class formOneEmployee extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-//        conn = sqlManager.openConnection();                         // Opens the connection to the DB
-//        int NoInvoices = sqlManager.countInvoices(conn, CustomerID);        // Counts how many invoices the customer has
-//        int NoQuotations = sqlManager.countQuotations(conn, CustomerID);    // Counts how many quotations the custome has
-//        System.out.println("-------------------------------");
-//        System.out.println("Customer ID: " + CustomerID);
-//        System.out.println("No. of invoices: " + NoInvoices);
-//        System.out.println("No. of quotations: " + NoQuotations);
-//        if (NoInvoices == 0 && NoQuotations == 0) {                 // If the customer has no invoices or quotations stored under their name
-//            // Asks user whether they really want to remove this customer
-//            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?", "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-//            if (YesNo == 0) {                                       // If response is yes
-//                sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);   // Removes the customer
-//                this.dispose();                                     // Closes this form since the customer no longer exists
-//                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer was removed
-//
-//            }
-//        } else {                                                    // If the customer had any invoices or quotations associated with them then the user is informed
-//            JOptionPane.showMessageDialog(null, "This customer has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove customer", JOptionPane.WARNING_MESSAGE);
-//        }
-//        sqlManager.closeConnection(conn);                           // Closes the connection to the DB
+        conn = sqlManager.openConnection();                         // Opens the connection to the DB
+        int NoInvoices = sqlManager.countInvoices(conn, "employee_id", EmployeeID);        // Counts how many invoices the employee has
+        int NoQuotations = sqlManager.countQuotations(conn, "employee_id", EmployeeID);    // Counts how many quotations the employee has
+        System.out.println("-------------------------------");
+        System.out.println("Employee ID: " + EmployeeID);
+        System.out.println("No. of invoices: " + NoInvoices);
+        System.out.println("No. of quotations: " + NoQuotations);
+        if (NoInvoices == 0 && NoQuotations == 0) {                 // If the employee has no invoices or quotations stored under their name
+            // Asks user whether they really want to remove this employee
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?", "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) {                                       // If response is yes
+                sqlManager.removeRecord(conn, "tblEmployees", "employee_id", EmployeeID);   // Removes the employee
+                sqlManager.removeRecord(conn, "tblLogins", "employee_id", EmployeeID);   // Removes the employee's login access
+                this.dispose();                                     // Closes this form since the employee no longer exists
+                previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee was removed
+
+            }
+        } else {                                                    // If the employee had any invoices or quotations associated with them then the user is informed
+            JOptionPane.showMessageDialog(null, "This employee has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove employee", JOptionPane.WARNING_MESSAGE);
+        }
+        sqlManager.closeConnection(conn);                           // Closes the connection to the DB
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     // Counts how many of the input fields is empty and returns the integer value
