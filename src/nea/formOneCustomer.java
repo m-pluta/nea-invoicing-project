@@ -34,8 +34,8 @@ public class formOneCustomer extends javax.swing.JFrame {
         loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
 
         btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
-        txtCustomerID.setEditable(false);                           //
-        setEditable(false);                                         // Makes all the fields uneditable
+        JTextField[] fields = {txtCustomerID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+        setEditable(fields, false);                                         // Makes all the fields uneditable
     }
 
     public formOneCustomer getFrame() {
@@ -61,16 +61,10 @@ public class formOneCustomer extends javax.swing.JFrame {
     }
 
     // Sets these components to either visible or invisible depending on the boolean state
-    public void setEditable(boolean state) {
-        txtForename.setEditable(state);
-        txtSurname.setEditable(state);
-        txtAddress1.setEditable(state);
-        txtAddress2.setEditable(state);
-        txtAddress3.setEditable(state);
-        txtCounty.setEditable(state);
-        txtPostcode.setEditable(state);
-        txtPhoneNumber.setEditable(state);
-        txtEmailAddress.setEditable(state);
+    public void setEditable(JTextField[] fields, boolean state) {
+        for (JTextField field : fields) {
+            field.setEditable(state);
+        }
     }
 
     // Loads the customer data into the form
@@ -347,7 +341,8 @@ public class formOneCustomer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        setEditable(true);                                          // Makes all the fields editable
+        JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+        setEditable(fields, true);                                  // Makes all the fields editable
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
 
     }//GEN-LAST:event_btnEditActionPerformed
@@ -420,7 +415,9 @@ public class formOneCustomer extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
                 sqlManager.closeConnection(conn);                   // Closes connection to the DB
-                setEditable(false);                                 // Makes all the fields no longer editable
+                setEditable(inputFields, false);                    // Makes all the fields no longer editable
+                txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
+                txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
                 btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
                 previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
             }
