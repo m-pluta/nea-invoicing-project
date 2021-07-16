@@ -43,7 +43,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         JTableHeader header = jTable_Customers.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        jTable_Customers.addMouseListener(new MouseListener() {     // Mouse listener for when the customer clicks on a row in the customer table
+        jTable_Customers.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the customer table
             @Override
             public void mouseReleased(MouseEvent e) {
             }

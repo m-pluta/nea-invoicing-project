@@ -5,9 +5,15 @@
  */
 package nea;
 
+import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import javax.swing.JFrame;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -28,6 +34,70 @@ public class formManageEmployees extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        model = (DefaultTableModel) jTable_Employees.getModel();    // Fetches the table model of the table
+        jTable_Employees.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
+
+        JTableHeader header = jTable_Employees.getTableHeader();
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+
+        jTable_Employees.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the customer table
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+//                int selectedID = getSelectedCustomer();             // Gets the id of the customer which is currently selected in the table
+//                if (selectedID != -1) {                             // id of the customer is no '-1', this is the default return value from getSelectedCustomer()
+//                    if (Employee_in_view != null) {                 // If there is another customer in view then it closes it
+//                        Employee_in_view.dispose();
+//                    }
+//
+//                    formOneCustomer form = new formOneCustomer().getFrame();    // Opens a new instance of the formOneCustomer() form
+//                    form.setLocation(1630, 422);                    // Sets the location of the customer view to the right of the current customer management form
+//                    form.setVisible(true);                          // Makes the new customer view visible
+//                    form.CustomerID = selectedID;                   // Tells the customer view form which customer to load
+//                    form.previousForm = formManageCustomers.this;   // Informs the customer view what the previous form is 
+//                    form.loadCustomer();                            // Runs the loadCustomer() method which will load all of the specified customer's details
+//                    Customer_in_view = form;                        // Sets the customer in view to this
+//
+//                } else {
+//                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
+//                }
+
+            }
+        });
+
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+            @Override
+            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+//                loadCustomers();                                    // Refreshes the customer table as the search term has changed
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+//                loadCustomers();                                    // Refreshes the customer table as the search term has changed
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+        });
     }
 
     public formManageEmployees getFrame() {
@@ -151,6 +221,20 @@ public class formManageEmployees extends javax.swing.JFrame {
         this.dispose();                                             // Closes the employee management form (current form)
     }//GEN-LAST:event_btnBackActionPerformed
 
+        // Returns the Employee_id of the selected employee in the employee table
+    public int getSelectedCustomer() {
+        int selectedRow = jTable_Employees.getSelectedRow();        // Gets the selected row in the table
+        if (selectedRow == -1) {                                    // If no row is selected in the table
+            System.out.println("-------------------------------");
+            System.out.println("No row selected");
+        } else {                                                    // If there is a row selected in the table
+            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
+            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
+            return id;
+        }
+        return -1;                                                  //  Returns -1 if there were to be an error somewhere
+    }
+    
     /**
      * @param args the command line arguments
      */
