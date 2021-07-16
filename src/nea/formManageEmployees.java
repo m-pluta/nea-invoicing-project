@@ -9,6 +9,9 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -102,6 +105,47 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     public formManageEmployees getFrame() {
         return this;
+    }
+    
+    // Loads all the employees in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
+    public void loadEmployees() {
+        model.setRowCount(0);                                       // Empties the table
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        String query = "SELECT employee_id, forename, surname, phone_number, email_address FROM tblEmployees";
+
+        if (!sp.equals("")) {                                       // When searchParameter is something
+            query += " WHERE";
+            query += " employee_id LIKE '%" + sp + "%'";            // \
+            query += " OR forename LIKE '%" + sp + "%'";            //  |
+            query += " OR surname LIKE '%" + sp + "%'";             //  |-- Check whether a column value contains the searchParameter
+            query += " OR phone_number LIKE '%" + sp + "%'";        //  |
+            query += " OR email_address LIKE '%" + sp + "%'";       // /
+        }
+
+        try {
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(query);
+            int employeeCounter = 0;                                // variable for counting how many employees are being shown in the table
+            while (rs.next()) {                                     // If there is another result from the DBMS
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                String FullName = rs.getString(2) + " " + rs.getString(3);
+                System.out.println(FullName);                       // For debugging, shows each employee's data
+                System.out.println(rs.getString(4));
+                System.out.println(rs.getString(5));
+                String last_login_date = sqlManager.getLastLogin(conn, Utility.StringToInt(rs.getString(1)));
+
+                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), last_login_date}); // Adds the employee to the table
+                employeeCounter++;                                  // Increments employee counter as a new employee was added to the table
+                
+            }
+            lblEmployeeCount.setText("Number of employees: " + String.valueOf(employeeCounter)); // Updates employee counter label
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+
     }
 
     /**
