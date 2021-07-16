@@ -30,7 +30,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model;                                        // The table model
-    formOneCustomer Employee_in_view = null;                        // could be null or could store whichever employee the user is currently viewing
+    formOneEmployee Employee_in_view = null;                        // could be null or could store whichever employee the user is currently viewing
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
 
     public formManageEmployees() {
@@ -43,7 +43,7 @@ public class formManageEmployees extends javax.swing.JFrame {
         JTableHeader header = jTable_Employees.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        jTable_Employees.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the customer table
+        jTable_Employees.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the employee table
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -62,23 +62,23 @@ public class formManageEmployees extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-//                int selectedID = getSelectedCustomer();             // Gets the id of the customer which is currently selected in the table
-//                if (selectedID != -1) {                             // id of the customer is no '-1', this is the default return value from getSelectedCustomer()
-//                    if (Employee_in_view != null) {                 // If there is another customer in view then it closes it
-//                        Employee_in_view.dispose();
-//                    }
-//
-//                    formOneCustomer form = new formOneCustomer().getFrame();    // Opens a new instance of the formOneCustomer() form
-//                    form.setLocation(1630, 422);                    // Sets the location of the customer view to the right of the current customer management form
-//                    form.setVisible(true);                          // Makes the new customer view visible
-//                    form.CustomerID = selectedID;                   // Tells the customer view form which customer to load
-//                    form.previousForm = formManageCustomers.this;   // Informs the customer view what the previous form is 
-//                    form.loadCustomer();                            // Runs the loadCustomer() method which will load all of the specified customer's details
-//                    Customer_in_view = form;                        // Sets the customer in view to this
-//
-//                } else {
-//                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
-//                }
+                int selectedID = getSelectedEmployee();             // Gets the id of the employee which is currently selected in the table
+                if (selectedID != -1) {                             // id of the employee is not '-1', this is the default return value from getSelectedCustomer()
+                    if (Employee_in_view != null) {                 // If there is another employee in view then it closes it
+                        Employee_in_view.dispose();
+                    }
+
+                    formOneEmployee form = new formOneEmployee().getFrame();    // Opens a new instance of the formOneEmployee() form
+                    form.setLocation(1630, 422);                    // Sets the location of the employee view to the right of the current employee management form
+                    form.setVisible(true);                          // Makes the new employee view visible
+                    form.EmployeeID = selectedID;                   // Tells the employee view form which employee to load
+                    form.previousForm = formManageEmployees.this;   // Informs the employee view what the previous form is 
+                    form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details
+                    Employee_in_view = form;                        // Sets the employee in view to this
+
+                } else {
+                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
+                }
 
             }
         });
