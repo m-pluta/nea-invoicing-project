@@ -63,7 +63,7 @@ public class formManageCustomers extends javax.swing.JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int selectedID = getSelectedCustomer();             // Gets the id of the customer which is currently selected in the table
-                if (selectedID != -1) {                             // id of the customer is no '-1', this is the default return value from getSelectedCustomer()
+                if (selectedID != -1) {                             // id of the customer is not '-1', this is the default return value from getSelectedCustomer()
                     if (Customer_in_view != null) {                 // If there is another customer in view then it closes it
                         Customer_in_view.dispose();
                     }
