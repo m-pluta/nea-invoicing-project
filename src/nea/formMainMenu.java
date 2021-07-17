@@ -27,6 +27,10 @@ public class formMainMenu extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        btnManageCustomers.setEnabled(false);
+        btnManageEmployees.setEnabled(false);
+        btnManageItemCategories.setEnabled(false);
+        btnManageCustomerCategories.setEnabled(false);
     }
 
     // Fetches the full name of whoever is currently logged in and updates label
@@ -61,6 +65,17 @@ public class formMainMenu extends javax.swing.JFrame {
             // This point should theoretically not be reachable as the user would not be able to login if the user's name data didnt exist
         }
 
+    }
+
+    // Checks whether the logged in user is an admin, if they are then they have access to the management section of the program.
+    public void checkWhetherAdmin() {
+        Connection conn = sqlManager.openConnection();
+        if (sqlManager.isAdmin(conn, loggedIn_UserID)) {
+            btnManageCustomers.setEnabled(true);
+            btnManageEmployees.setEnabled(true);
+            btnManageItemCategories.setEnabled(true);
+            btnManageCustomerCategories.setEnabled(true);;
+        }
     }
 
     /**
