@@ -7,8 +7,9 @@ package nea;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -61,18 +62,58 @@ public class Utility {
 
     public static String[] JOptionPaneMultiInput(String[] Fieldnames) {
         int NoInputs = Fieldnames.length;                           // Number of inputs the user must enter
-        JTextField[] inputBoxes = new JTextField[NoInputs];         // Array of JTextFields. One Field for each input
+        
         JPanel myPanel = new JPanel();                              // JPanel to hold all of the TextFields and Labels
         
-        myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS)); // Box Layout in order to vertically align all the components
-        
+        JTextField[] inputBoxes = new JTextField[NoInputs];         // Array of JTextFields. One Field for each input
+        JLabel[] labels = new JLabel[NoInputs];                     // Array of JLabels. Each describes what the corresponding textbox wants from the user
+
         for (int i = 0; i < NoInputs; i++) {                        // Goes through each input
-            inputBoxes[i] = new JTextField(30);                     // Creates new TextField and adds it to the array holding all the TextFields
-            myPanel.add(new JLabel(Fieldnames[i] + ": "));          // Label which tells the user what piece of information to enter
-            myPanel.add(inputBoxes[i]);                             // Adds the text box
-            myPanel.add(Box.createHorizontalGlue());               // <--- ?????? Confused about this
+            inputBoxes[i] = new JTextField(20);                     // Creates new TextField
+            labels[i] = new JLabel(Fieldnames[i] + ": ");           // Creates new JLabel
+        }
+
+        GroupLayout layout = new GroupLayout(myPanel);              // New instance of the GridLayout layout manager 
+        myPanel.setLayout(layout);                                  // sets it as the layout of the JPanel
+
+        layout.setAutoCreateGaps(true);                             // Gaps between components
+        layout.setAutoCreateContainerGaps(true);                    //
+
+        // Explanation of code https://docs.oracle.com/javase/tutorial/uiswing/layout/group.html
+        
+        // Both the horizontal and vertical layout need to be specified otherwise there is an exception
+        
+        //Horizontal Layout     
+        SequentialGroup H_sg = layout.createSequentialGroup();                              // Group which goes LEFT -> RIGHT
+        
+        ParallelGroup H_pg1 = layout.createParallelGroup(GroupLayout.Alignment.LEADING);    // 
+        ParallelGroup H_pg2 = layout.createParallelGroup(GroupLayout.Alignment.LEADING);    // These groups are 'parallel' so they go TOP -> BOTTOM
+        
+        for (int i = 0; i < NoInputs; i++) {
+            H_pg1.addComponent(labels[i]);                          // Adds each JLabel to the group going TOP -> BOTTOM
+            H_pg2.addComponent(inputBoxes[i]);                      // Adds each JTextField
+        }
+        H_sg.addGroup(H_pg1);                                       //
+        H_sg.addGroup(H_pg2);                                       // Adds each group that goes TOP -> BOTTOM to the group that goes LEFT -> RIGHT
+        
+        layout.setHorizontalGroup(H_sg);                            // Adds the horizontal layout to the overall layout
+        
+        // Vertical Layout
+        
+        SequentialGroup V_sg = layout.createSequentialGroup();      // Group which goes TOP -> BOTTOM
+        
+        ParallelGroup temp = null;                                  // There will be NoInputs amount of rows in the dialog box so it is easier to use a temporary Parallel Group that goes LEFT -> RIGHT
+        for (int i = 0; i < NoInputs; i++) {
+            temp = layout.createParallelGroup(GroupLayout.Alignment.BASELINE);  // Creates a new parallel group that goes LEFT -> RIGHT
+            temp.addComponent(labels[i]);                           // Adds the JLabel
+            temp.addComponent(inputBoxes[i]);                       // Adds the JTextField
+            V_sg.addGroup(temp);                                    // Adds the parallel group (the row) to the group that goes TOP -> BOTTOM
         }
         
+        layout.setVerticalGroup(V_sg);                              // Adds the vertical layout to the overall layout
+        
+        
+
         // Creates a new instance of the Dialog
         int result = JOptionPane.showConfirmDialog(null, myPanel, "Enter these details to change your login details", JOptionPane.OK_CANCEL_OPTION);
         if (result == 0) {                                          // If the user selected OK
