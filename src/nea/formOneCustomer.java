@@ -5,6 +5,8 @@
  */
 package nea;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,6 +38,49 @@ public class formOneCustomer extends javax.swing.JFrame {
         btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
         JTextField[] fields = {txtCustomerID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         setEditable(fields, false);                                         // Makes all the fields uneditable
+
+        cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new category...')
+                    addNewCategory();                               // Prompts the user to add the new category
+                }
+            }
+        });
+
+    }
+    
+    // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
+    public void addNewCategory() {
+        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
+        if (inputCategory != null) {                                // If the dialog input was valid    
+            conn = sqlManager.openConnection();                     // Opens connection to the DB
+
+            inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
+
+            if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                System.out.println("-------------------------------");
+                System.out.println("Category under this name already exists");
+            } else {                                                // If it is a unique category
+                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
+                    pstmt.setInt(1, newID);
+                    pstmt.setString(2, inputCategory);
+                    pstmt.setString(3, Utility.getCurrentDate());
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row inserted.");
+                    loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
+                    cbCategory.setSelectedIndex(newID - 1);         // Set the selected index to whatever category the user just added
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            sqlManager.closeConnection(conn);                       // Closes connection to DB
+        }
     }
 
     public formOneCustomer getFrame() {
@@ -43,6 +88,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     }
 
     public void loadCustomerCategoriesIntoCB() {
+        cbCategory.removeAllItems();
         conn = sqlManager.openConnection();                         // Opens connection to the DB
         String query = "SELECT category_name FROM tblCustomerCategories";
         try {
@@ -58,6 +104,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        cbCategory.addItem("Add a new category...");                // Set one of the option to a custom category
     }
 
     // Sets these components to either visible or invisible depending on the boolean state
