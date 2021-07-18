@@ -189,9 +189,9 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
         if (inputCategory != null) {                                // If the dialog input was valid    
             conn = sqlManager.openConnection();                     // Opens connection to the DB
-            
+
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
-            
+
             if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
@@ -233,20 +233,25 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be removed");
             } else {                                                // If it is any other row other than row 1
+                conn = sqlManager.openConnection();                 // Opens connection to DB
+                int usersWithCategory = sqlManager.countRecordsWithCategory(conn, "tblCustomers", "type_id", id);
+                if (usersWithCategory == -1) {
+                    System.out.println("Error fetching customers with this category");
+                } else if (usersWithCategory > 0) {
+                    System.out.println("Cannot remove category since " + usersWithCategory + " customer(s) are under this category");
+                } else {
 
-                // Asks user whether they really want to remove the category
-                int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-                if (YesNo == 0) {                                   // If response is yes
-                    System.out.println("-------------------------------");
-                    System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
+                    // Asks user whether they really want to remove the category
+                    int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+                    if (YesNo == 0) {                               // If response is yes
+                        System.out.println("-------------------------------");
+                        System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
 
-                    
-                    conn = sqlManager.openConnection();             // Opens connection to DB
-                    sqlManager.removeRecord(conn, "tblCustomerCategories", "customer_category_id", id); // Removes the selected category
-                    sqlManager.closeConnection(conn);               // Closes connection to DB
-                    loadCategories();                               //Refreshes table since a record was removed
-
+                        sqlManager.removeRecord(conn, "tblCustomerCategories", "customer_category_id", id); // Removes the selected category
+                        loadCategories();                           //Refreshes table since a record was removed
+                    }
                 }
+                sqlManager.closeConnection(conn);                   // Closes connection to DB
             }
         }
     }//GEN-LAST:event_btnRemoveActionPerformed

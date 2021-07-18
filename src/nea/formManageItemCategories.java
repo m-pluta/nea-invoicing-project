@@ -234,18 +234,26 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be removed");
             } else {                                                // If it is any other row other than row 1
+                conn = sqlManager.openConnection();                 // Opens connection to DB
+                int invoiceRowsWithCategory = sqlManager.countRecordsWithCategory(conn, "tblInvoiceDetails", "item_category_id", id);
+                int quotationRowsWithCategory = sqlManager.countRecordsWithCategory(conn, "tblQuotationDetails", "item_category_id", id);
+                if (invoiceRowsWithCategory == -1 || quotationRowsWithCategory == -1) {
+                    System.out.println("Error fetching document rows with this category");
+                } else if (invoiceRowsWithCategory > 0 || quotationRowsWithCategory > 0) {
+                    System.out.println("Cannot remove category since " + invoiceRowsWithCategory + " invoice rows and " + quotationRowsWithCategory + " quotation rows are under this category");
+                } else {
 
-                // Asks user whether they really want to remove the category
-                int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-                if (YesNo == 0) {                                   // If response is yes
-                    System.out.println("-------------------------------");
-                    System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
+                    // Asks user whether they really want to remove the category
+                    int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+                    if (YesNo == 0) {                               // If response is yes
+                        System.out.println("-------------------------------");
+                        System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
 
-                    conn = sqlManager.openConnection();             // Opens connection to DB
-                    sqlManager.removeRecord(conn, "tblItemCategories", "item_category_id", id); // Removes the selected category
-                    sqlManager.closeConnection(conn);               // Closes connection to DB
-                    loadCategories();                               //Refreshes table since a record was removed
+                        sqlManager.removeRecord(conn, "tblItemCategories", "item_category_id", id); // Removes the selected category
+                        loadCategories();                           //Refreshes table since a record was removed
+                    }
                 }
+                sqlManager.closeConnection(conn);                   // Closes connection to DB
 
             }
         }
@@ -282,7 +290,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         // # TODO Allow the user to merge the two categories together under the wanted name
 
                     } else {
-                        
+
                         // Update category name in the DB
                         String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
                         PreparedStatement pstmt = null;

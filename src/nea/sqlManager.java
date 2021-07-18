@@ -137,6 +137,22 @@ public class sqlManager {
         return null;
     }
 
+    public static int countRecordsWithCategory(Connection conn, String tableName, String key, int catID) {
+        try {
+            String query = "SELECT COUNT(" + key + ") FROM " + tableName + " WHERE " + key + " = " + catID;
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();                                              // Gets the next result from query
+            return rs.getInt(1);                                    // Returns the number of invoices
+
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.toString());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
+    
     // Counts how many invoices a given customer_id or employee_id has
     public static int countInvoices(Connection conn, String user_key, int id) {
         try {
