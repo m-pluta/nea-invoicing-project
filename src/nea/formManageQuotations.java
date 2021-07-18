@@ -40,12 +40,12 @@ public class formManageQuotations extends javax.swing.JFrame {
     private void initComponents() {
 
         btnBack = new javax.swing.JButton();
-        lblManageDocuments = new javax.swing.JLabel();
+        lblManageQuotations = new javax.swing.JLabel();
         lblSearch = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
-        lblDocumentCount = new javax.swing.JLabel();
+        lblQuotationCount = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable_Documents = new javax.swing.JTable();
+        jTable_Quotations = new javax.swing.JTable();
         btnAddNew = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -58,8 +58,9 @@ public class formManageQuotations extends javax.swing.JFrame {
             }
         });
 
-        lblManageDocuments.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblManageDocuments.setText("Manage Documents");
+        lblManageQuotations.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblManageQuotations.setText("Manage Quotations");
+        lblManageQuotations.setToolTipText("");
 
         lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblSearch.setText("Search");
@@ -67,20 +68,20 @@ public class formManageQuotations extends javax.swing.JFrame {
         txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         txtSearch.setName(""); // NOI18N
 
-        lblDocumentCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblDocumentCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        lblDocumentCount.setText("Number of documents:");
+        lblQuotationCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblQuotationCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblQuotationCount.setText("Number of quotations:");
 
-        jTable_Documents.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        jTable_Documents.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_Quotations.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jTable_Quotations.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Full Name", "Postcode", "Phone Number", "Email Address"
+                "ID", "Customer", "Total", "Date created", "Employee"
             }
         ));
-        jScrollPane1.setViewportView(jTable_Documents);
+        jScrollPane1.setViewportView(jTable_Quotations);
 
         btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnAddNew.setText("Add New");
@@ -105,13 +106,13 @@ public class formManageQuotations extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(179, 179, 179)
-                                .addComponent(lblManageDocuments)
+                                .addComponent(lblManageQuotations)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblDocumentCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblQuotationCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -125,12 +126,12 @@ public class formManageQuotations extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBack)
-                    .addComponent(lblManageDocuments))
+                    .addComponent(lblManageQuotations))
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSearch)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblDocumentCount))
+                    .addComponent(lblQuotationCount))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
@@ -200,9 +201,9 @@ public class formManageQuotations extends javax.swing.JFrame {
     private javax.swing.JButton btnAddNew;
     private javax.swing.JButton btnBack;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable_Documents;
-    private javax.swing.JLabel lblDocumentCount;
-    private javax.swing.JLabel lblManageDocuments;
+    private javax.swing.JTable jTable_Quotations;
+    private javax.swing.JLabel lblManageQuotations;
+    private javax.swing.JLabel lblQuotationCount;
     private javax.swing.JLabel lblSearch;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
