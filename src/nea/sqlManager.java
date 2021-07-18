@@ -107,7 +107,7 @@ public class sqlManager {
 
             ResultSet rs = pstmt.executeQuery();
             if (!rs.next()) {                                       // If no results were fetched then the record doesn't exist
-                return false; 
+                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,8 +151,7 @@ public class sqlManager {
         }
         return -1;
     }
-    
-    
+
     // Counts how many invoices a given customer_id or employee_id has
     public static int countInvoices(Connection conn, String user_key, int id) {
         try {
@@ -184,14 +183,13 @@ public class sqlManager {
         }
         return -1;
     }
-    
-    
+
     // This method might be implemented later on since im unsure if a full removal should even be allowed
     public static void removeCustomer(Connection conn, boolean fullRemoval, int customerID) {
         removeRecord(conn, "tblCustomers", "customer_id", customerID);
-           
+
     }
-    
+
     // Returns the last time a given employee (id) was logged in
     public static String getLastLogin(Connection conn, int employee_id) {
         String query = "SELECT date_last_logged_in FROM tblLogins WHERE employee_id = ?";
@@ -211,7 +209,7 @@ public class sqlManager {
         }
         return null;
     }
-    
+
     // Returns true/false whether an employee has admin permissions
     public static boolean isAdmin(Connection conn, int employee_id) {
         String query = "SELECT admin FROM tblLogins WHERE employee_id = ?";
@@ -232,5 +230,43 @@ public class sqlManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static String getEmployeeFullName(Connection conn, int employee_id) {
+        String query = "SELECT forename, surname FROM tblEmployees WHERE employee_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, employee_id);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If a employee with the given id was found
+                return rs.getString(1) + " " + rs.getString(2);
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error getching employee name with id: " + employee_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+        public static String getCustomerFullName(Connection conn, int customer_id) {
+        String query = "SELECT forename, surname FROM tblCustomers WHERE customer_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, customer_id);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If a employee with the given id was found
+                return rs.getString(1) + " " + rs.getString(2);
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error getching customer name with id: " + customer_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

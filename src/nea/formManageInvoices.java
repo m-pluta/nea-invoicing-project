@@ -9,6 +9,9 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -29,7 +32,6 @@ public class formManageInvoices extends javax.swing.JFrame {
     DefaultTableModel model;                                        // The table model
     formOneInvoice Invoice_in_view = null;                          // could be null or could store whichever invoice the user is currently viewing
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
-    
 
     public formManageInvoices() {
         initComponents();
@@ -97,7 +99,6 @@ public class formManageInvoices extends javax.swing.JFrame {
         });
 
     }
-
 
     public formManageInvoices getFrame() {
         return this;
@@ -214,10 +215,38 @@ public class formManageInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void loadInvoices() {
-
-    }
     
+    
+    
+    public void loadInvoices() {
+        model.setRowCount(0);                                       // Empties the table
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        String query = "SELECT invoice_id, customer_id, date_created, employee_id FROM tblInvoices";
+        
+        try {
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(query);
+            int invoiceCounter = 0;                                // variable for counting how many invoices are being shown in the table
+            while (rs.next()) {                                     // If there is another result from the DBMS
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                System.out.println(sqlManager.getCustomerFullName(conn, Utility.StringToInt(rs.getString(2))));
+                System.out.println("Total here");
+                System.out.println(rs.getString(3));                      // For debugging, shows each invoice's data
+                System.out.println(sqlManager.getEmployeeFullName(conn, Utility.StringToInt(rs.getString(4))));
+
+                // model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)}); // Adds the invoice to the table
+                invoiceCounter++;                                  // Increments invoice counter as a new invoice was added to the table
+
+            }
+            lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+    }
+
     // Returns the invoice_id of the selected invoice in the invoice table
     public int getSelectedInvoice() {
         int selectedRow = jTable_Invoices.getSelectedRow();         // Gets the selected row in the table
