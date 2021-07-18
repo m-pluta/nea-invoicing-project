@@ -233,6 +233,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Manage Invoices"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnManageInvoicesActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnManageQuotations">
           <Properties>
@@ -241,6 +244,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Manage Quotations"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnManageQuotationsActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnNewInvoice">
           <Properties>
@@ -302,9 +308,6 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Report 3"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReport3ActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnReport2">
           <Properties>
@@ -313,9 +316,6 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Report 2"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReport2ActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnReport1">
           <Properties>
@@ -324,9 +324,6 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Report 1"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReport1ActionPerformed"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>

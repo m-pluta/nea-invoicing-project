@@ -191,9 +191,19 @@ public class formMainMenu extends javax.swing.JFrame {
 
         btnManageInvoices.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnManageInvoices.setText("Manage Invoices");
+        btnManageInvoices.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnManageInvoicesActionPerformed(evt);
+            }
+        });
 
         btnManageQuotations.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnManageQuotations.setText("Manage Quotations");
+        btnManageQuotations.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnManageQuotationsActionPerformed(evt);
+            }
+        });
 
         btnNewInvoice.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnNewInvoice.setText("Set an invoice");
@@ -234,27 +244,12 @@ public class formMainMenu extends javax.swing.JFrame {
 
         btnReport3.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnReport3.setText("Report 3");
-        btnReport3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReport3ActionPerformed(evt);
-            }
-        });
 
         btnReport2.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnReport2.setText("Report 2");
-        btnReport2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReport2ActionPerformed(evt);
-            }
-        });
 
         btnReport1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnReport1.setText("Report 1");
-        btnReport1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReport1ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout pReportsLayout = new javax.swing.GroupLayout(pReports);
         pReports.setLayout(pReportsLayout);
@@ -424,18 +419,29 @@ public class formMainMenu extends javax.swing.JFrame {
         form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnNewQuotationActionPerformed
 
-    private void btnReport3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnReport3ActionPerformed
+    private void btnManageInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageInvoicesActionPerformed
+        formManageDocuments form = new formManageDocuments().getFrame();    // Opens new Document Management form
+        form.managerType = "Invoice";
+        form.setUI();
+        form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+        form.sp = "";                                                       // Empties search parameter in next form
+        form.loadInvoices();                                                // Load all the invoices into the table
+        this.setVisible(false);                                             // Makes main menu invisible
+        form.setVisible(true);                                              // makes the next form visible
+    }//GEN-LAST:event_btnManageInvoicesActionPerformed
 
-    private void btnReport2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnReport2ActionPerformed
+    private void btnManageQuotationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageQuotationsActionPerformed
+        formManageDocuments form = new formManageDocuments().getFrame();    // Opens new Document Management form
+        form.managerType = "Quotation";
+        form.setUI();
+        form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+        form.sp = "";                                                       // Empties search parameter in next form
+        form.loadQuotations();                                              // Load all the invoices into the table
+        this.setVisible(false);                                             // Makes main menu invisible
+        form.setVisible(true);                                              // makes the next form visible
+    }//GEN-LAST:event_btnManageQuotationsActionPerformed
 
-    private void btnReport1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnReport1ActionPerformed
-
+    
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();                 // Opens connection to the DB
         String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = " + id;

@@ -5,6 +5,8 @@
  */
 package nea;
 
+import java.sql.Connection;
+
 /**
  *
  * @author Michal
@@ -14,8 +16,24 @@ public class formManageDocuments extends javax.swing.JFrame {
     /**
      * Creates new form formManageDocuments
      */
+    formMainMenu previousForm = null;                               // Stores the previously open form
+    Connection conn = null;                                         // Stores the connection object
+    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    public static String managerType = null;
+
     public formManageDocuments() {
         initComponents();
+        this.setLocationRelativeTo(null);
+
+    }
+
+    public void setUI() {
+        lblManageDocuments.setText("Manage " + managerType + "s");
+        lblDocumentCount.setText("Number of " + managerType.toLowerCase() + "s: ");
+    }
+
+    public formManageDocuments getFrame() {
+        return this;
     }
 
     /**
@@ -31,7 +49,7 @@ public class formManageDocuments extends javax.swing.JFrame {
         lblManageDocuments = new javax.swing.JLabel();
         lblSearch = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
-        lblCustomerCount = new javax.swing.JLabel();
+        lblDocumentCount = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Documents = new javax.swing.JTable();
         btnAddNew = new javax.swing.JButton();
@@ -55,9 +73,9 @@ public class formManageDocuments extends javax.swing.JFrame {
         txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         txtSearch.setName(""); // NOI18N
 
-        lblCustomerCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCustomerCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        lblCustomerCount.setText("Number of documents:");
+        lblDocumentCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblDocumentCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblDocumentCount.setText("Number of documents:");
 
         jTable_Documents.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_Documents.setModel(new javax.swing.table.DefaultTableModel(
@@ -99,7 +117,7 @@ public class formManageDocuments extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblCustomerCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblDocumentCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -118,7 +136,7 @@ public class formManageDocuments extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSearch)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCustomerCount))
+                    .addComponent(lblDocumentCount))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
@@ -129,12 +147,17 @@ public class formManageDocuments extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void loadInvoices() {
+
+    }
+
+    public void loadQuotations() {
+
+    }
+
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-//        if (Customer_in_view != null) {                             // Checks whether there is another form opened showing the selected customer
-//            Customer_in_view.dispose();                             // If there is another form then it gets rid of it
-//        }
-//        previousForm.setVisible(true);                              // Makes main previous form visible
-//        this.dispose();                                             // Closes the customer management form (current form)
+        previousForm.setVisible(true);                              // Makes main previous form visible
+        this.dispose();                                             // Closes the document management form (current form)
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
@@ -187,7 +210,7 @@ public class formManageDocuments extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Documents;
-    private javax.swing.JLabel lblCustomerCount;
+    private javax.swing.JLabel lblDocumentCount;
     private javax.swing.JLabel lblManageDocuments;
     private javax.swing.JLabel lblSearch;
     private javax.swing.JTextField txtSearch;

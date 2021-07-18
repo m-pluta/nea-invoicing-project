@@ -42,7 +42,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="txtSearch" min="-2" pref="250" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="lblCustomerCount" min="-2" pref="250" max="-2" attributes="0"/>
+                              <Component id="lblDocumentCount" min="-2" pref="250" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -69,7 +69,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="lblSearch" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtSearch" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblCustomerCount" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblDocumentCount" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="273" max="-2" attributes="0"/>
@@ -116,7 +116,7 @@
         <Property name="name" type="java.lang.String" value="" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="lblCustomerCount">
+    <Component class="javax.swing.JLabel" name="lblDocumentCount">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="18" style="0"/>
