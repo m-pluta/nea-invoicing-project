@@ -420,9 +420,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewQuotationActionPerformed
 
     private void btnManageInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageInvoicesActionPerformed
-        formManageDocuments form = new formManageDocuments().getFrame();    // Opens new Document Management form
-        form.managerType = "Invoice";
-        form.setUI();
+        formManageInvoices form = new formManageInvoices().getFrame();    // Opens new Invoice Management form
         form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
         form.sp = "";                                                       // Empties search parameter in next form
         form.loadInvoices();                                                // Load all the invoices into the table
@@ -431,12 +429,10 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnManageInvoicesActionPerformed
 
     private void btnManageQuotationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageQuotationsActionPerformed
-        formManageDocuments form = new formManageDocuments().getFrame();    // Opens new Document Management form
-        form.managerType = "Quotation";
-        form.setUI();
+        formManageQuotations form = new formManageQuotations().getFrame();  // Opens new Quotations Management form
         form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
         form.sp = "";                                                       // Empties search parameter in next form
-        form.loadQuotations();                                              // Load all the invoices into the table
+        form.loadQuotations();                                              // Load all the quotations into the table
         this.setVisible(false);                                             // Makes main menu invisible
         form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageQuotationsActionPerformed

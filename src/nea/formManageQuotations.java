@@ -11,7 +11,7 @@ import java.sql.Connection;
  *
  * @author Michal
  */
-public class formManageDocuments extends javax.swing.JFrame {
+public class formManageQuotations extends javax.swing.JFrame {
 
     /**
      * Creates new form formManageDocuments
@@ -19,20 +19,14 @@ public class formManageDocuments extends javax.swing.JFrame {
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
-    public static String managerType = null;
 
-    public formManageDocuments() {
+    public formManageQuotations() {
         initComponents();
         this.setLocationRelativeTo(null);
 
     }
 
-    public void setUI() {
-        lblManageDocuments.setText("Manage " + managerType + "s");
-        lblDocumentCount.setText("Number of " + managerType.toLowerCase() + "s: ");
-    }
-
-    public formManageDocuments getFrame() {
+    public formManageQuotations getFrame() {
         return this;
     }
 
@@ -147,10 +141,6 @@ public class formManageDocuments extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void loadInvoices() {
-
-    }
-
     public void loadQuotations() {
 
     }
@@ -187,20 +177,21 @@ public class formManageDocuments extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(formManageDocuments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageQuotations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(formManageDocuments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageQuotations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(formManageDocuments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageQuotations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formManageDocuments.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formManageQuotations.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new formManageDocuments().setVisible(true);
+                new formManageQuotations().setVisible(true);
             }
         });
     }
