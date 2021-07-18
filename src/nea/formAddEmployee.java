@@ -273,9 +273,9 @@ public class formAddEmployee extends javax.swing.JFrame {
             // Asks user whether they really want to add this employee
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?", "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
-                conn = sqlManager.openConnection();                 // Opens connection to the DB
-
                 addLogin();
+                
+                conn = sqlManager.openConnection();                 // Opens connection to the DB
 
                 String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement pstmt = null;
@@ -309,12 +309,30 @@ public class formAddEmployee extends javax.swing.JFrame {
         while (!validDetails) {
             String[] responses = Utility.JOptionPaneMultiInput("What login details should this employee have?", new String[]{"Username", "Confirm username", "Password", "Confirm password"});
             if (responses[0].equals(responses[1]) && responses[2].equals(responses[3])) {
+                conn = sqlManager.openConnection();
                 if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
                     System.out.println("An employee with this username already exists");
                 } else {
-                    // #TODO
+
+                    String query = "INSERT into tblLogins (employee_id, username, password, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?)";
+                    PreparedStatement pstmt = null;
+                    try {
+                        pstmt = conn.prepareStatement(query);
+                        pstmt.setInt(1, EmployeeID);
+                        pstmt.setString(2, responses[0]);
+                        pstmt.setString(3, responses[2]);
+                        pstmt.setString(4, (cbAdmin.isSelected() ? "Y" : "N"));
+                        pstmt.setString(5, Utility.getCurrentDate());
+
+                        int rowsAffected = pstmt.executeUpdate();
+                        System.out.println(rowsAffected + " row updated.");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
                     validDetails = true;
                 }
+                sqlManager.closeConnection(conn);                   // Closes connection to the DB
             } else {
                 System.out.println("Login details do not match, check you have entered them correctly");
             }
