@@ -42,14 +42,19 @@ public class formOneCustomer extends javax.swing.JFrame {
         cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new category...')
+                if (isAddNewCategorySelected()) {   // If the user selected the last item ('Add a new category...')
                     addNewCategory();                               // Prompts the user to add the new category
                 }
             }
         });
 
     }
-    
+
+    // Returns true if the 'Add new category' option in the combo box is selected
+    private boolean isAddNewCategorySelected() {
+        return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
+    }
+
     // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
     public void addNewCategory() {
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
@@ -432,7 +437,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
+        if (countEmptyFields(inputFields) != 0  || isAddNewCategorySelected()) {                   // If any one of the fields is empty
             System.out.println("-------------------------------");
             System.out.println("One of the required input fields is empty");
         } else {                                                    // If none of the fields are empty

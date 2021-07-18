@@ -328,10 +328,15 @@ public class formAddCustomer extends javax.swing.JFrame {
     }
 
 
+    // Returns true if the 'Add new category' option in the combo box is selected
+    private boolean isAddNewCategorySelected() {
+        return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
+    }
+    
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
+        if (countEmptyFields(inputFields) != 0 || isAddNewCategorySelected()) {    // If any one of the fields is empty and if the selected customer category is valid
             System.out.println("-------------------------------");
             System.out.println("One of the required input fields is empty");
         } else {                                                    // If none of the fields are empty
@@ -355,6 +360,7 @@ public class formAddCustomer extends javax.swing.JFrame {
                     pstmt.setString(10, txtEmailAddress.getText());
                     pstmt.setInt(11, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
 
+                    System.out.println(pstmt);
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println(rowsAffected + " row updated.");
                 } catch (SQLException e) {
