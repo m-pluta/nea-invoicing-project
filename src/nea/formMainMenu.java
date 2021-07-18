@@ -336,44 +336,60 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
     private void btnChangeLoginDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeLoginDetailsActionPerformed
-        String[] inputDetails = Utility.JOptionPaneMultiInput("Change login details", new String[]{"Current username", "Current password", "New username", "Confirm username", "New password", "Confirm password"});
-        if (inputDetails != null) {
+        boolean changingDetails = true;
+        while (changingDetails) {
+            String[] inputDetails = Utility.JOptionPaneMultiInput("Change login details", new String[]{"Current username", "Current password", "New username", "Confirm username", "New password", "Confirm password"});
+            if (inputDetails == null) {     // If the user closed the input window
+                changingDetails = false;
+            } else {
 
-            Boolean found = false;                                      // Whether a user exists under the given login details
-            int fetchedID = -1;                                         // Init
+                Boolean found = false;                                      // Whether a user exists under the given login details
+                int fetchedID = -1;                                         // Init
 
-            conn = sqlManager.openConnection();                         // Opens a connection to the DB
-            String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
-            try {
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setString(1, inputDetails[0]);
-                pstmt.setString(2, inputDetails[1]);
+                conn = sqlManager.openConnection();                         // Opens a connection to the DB
+                String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, inputDetails[0]);
+                    pstmt.setString(2, inputDetails[1]);
 
-                ResultSet rs = pstmt.executeQuery();
-                if (rs.next()) {                                        // If any results were fetched from the DB
-                    if (inputDetails[0].equals(rs.getString(2)) && inputDetails[1].equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
+                    ResultSet rs = pstmt.executeQuery();
+                    if (rs.next()) {                                        // If any results were fetched from the DB
+                        if (inputDetails[0].equals(rs.getString(2)) && inputDetails[1].equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
 
-                        fetchedID = rs.getInt(1);                       // Gets the id of whoever logged in
-                        found = true;
+                            fetchedID = rs.getInt(1);                       // Gets the id of whoever logged in
+                            found = true;
+                        }
                     }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            sqlManager.closeConnection(conn);                           // Closes connection to DB
+                sqlManager.closeConnection(conn);                           // Closes connection to DB
 
-            if (found) {                                               // If a user was not found
-                System.out.println("-------------------------------");
-                System.out.println("User ID: " + fetchedID);
-                if (inputDetails[2].equals(inputDetails[3]) && inputDetails[4].equals(inputDetails[5])) {
+                if (found) {                                               // If a user was not found
                     System.out.println("-------------------------------");
                     System.out.println("User ID: " + fetchedID);
-                    updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
-                } else {
-                    System.out.println("Make sure you have entered your new username and password correctly");
+                    if (inputDetails[2].equals(inputDetails[3]) && inputDetails[4].equals(inputDetails[5])) {
+                        if (inputDetails[2].length() >= 4 && inputDetails[4].length() >= 4) {   // Checks if the new username and password are of minimum length (4)
+                            conn = sqlManager.openConnection();
+                            if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
+                                System.out.println("User with this username already exists");
+                            } else {
+                                sqlManager.closeConnection(conn);
+                                System.out.println("-------------------------------");
+                                System.out.println("User ID: " + fetchedID);
+                                updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
+                                changingDetails = false;
+                            }
+                        } else {
+                            System.out.println("The username and password need to be at least 4 characters long for improved security");
+                        }
+                    } else {
+                        System.out.println("Make sure you have entered your new username and password correctly");
+                    }
+                } else {                                                    // If a user was found with those login details
+                    System.out.println("Incorrect username and/or password.");
                 }
-            } else {                                                    // If a user was found with those login details
-                System.out.println("Incorrect username and/or password.");
             }
         }
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
