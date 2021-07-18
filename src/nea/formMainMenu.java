@@ -180,7 +180,7 @@ public class formMainMenu extends javax.swing.JFrame {
         pDocuments.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Documents", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
         btnNewInvoice.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnNewInvoice.setText("Customers");
+        btnNewInvoice.setText("Set an invoice");
         btnNewInvoice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNewInvoiceActionPerformed(evt);
@@ -188,7 +188,7 @@ public class formMainMenu extends javax.swing.JFrame {
         });
 
         btnNewQuotation.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnNewQuotation.setText("Customers");
+        btnNewQuotation.setText("Set a quotation");
         btnNewQuotation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNewQuotationActionPerformed(evt);
@@ -202,8 +202,8 @@ public class formMainMenu extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pDocumentsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pDocumentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnNewInvoice, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                    .addComponent(btnNewQuotation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnNewInvoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnNewQuotation, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pDocumentsLayout.setVerticalGroup(
@@ -219,7 +219,7 @@ public class formMainMenu extends javax.swing.JFrame {
         pReports.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
         btnReport3.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport3.setText("Customers");
+        btnReport3.setText("Report 3");
         btnReport3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReport3ActionPerformed(evt);
@@ -227,7 +227,7 @@ public class formMainMenu extends javax.swing.JFrame {
         });
 
         btnReport2.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport2.setText("Customers");
+        btnReport2.setText("Report 2");
         btnReport2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReport2ActionPerformed(evt);
@@ -235,7 +235,7 @@ public class formMainMenu extends javax.swing.JFrame {
         });
 
         btnReport1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport1.setText("Customers");
+        btnReport1.setText("Report 1");
         btnReport1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReport1ActionPerformed(evt);
