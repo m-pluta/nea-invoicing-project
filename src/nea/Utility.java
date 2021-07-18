@@ -60,7 +60,7 @@ public class Utility {
         return output;                                              // Return the converted integer
     }
 
-    public static String[] JOptionPaneMultiInput(String[] Fieldnames) {
+    public static String[] JOptionPaneMultiInput(String windowTitle, String[] Fieldnames) {
         int NoInputs = Fieldnames.length;                           // Number of inputs the user must enter
         
         JPanel myPanel = new JPanel();                              // JPanel to hold all of the TextFields and Labels
@@ -115,7 +115,7 @@ public class Utility {
         
 
         // Creates a new instance of the Dialog
-        int result = JOptionPane.showConfirmDialog(null, myPanel, "Enter these details to change your login details", JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(null, myPanel, windowTitle, JOptionPane.OK_CANCEL_OPTION);
         if (result == 0) {                                          // If the user selected OK
             String[] output = new String[NoInputs];                 // Array holds all of the user's inputs
             for (int i = 0; i < NoInputs; i++) {                    //

@@ -336,7 +336,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
     private void btnChangeLoginDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeLoginDetailsActionPerformed
-        String[] inputDetails = Utility.JOptionPaneMultiInput(new String[]{"Current username", "Current password", "New username", "Confirm username", "New password", "Confirm password"});
+        String[] inputDetails = Utility.JOptionPaneMultiInput("Change login detaisl", new String[]{"Current username", "Current password", "New username", "Confirm username", "New password", "Confirm password"});
         if (inputDetails != null) {
 
             Boolean found = false;                                      // Whether a user exists under the given login details
