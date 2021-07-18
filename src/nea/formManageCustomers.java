@@ -32,6 +32,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     DefaultTableModel model;                                        // The table model
     formOneCustomer Customer_in_view = null;                        // could be null or could store whichever customer the user is currently viewing
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    public boolean CurrentlyAddingCustomer = false;
 
     public formManageCustomers() {
         initComponents();
@@ -139,7 +140,7 @@ public class formManageCustomers extends javax.swing.JFrame {
 
                 model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)}); // Adds the customer to the table
                 customerCounter++;                                  // Increments customer counter as a new customer was added to the table
-                
+
             }
             lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter)); // Updates customer counter label
         } catch (SQLException e) {
@@ -187,6 +188,11 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewActionPerformed(evt);
+            }
+        });
 
         lblCustomerCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -231,12 +237,12 @@ public class formManageCustomers extends javax.swing.JFrame {
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(lblCustomerCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)))))
+                                .addGap(10, 10, 10))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,7 +266,6 @@ public class formManageCustomers extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
     // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         if (Customer_in_view != null) {                             // Checks whether there is another form opened showing the selected customer
@@ -270,6 +275,16 @@ public class formManageCustomers extends javax.swing.JFrame {
         this.dispose();                                             // Closes the customer management form (current form)
 
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
+        if (!CurrentlyAddingCustomer) {
+            formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
+            form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
+            form.setVisible(true);                          // Makes the new customer view visible
+            form.previousForm = this;
+            CurrentlyAddingCustomer = true;
+        }
+    }//GEN-LAST:event_btnAddNewActionPerformed
 
     // Returns the customer_id of the selected customer in the customer table
     public int getSelectedCustomer() {
