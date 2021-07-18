@@ -359,7 +359,6 @@ public class formAddCustomer extends javax.swing.JFrame {
                     pstmt.setString(10, txtEmailAddress.getText());
                     pstmt.setInt(11, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
 
-                    System.out.println(pstmt);
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println(rowsAffected + " row updated.");
                 } catch (SQLException e) {
