@@ -7,6 +7,8 @@ package nea;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,6 +52,27 @@ public class formAddCustomer extends javax.swing.JFrame {
             }
         });
 
+        this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {}
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                previousForm.CurrentlyAddingCustomer = false;
+                System.out.println("test");
+            }
+            
+            @Override
+            public void windowClosed(WindowEvent e) {}
+            @Override
+            public void windowIconified(WindowEvent e) {}
+            @Override
+            public void windowDeiconified(WindowEvent e) {}
+            @Override
+            public void windowActivated(WindowEvent e) {}
+            @Override
+            public void windowDeactivated(WindowEvent e) {}
+        });
     }
 
     // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
