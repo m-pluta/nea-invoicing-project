@@ -5,7 +5,15 @@
  */
 package nea;
 
+import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
+import javax.swing.JFrame;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -14,15 +22,79 @@ import java.sql.Connection;
 public class formManageInvoices extends javax.swing.JFrame {
 
     /**
-     * Creates new form formManageDocuments
+     * Creates new form formManageInvoices
      */
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
+    DefaultTableModel model;                                        // The table model
+    formOneInvoice Invoice_in_view = null;                          // could be null or could store whichever invoice the user is currently viewing
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    
 
     public formManageInvoices() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        model = (DefaultTableModel) jTable_Invoices.getModel();    // Fetches the table model of the table
+        jTable_Invoices.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
+
+        JTableHeader header = jTable_Invoices.getTableHeader();
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+
+        jTable_Invoices.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the invoice table
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedID = getSelectedInvoice();              // Gets the id of the invoice which is currently selected in the table
+                if (selectedID != -1) {                             // id of the invoice is not '-1', this is the default return value from getSelectedInvoice()
+                    formOneInvoice form = new formOneInvoice().getFrame();    // Opens a new instance of the formOneInvoice() form
+                    form.setLocation(1630, 422);                    // Sets the location of the invoice view to the right of the current invoice management form
+                    form.setVisible(true);                          // Makes the new invoice view visible
+                    form.InvoiceID = selectedID;                   // Tells the invoice view form which invoice to load
+                    form.previousForm = formManageInvoices.this;   // Informs the invoice view what the previous form is 
+                    form.loadInvoice();                            // Runs the loadInvoice() method which will load all of the specified invoice's details
+                    Invoice_in_view = form;                        // Sets the invoice in view to this
+
+                } else {
+                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
+                }
+
+            }
+        });
+
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+            @Override
+            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+                loadInvoices();                                     // Refreshes the invoice table as the search term has changed
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+                loadInvoices();                                     // Refreshes the invoice table as the search term has changed
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+        });
 
     }
 
@@ -144,6 +216,20 @@ public class formManageInvoices extends javax.swing.JFrame {
 
     public void loadInvoices() {
 
+    }
+    
+    // Returns the invoice_id of the selected invoice in the invoice table
+    public int getSelectedInvoice() {
+        int selectedRow = jTable_Invoices.getSelectedRow();         // Gets the selected row in the table
+        if (selectedRow == -1) {                                    // If no row is selected in the table
+            System.out.println("-------------------------------");
+            System.out.println("No row selected");
+        } else {                                                    // If there is a row selected in the table
+            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
+            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
+            return id;
+        }
+        return -1;                                                  //  Returns -1 if there were to be an error somewhere
     }
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
