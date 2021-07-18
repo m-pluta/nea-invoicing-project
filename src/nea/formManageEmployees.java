@@ -32,7 +32,8 @@ public class formManageEmployees extends javax.swing.JFrame {
     DefaultTableModel model;                                        // The table model
     formOneEmployee Employee_in_view = null;                        // could be null or could store whichever employee the user is currently viewing
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
-
+    public boolean CurrentlyAddingEmployee = false;
+    
     public formManageEmployees() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -106,7 +107,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     public formManageEmployees getFrame() {
         return this;
     }
-    
+
     // Loads all the employees in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
     public void loadEmployees() {
         model.setRowCount(0);                                       // Empties the table
@@ -138,7 +139,7 @@ public class formManageEmployees extends javax.swing.JFrame {
 
                 model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), last_login_date}); // Adds the employee to the table
                 employeeCounter++;                                  // Increments employee counter as a new employee was added to the table
-                
+
             }
             lblEmployeeCount.setText("Number of employees: " + String.valueOf(employeeCounter)); // Updates employee counter label
         } catch (SQLException e) {
@@ -203,6 +204,11 @@ public class formManageEmployees extends javax.swing.JFrame {
 
         btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -226,12 +232,12 @@ public class formManageEmployees extends javax.swing.JFrame {
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(lblEmployeeCount, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)))))
+                                .addGap(10, 10, 10))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnAddNew, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,8 +258,6 @@ public class formManageEmployees extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        lblManageEmployees.getAccessibleContext().setAccessibleName("Manage Employees");
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -264,6 +268,16 @@ public class formManageEmployees extends javax.swing.JFrame {
         previousForm.setVisible(true);                              // Makes main previous form visible
         this.dispose();                                             // Closes the employee management form (current form)
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
+        if (!CurrentlyAddingEmployee) {
+            formAddEmployee form = new formAddEmployee().getFrame();    // Opens a new instance of the formAddCustomer() form
+            form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
+            form.setVisible(true);                          // Makes the new customer view visible
+            form.previousForm = this;
+            CurrentlyAddingEmployee = true;
+        }
+    }//GEN-LAST:event_btnAddNewActionPerformed
 
     // Returns the Employee_id of the selected employee in the employee table
     public int getSelectedEmployee() {
@@ -278,7 +292,7 @@ public class formManageEmployees extends javax.swing.JFrame {
         }
         return -1;                                                  //  Returns -1 if there were to be an error somewhere
     }
-    
+
     /**
      * @param args the command line arguments
      */
