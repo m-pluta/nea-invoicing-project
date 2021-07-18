@@ -59,7 +59,6 @@ public class formAddCustomer extends javax.swing.JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 previousForm.CurrentlyAddingCustomer = false;
-                System.out.println("test");
             }
             
             @Override
