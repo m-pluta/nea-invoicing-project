@@ -379,11 +379,19 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
 
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
-        // TODO add your handling code here:
+        formNewDocument form = new formNewDocument().getFrame();            // Opens new NewDocument form
+        form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+        form.setTitle("New Invoice");                                       // Sets the title of the form
+        this.setVisible(false);                                             // Makes main menu invisible
+        form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnNewInvoiceActionPerformed
 
     private void btnNewQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewQuotationActionPerformed
-        // TODO add your handling code here:
+        formNewDocument form = new formNewDocument().getFrame();            // Opens new NewDocument form
+        form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+        form.setTitle("New Quotation");                                     // Sets the title of the form
+        this.setVisible(false);                                             // Makes main menu invisible
+        form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnNewQuotationActionPerformed
 
     private void btnReport3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport3ActionPerformed

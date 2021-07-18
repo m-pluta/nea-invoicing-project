@@ -5,6 +5,8 @@
  */
 package nea;
 
+import java.sql.Connection;
+
 /**
  *
  * @author Michal
@@ -14,8 +16,16 @@ public class formNewDocument extends javax.swing.JFrame {
     /**
      * Creates new form formNewDocument
      */
+    formMainMenu previousForm = null;                               // Stores the previously open form
+    Connection conn = null;                                         // Stores the connection object
+
     public formNewDocument() {
         initComponents();
+        this.setLocationRelativeTo(null);
+    }
+
+    public formNewDocument getFrame() {
+        return this;
     }
 
     /**
@@ -27,21 +37,43 @@ public class formNewDocument extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnBack = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("New Document");
+
+        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnBack)
+                .addContainerGap(333, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnBack)
+                .addContainerGap(259, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        previousForm.setVisible(true);                              // Makes main previous form visible
+        this.dispose();                                             // Closes the customer management form (current form)
+    }//GEN-LAST:event_btnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -79,5 +111,6 @@ public class formNewDocument extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBack;
     // End of variables declaration//GEN-END:variables
 }
