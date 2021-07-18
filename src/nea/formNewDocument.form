@@ -27,7 +27,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnBack" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="333" max="32767" attributes="0"/>
+              <EmptySpace pref="733" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -36,7 +36,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnBack" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="259" max="32767" attributes="0"/>
+              <EmptySpace pref="759" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

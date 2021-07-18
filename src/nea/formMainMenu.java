@@ -95,8 +95,10 @@ public class formMainMenu extends javax.swing.JFrame {
         btnManageCustomerCategories = new javax.swing.JButton();
         btnChangeLoginDetails = new javax.swing.JButton();
         pDocuments = new javax.swing.JPanel();
-        btnNewInvoice = new javax.swing.JButton();
         btnNewQuotation = new javax.swing.JButton();
+        btnManageInvoices = new javax.swing.JButton();
+        btnManageQuotations = new javax.swing.JButton();
+        btnNewInvoice = new javax.swing.JButton();
         pReports = new javax.swing.JPanel();
         btnReport3 = new javax.swing.JButton();
         btnReport2 = new javax.swing.JButton();
@@ -179,14 +181,6 @@ public class formMainMenu extends javax.swing.JFrame {
 
         pDocuments.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Documents", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
-        btnNewInvoice.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnNewInvoice.setText("Set an invoice");
-        btnNewInvoice.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNewInvoiceActionPerformed(evt);
-            }
-        });
-
         btnNewQuotation.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnNewQuotation.setText("Set a quotation");
         btnNewQuotation.addActionListener(new java.awt.event.ActionListener() {
@@ -195,25 +189,45 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         });
 
+        btnManageInvoices.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnManageInvoices.setText("Manage Invoices");
+
+        btnManageQuotations.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnManageQuotations.setText("Manage Quotations");
+
+        btnNewInvoice.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnNewInvoice.setText("Set an invoice");
+        btnNewInvoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewInvoiceActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pDocumentsLayout = new javax.swing.GroupLayout(pDocuments);
         pDocuments.setLayout(pDocumentsLayout);
         pDocumentsLayout.setHorizontalGroup(
             pDocumentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pDocumentsLayout.createSequentialGroup()
+            .addGroup(pDocumentsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pDocumentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnNewInvoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnNewQuotation, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
+                .addGroup(pDocumentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnNewQuotation, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+                    .addComponent(btnManageInvoices, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnManageQuotations, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnNewInvoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pDocumentsLayout.setVerticalGroup(
             pDocumentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pDocumentsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnNewInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnManageInvoices, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(btnManageQuotations, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnNewInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnNewQuotation, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pReports.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
@@ -484,7 +498,9 @@ public class formMainMenu extends javax.swing.JFrame {
     private javax.swing.JButton btnManageCustomerCategories;
     private javax.swing.JButton btnManageCustomers;
     private javax.swing.JButton btnManageEmployees;
+    private javax.swing.JButton btnManageInvoices;
     private javax.swing.JButton btnManageItemCategories;
+    private javax.swing.JButton btnManageQuotations;
     private javax.swing.JButton btnNewInvoice;
     private javax.swing.JButton btnNewQuotation;
     private javax.swing.JButton btnReport1;

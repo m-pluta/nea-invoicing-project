@@ -57,14 +57,14 @@ public class formNewDocument extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnBack)
-                .addContainerGap(333, Short.MAX_VALUE))
+                .addContainerGap(733, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnBack)
-                .addContainerGap(259, Short.MAX_VALUE))
+                .addContainerGap(759, Short.MAX_VALUE))
         );
 
         pack();
