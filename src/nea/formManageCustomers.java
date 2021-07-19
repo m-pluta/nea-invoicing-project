@@ -161,19 +161,40 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         jScrollPane2 = new javax.swing.JScrollPane();
         jEditorPane1 = new javax.swing.JEditorPane();
+        lblManageCustomers = new javax.swing.JLabel();
+        lblSearch = new javax.swing.JLabel();
+        lblCustomerCount = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        btnAddNew = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Customers = new javax.swing.JTable();
-        btnAddNew = new javax.swing.JButton();
-        lblCustomerCount = new javax.swing.JLabel();
-        lblManageCustomers = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
-        txtSearch = new javax.swing.JTextField();
-        lblSearch = new javax.swing.JLabel();
 
         jScrollPane2.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Customer Management");
+
+        lblManageCustomers.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblManageCustomers.setText("Manage Customers");
+
+        lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblSearch.setText("Search");
+
+        lblCustomerCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCustomerCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblCustomerCount.setText("Number of customers:");
+
+        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        txtSearch.setName(""); // NOI18N
+
+        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewActionPerformed(evt);
+            }
+        });
 
         jTable_Customers.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_Customers.setModel(new javax.swing.table.DefaultTableModel(
@@ -186,21 +207,6 @@ public class formManageCustomers extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable_Customers);
 
-        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnAddNew.setText("Add New");
-        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddNewActionPerformed(evt);
-            }
-        });
-
-        lblCustomerCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCustomerCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        lblCustomerCount.setText("Number of customers:");
-
-        lblManageCustomers.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblManageCustomers.setText("Manage Customers");
-
         btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
@@ -208,12 +214,6 @@ public class formManageCustomers extends javax.swing.JFrame {
                 btnBackActionPerformed(evt);
             }
         });
-
-        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        txtSearch.setName(""); // NOI18N
-
-        lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblSearch.setText("Search");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

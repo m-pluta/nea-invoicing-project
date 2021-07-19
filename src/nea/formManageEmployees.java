@@ -158,17 +158,23 @@ public class formManageEmployees extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblManageEmployees = new javax.swing.JLabel();
+        lblSearch = new javax.swing.JLabel();
         lblEmployeeCount = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
-        lblManageEmployees = new javax.swing.JLabel();
-        btnBack = new javax.swing.JButton();
-        lblSearch = new javax.swing.JLabel();
+        btnAddNew = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Employees = new javax.swing.JTable();
-        btnAddNew = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Employee Management");
+
+        lblManageEmployees.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblManageEmployees.setText("Manage Employees");
+
+        lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblSearch.setText("Search");
 
         lblEmployeeCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmployeeCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -177,19 +183,13 @@ public class formManageEmployees extends javax.swing.JFrame {
         txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         txtSearch.setName(""); // NOI18N
 
-        lblManageEmployees.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblManageEmployees.setText("Manage Employees");
-
-        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        btnBack.setText("Back");
-        btnBack.addActionListener(new java.awt.event.ActionListener() {
+        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
+                btnAddNewActionPerformed(evt);
             }
         });
-
-        lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblSearch.setText("Search");
 
         jTable_Employees.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_Employees.setModel(new javax.swing.table.DefaultTableModel(
@@ -202,11 +202,11 @@ public class formManageEmployees extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable_Employees);
 
-        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnAddNew.setText("Add New");
-        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddNewActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 

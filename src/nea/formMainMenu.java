@@ -89,20 +89,20 @@ public class formMainMenu extends javax.swing.JFrame {
 
         lblLoggedInAs = new javax.swing.JLabel();
         pManagement = new javax.swing.JPanel();
-        btnManageItemCategories = new javax.swing.JButton();
-        btnManageEmployees = new javax.swing.JButton();
         btnManageCustomers = new javax.swing.JButton();
+        btnManageEmployees = new javax.swing.JButton();
+        btnManageItemCategories = new javax.swing.JButton();
         btnManageCustomerCategories = new javax.swing.JButton();
-        btnChangeLoginDetails = new javax.swing.JButton();
         pDocuments = new javax.swing.JPanel();
-        btnNewQuotation = new javax.swing.JButton();
         btnManageInvoices = new javax.swing.JButton();
         btnManageQuotations = new javax.swing.JButton();
         btnNewInvoice = new javax.swing.JButton();
+        btnNewQuotation = new javax.swing.JButton();
         pReports = new javax.swing.JPanel();
-        btnReport3 = new javax.swing.JButton();
-        btnReport2 = new javax.swing.JButton();
         btnReport1 = new javax.swing.JButton();
+        btnReport2 = new javax.swing.JButton();
+        btnReport3 = new javax.swing.JButton();
+        btnChangeLoginDetails = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Main Menu");
@@ -112,11 +112,11 @@ public class formMainMenu extends javax.swing.JFrame {
 
         pManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Management", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
-        btnManageItemCategories.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnManageItemCategories.setText("Item Categories");
-        btnManageItemCategories.addActionListener(new java.awt.event.ActionListener() {
+        btnManageCustomers.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnManageCustomers.setText("Customers");
+        btnManageCustomers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnManageItemCategoriesActionPerformed(evt);
+                btnManageCustomersActionPerformed(evt);
             }
         });
 
@@ -128,11 +128,11 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         });
 
-        btnManageCustomers.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnManageCustomers.setText("Customers");
-        btnManageCustomers.addActionListener(new java.awt.event.ActionListener() {
+        btnManageItemCategories.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnManageItemCategories.setText("Item Categories");
+        btnManageItemCategories.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnManageCustomersActionPerformed(evt);
+                btnManageItemCategoriesActionPerformed(evt);
             }
         });
 
@@ -171,23 +171,7 @@ public class formMainMenu extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        btnChangeLoginDetails.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        btnChangeLoginDetails.setText("Change Login details");
-        btnChangeLoginDetails.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnChangeLoginDetailsActionPerformed(evt);
-            }
-        });
-
         pDocuments.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Documents", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
-
-        btnNewQuotation.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnNewQuotation.setText("Set a quotation");
-        btnNewQuotation.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNewQuotationActionPerformed(evt);
-            }
-        });
 
         btnManageInvoices.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnManageInvoices.setText("Manage Invoices");
@@ -210,6 +194,14 @@ public class formMainMenu extends javax.swing.JFrame {
         btnNewInvoice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNewInvoiceActionPerformed(evt);
+            }
+        });
+
+        btnNewQuotation.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnNewQuotation.setText("Set a quotation");
+        btnNewQuotation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewQuotationActionPerformed(evt);
             }
         });
 
@@ -242,14 +234,14 @@ public class formMainMenu extends javax.swing.JFrame {
 
         pReports.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
-        btnReport3.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport3.setText("Report 3");
+        btnReport1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnReport1.setText("Report 1");
 
         btnReport2.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnReport2.setText("Report 2");
 
-        btnReport1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport1.setText("Report 1");
+        btnReport3.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnReport3.setText("Report 3");
 
         javax.swing.GroupLayout pReportsLayout = new javax.swing.GroupLayout(pReports);
         pReports.setLayout(pReportsLayout);
@@ -274,6 +266,14 @@ public class formMainMenu extends javax.swing.JFrame {
                 .addComponent(btnReport3, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        btnChangeLoginDetails.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnChangeLoginDetails.setText("Change Login details");
+        btnChangeLoginDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangeLoginDetailsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

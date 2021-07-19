@@ -53,32 +53,28 @@ public class formLogin extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnLogin = new javax.swing.JButton();
-        txtUsername = new javax.swing.JTextField();
         lblUsername = new javax.swing.JLabel();
         lblPassword = new javax.swing.JLabel();
+        lblCapsLock = new javax.swing.JLabel();
+        txtUsername = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
         cbPassword = new javax.swing.JCheckBox();
-        lblCapsLock = new javax.swing.JLabel();
+        btnLogin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
-
-        btnLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnLogin.setText("Login");
-        btnLogin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLoginActionPerformed(evt);
-            }
-        });
-
-        txtUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
         lblUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblUsername.setText("Username:");
 
         lblPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblPassword.setText("Password:");
+
+        lblCapsLock.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCapsLock.setForeground(new java.awt.Color(255, 39, 93));
+        lblCapsLock.setText("Caps Lock is on");
+
+        txtUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
         txtPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
@@ -90,9 +86,13 @@ public class formLogin extends javax.swing.JFrame {
             }
         });
 
-        lblCapsLock.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCapsLock.setForeground(new java.awt.Color(255, 39, 93));
-        lblCapsLock.setText("Caps Lock is on");
+        btnLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnLogin.setText("Login");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
