@@ -159,98 +159,64 @@ public class formOneInvoice extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblCustomerID = new javax.swing.JLabel();
-        lblForename = new javax.swing.JLabel();
-        lblSurname = new javax.swing.JLabel();
-        lblAddress = new javax.swing.JLabel();
-        lblCounty = new javax.swing.JLabel();
-        lblPostcode = new javax.swing.JLabel();
-        lblPhoneNumber = new javax.swing.JLabel();
-        lblEmailAddress = new javax.swing.JLabel();
-        lblCustomerCategory = new javax.swing.JLabel();
-        txtCustomerID = new javax.swing.JTextField();
+        lblCustomer = new javax.swing.JLabel();
+        lblEmployee = new javax.swing.JLabel();
+        txtCustomer = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
-        txtSurname = new javax.swing.JTextField();
-        txtCounty = new javax.swing.JTextField();
-        txtPostcode = new javax.swing.JTextField();
-        txtPhoneNumber = new javax.swing.JTextField();
-        txtEmailAddress = new javax.swing.JTextField();
-        lblFullName = new javax.swing.JLabel();
-        btnSetInvoice = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
-        btnRemove = new javax.swing.JButton();
-        btnSetQuotation = new javax.swing.JButton();
-        cbCategory = new javax.swing.JComboBox<>();
-        txtAddress1 = new javax.swing.JTextField();
-        txtAddress2 = new javax.swing.JTextField();
-        txtAddress3 = new javax.swing.JTextField();
-        btnConfirmEdit = new javax.swing.JButton();
+        lblInvoiceID = new javax.swing.JLabel();
+        lblDateCreated = new javax.swing.JLabel();
+        lblDateDeadline = new javax.swing.JLabel();
+        lblSubtotal = new javax.swing.JLabel();
+        lblPayments = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        txtDateCreated = new javax.swing.JTextField();
+        txtDateDeadline = new javax.swing.JTextField();
+        txtSubtotal = new javax.swing.JTextField();
+        txtPayments = new javax.swing.JTextField();
+        txtTotal = new javax.swing.JTextField();
+        txtInvoiceID = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Customer");
 
-        lblCustomerID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCustomerID.setText("Customer ID:");
+        lblCustomer.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCustomer.setText("Customer:");
 
-        lblForename.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblForename.setText("Forename:");
+        lblEmployee.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblEmployee.setText("Employee:");
 
-        lblSurname.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblSurname.setText("Surname:");
+        lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblInvoiceID.setText("Invoice ID:");
 
-        lblAddress.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblAddress.setText("Address:");
+        lblDateCreated.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblDateCreated.setText("Date created:");
 
-        lblCounty.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCounty.setText("County:");
+        lblDateDeadline.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblDateDeadline.setText("Deadline Date:");
 
-        lblPostcode.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblPostcode.setText("Postcode:");
-        lblPostcode.setToolTipText("");
+        lblSubtotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblSubtotal.setText("Sub total:");
 
-        lblPhoneNumber.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblPhoneNumber.setText("Phone number:");
+        lblPayments.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblPayments.setText("Payments:");
 
-        lblEmailAddress.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblEmailAddress.setText("Email address:");
+        lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblTotal.setText("Total:");
 
-        lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCustomerCategory.setText("Category:");
-
-        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblFullName.setText("Full name here");
-
-        btnSetInvoice.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnSetInvoice.setText("Set an Invoice");
-
-        btnEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnEdit.setText("Edit details");
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Row", "Description", "Quantity", "Unit Price", "Item Total"
             }
-        });
-
-        btnRemove.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnRemove.setText("Remove");
-        btnRemove.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRemoveActionPerformed(evt);
-            }
-        });
-
-        btnSetQuotation.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnSetQuotation.setText("Set a Quotation");
-
-        txtAddress1.setToolTipText("");
-
-        btnConfirmEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnConfirmEdit.setText("Confirm Edit");
-        btnConfirmEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfirmEditActionPerformed(evt);
-            }
-        });
+        ));
+        jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -259,151 +225,83 @@ public class formOneInvoice extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(lblAddress)
+                        .addComponent(lblInvoiceID)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(txtAddress2)
-                            .addComponent(txtAddress3)))
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtInvoiceID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblPhoneNumber)
-                            .addComponent(lblEmailAddress)
-                            .addComponent(lblPostcode)
-                            .addComponent(lblCounty)
-                            .addComponent(lblCustomerCategory))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtPostcode, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtCounty, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(lblFullName)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(lblCustomerID)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblForename)
-                            .addComponent(lblSurname))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lblTotal)
+                            .addComponent(lblPayments)
+                            .addComponent(lblSubtotal))
+                        .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtForename, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(txtSurname))))
-                .addGap(63, 63, 63)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btnRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
-                    .addComponent(btnConfirmEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSetInvoice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSetQuotation, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(txtTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+                            .addComponent(txtPayments)
+                            .addComponent(txtSubtotal)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(lblDateCreated)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtDateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblCustomer)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 215, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblEmployee)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblDateDeadline)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtDateDeadline, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(4, 4, 4)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblFullName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblCustomerID)
-                            .addComponent(txtCustomerID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblForename)
-                            .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblSurname)
-                            .addComponent(txtSurname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblAddress)
-                            .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtAddress2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnConfirmEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtAddress3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtCounty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblCounty))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblPostcode)
-                            .addComponent(txtPostcode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblPhoneNumber)
-                            .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblEmailAddress)
-                            .addComponent(txtEmailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblCustomerCategory)
-                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnSetQuotation, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSetInvoice, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblInvoiceID)
+                    .addComponent(txtInvoiceID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCustomer)
+                    .addComponent(txtCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblEmployee)
+                    .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblDateCreated)
+                    .addComponent(lblDateDeadline)
+                    .addComponent(txtDateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDateDeadline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSubtotal)
+                    .addComponent(txtSubtotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblPayments)
+                    .addComponent(txtPayments, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTotal)
+                    .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-//        JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-//        setEditable(fields, true);                                  // Makes all the fields editable
-//        btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
-
-    }//GEN-LAST:event_btnEditActionPerformed
-
-    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-//        conn = sqlManager.openConnection();                         // Opens the connection to the DB
-//        int NoInvoices = sqlManager.countInvoices(conn, "customer_id", CustomerID);        // Counts how many invoices the customer has
-//        int NoQuotations = sqlManager.countQuotations(conn, "customer_id", CustomerID);    // Counts how many quotations the customer has    
-//        System.out.println("-------------------------------");
-//        System.out.println("Customer ID: " + CustomerID);
-//        System.out.println("No. of invoices: " + NoInvoices);
-//        System.out.println("No. of quotations: " + NoQuotations);
-//        if (NoInvoices == 0 && NoQuotations == 0) {                 // If the customer has no invoices or quotations stored under their name
-//            // Asks user whether they really want to remove this customer
-//            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?", "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-//            if (YesNo == 0) {                                       // If response is yes
-//                sqlManager.removeRecord(conn, "tblCustomers", "customer_id", CustomerID);   // Removes the customer
-//                this.dispose();                                     // Closes this form since the customer no longer exists
-//                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer was removed
-//
-//            }
-//        } else {                                                    // If the customer had any invoices or quotations associated with them then the user is informed
-//            JOptionPane.showMessageDialog(null, "This customer has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove customer", JOptionPane.WARNING_MESSAGE);
-//        }
-//        sqlManager.closeConnection(conn);                           // Closes the connection to the DB
-    }//GEN-LAST:event_btnRemoveActionPerformed
 
     // Counts how many of the input fields is empty and returns the integer value
     public int countEmptyFields(JTextField[] fields) {
@@ -416,48 +314,6 @@ public class formOneInvoice extends javax.swing.JFrame {
         return emptyFields;
     }
 
-
-    private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
-//        JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-//        // Checks if any of the input fields are empty
-//        if (countEmptyFields(inputFields) != 0  || isAddNewCategorySelected()) {                   // If any one of the fields is empty
-//            System.out.println("-------------------------------");
-//            System.out.println("One of the required input fields is empty");
-//        } else {                                                    // If none of the fields are empty
-//            // Asks user whether they really want to edit this customer's details
-//            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-//            if (YesNo == 0) {                                       // If response is yes
-//                conn = sqlManager.openConnection();                 // Opens connection to the DB
-//                String query = "UPDATE tblCustomers SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, type_id = ? WHERE customer_id = ?";
-//                PreparedStatement pstmt = null;
-//                try {
-//                    pstmt = conn.prepareStatement(query);
-//                    pstmt.setString(1, txtForename.getText());
-//                    pstmt.setString(2, txtSurname.getText());
-//                    pstmt.setString(3, txtAddress1.getText());
-//                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
-//                    pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
-//                    pstmt.setString(6, txtCounty.getText());
-//                    pstmt.setString(7, txtPostcode.getText());
-//                    pstmt.setString(8, txtPhoneNumber.getText());
-//                    pstmt.setString(9, txtEmailAddress.getText());
-//                    pstmt.setInt(10, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
-//                    pstmt.setInt(11, CustomerID);
-//
-//                    int rowsAffected = pstmt.executeUpdate();
-//                    System.out.println(rowsAffected + " row updated.");
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//                sqlManager.closeConnection(conn);                   // Closes connection to the DB
-//                setEditable(inputFields, false);                    // Makes all the fields no longer editable
-//                txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
-//                txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
-//                btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
-//                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
-//            }
-//        }
-    }//GEN-LAST:event_btnConfirmEditActionPerformed
 
     /**
      * @param args the command line arguments
@@ -496,31 +352,23 @@ public class formOneInvoice extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnConfirmEdit;
-    private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnRemove;
-    private javax.swing.JButton btnSetInvoice;
-    private javax.swing.JButton btnSetQuotation;
-    private javax.swing.JComboBox<String> cbCategory;
-    private javax.swing.JLabel lblAddress;
-    private javax.swing.JLabel lblCounty;
-    private javax.swing.JLabel lblCustomerCategory;
-    private javax.swing.JLabel lblCustomerID;
-    private javax.swing.JLabel lblEmailAddress;
-    private javax.swing.JLabel lblForename;
-    private javax.swing.JLabel lblFullName;
-    private javax.swing.JLabel lblPhoneNumber;
-    private javax.swing.JLabel lblPostcode;
-    private javax.swing.JLabel lblSurname;
-    private javax.swing.JTextField txtAddress1;
-    private javax.swing.JTextField txtAddress2;
-    private javax.swing.JTextField txtAddress3;
-    private javax.swing.JTextField txtCounty;
-    private javax.swing.JTextField txtCustomerID;
-    private javax.swing.JTextField txtEmailAddress;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lblCustomer;
+    private javax.swing.JLabel lblDateCreated;
+    private javax.swing.JLabel lblDateDeadline;
+    private javax.swing.JLabel lblEmployee;
+    private javax.swing.JLabel lblInvoiceID;
+    private javax.swing.JLabel lblPayments;
+    private javax.swing.JLabel lblSubtotal;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JTextField txtCustomer;
+    private javax.swing.JTextField txtDateCreated;
+    private javax.swing.JTextField txtDateDeadline;
     private javax.swing.JTextField txtForename;
-    private javax.swing.JTextField txtPhoneNumber;
-    private javax.swing.JTextField txtPostcode;
-    private javax.swing.JTextField txtSurname;
+    private javax.swing.JTextField txtInvoiceID;
+    private javax.swing.JTextField txtPayments;
+    private javax.swing.JTextField txtSubtotal;
+    private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
 }
