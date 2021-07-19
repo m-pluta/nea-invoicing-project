@@ -22,7 +22,7 @@ import javax.swing.table.JTableHeader;
 public class formOneInvoice extends javax.swing.JFrame {
 
     /**
-     * Creates new form formOneCustomer
+     * Creates new form formOneinvoice
      */
     int InvoiceID = 0;                                              // invoice_id of currently loaded invoice
     Connection conn = null;                                         // Stores the connection object
