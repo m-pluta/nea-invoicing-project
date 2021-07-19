@@ -24,7 +24,7 @@ public class formOneInvoice extends javax.swing.JFrame {
     /**
      * Creates new form formOneCustomer
      */
-    int InvoiceID = 0;                                              // customer_id of currently loaded customer
+    int InvoiceID = 0;                                              // invoice_id of currently loaded invoice
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model;                                        // The table model
     formManageInvoices previousForm = null;                         // Stores the previous Form object
@@ -106,118 +106,11 @@ public class formOneInvoice extends javax.swing.JFrame {
         return InvoiceTotal;
     }
 
-//    // Returns true if the 'Add new category' option in the combo box is selected
-//    private boolean isAddNewCategorySelected() {
-//        return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
-//    }
-//    // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
-//    public void addNewCategory() {
-//        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
-//        if (inputCategory != null) {                                // If the dialog input was valid    
-//            conn = sqlManager.openConnection();                     // Opens connection to the DB
-//
-//            inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
-//
-//            if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-//                System.out.println("-------------------------------");
-//                System.out.println("Category under this name already exists");
-//            } else {                                                // If it is a unique category
-//                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
-//                try {
-//                    PreparedStatement pstmt = conn.prepareStatement(query);
-//                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
-//                    pstmt.setInt(1, newID);
-//                    pstmt.setString(2, inputCategory);
-//                    pstmt.setString(3, Utility.getCurrentDate());
-//
-//                    int rowsAffected = pstmt.executeUpdate();
-//                    System.out.println("-------------------------------");
-//                    System.out.println(rowsAffected + " row inserted.");
-//                    loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-//                    cbCategory.setSelectedIndex(newID - 1);         // Set the selected index to whatever category the user just added
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            sqlManager.closeConnection(conn);                       // Closes connection to DB
-//        }
-//    }
     public formOneInvoice getFrame() {
         return this;
     }
 
-//    public void loadCustomerCategoriesIntoCB() {
-//        cbCategory.removeAllItems();
-//        conn = sqlManager.openConnection();                         // Opens connection to the DB
-//        String query = "SELECT category_name FROM tblCustomerCategories";
-//        try {
-//            Statement stmt = conn.createStatement();
-//
-//            ResultSet rs = stmt.executeQuery(query);
-//            System.out.println("-------------------------------");
-//            while (rs.next()) {
-//                System.out.println(rs.getString(1));                // For debugging
-//                cbCategory.addItem(rs.getString(1));                // Ads the category to the combo box
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        sqlManager.closeConnection(conn);                           // Closes connection to the DB
-//        cbCategory.addItem("Add a new category...");                // Set one of the option to a custom category
-//    }
-//    // Sets these components to either visible or invisible depending on the boolean state
-//    public void setEditable(JTextField[] fields, boolean state) {
-//        for (JTextField field : fields) {
-//            field.setEditable(state);
-//        }
-//    }
-//    // Loads the customer data into the form
-//    public void loadCustomer() {
-//        txtCustomerID.setText(String.valueOf(CustomerID));
-//
-//        conn = sqlManager.openConnection();
-//
-//        String query = "SELECT forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
-//        try {
-//            PreparedStatement pstmt = conn.prepareStatement(query);
-//
-//            pstmt.setInt(1, CustomerID);
-//            ResultSet rs = pstmt.executeQuery();
-//            if (rs.next()) {
-//                System.out.println("-------------------------------");
-//                System.out.println(rs.getString(1));
-//                System.out.println(rs.getString(2));    // For debugging, shows customer data
-//                System.out.println(rs.getString(3));
-//                System.out.println(rs.getString(4));
-//                System.out.println(rs.getString(5));
-//                System.out.println(rs.getString(6));
-//                System.out.println(rs.getString(7));
-//                System.out.println(rs.getString(8));
-//                System.out.println(rs.getString(9));
-//                System.out.println(rs.getString(10));
-//
-//                String FullName = rs.getString(1) + " " + rs.getString(2); // Formats the name components into one full name
-//                lblFullName.setText(FullName);
-//                txtForename.setText(rs.getString(1));
-//                txtSurname.setText(rs.getString(2));
-//                txtAddress1.setText(rs.getString(3));
-//                txtAddress2.setText(rs.getString(4));
-//                txtAddress3.setText(rs.getString(5));
-//                txtCounty.setText(rs.getString(6));
-//                txtPostcode.setText(rs.getString(7));
-//                txtPhoneNumber.setText(rs.getString(8));
-//                txtEmailAddress.setText(rs.getString(9));
-//                cbCategory.setSelectedIndex(rs.getInt(10) - 1);
-//            } else {
-//                System.out.println("-------------------------------");
-//                System.out.println("Error occurred fetching customer data");
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        sqlManager.closeConnection(conn);                           // Closes connection to the DB
-//
-//    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
