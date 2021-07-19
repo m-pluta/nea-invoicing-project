@@ -6,6 +6,9 @@
 package nea;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
@@ -18,26 +21,46 @@ public class formOneInvoice extends javax.swing.JFrame {
     /**
      * Creates new form formOneCustomer
      */
-    int InvoiceID = 0;                                             // customer_id of currently loaded customer
+    int InvoiceID = 0;                                              // customer_id of currently loaded customer
     Connection conn = null;                                         // Stores the connection object
-    formManageInvoices previousForm = null;                        // Stores the previous Form object
+    formManageInvoices previousForm = null;                         // Stores the previous Form object
 
     public formOneInvoice() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
 
     }
-    
+
     public void loadInvoice() {
-    
-    
+        conn = sqlManager.openConnection();
+        String query = "SELECT customer_id, employee_id, date_created, date_deadline, payments FROM tblInvoices WHERE invoice_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, InvoiceID);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If an document with the given id was found
+                txtInvoiceID.setText(String.valueOf(InvoiceID));
+                txtCustomer.setText(sqlManager.getCustomerFullName(conn, rs.getInt(1)));
+                txtEmployee.setText(sqlManager.getCustomerFullName(conn, rs.getInt(2)));
+                txtDateCreated.setText(String.valueOf(rs.getDate(3)));
+                txtDateDeadline.setText(String.valueOf(rs.getDate(4)));
+                txtPayments.setText(String.valueOf(rs.getDouble(5)));  
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("No invoice with this invoice_id was found");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
 //    // Returns true if the 'Add new category' option in the combo box is selected
 //    private boolean isAddNewCategorySelected() {
 //        return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
 //    }
-
 //    // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
 //    public void addNewCategory() {
 //        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
@@ -70,7 +93,6 @@ public class formOneInvoice extends javax.swing.JFrame {
 //            sqlManager.closeConnection(conn);                       // Closes connection to DB
 //        }
 //    }
-
     public formOneInvoice getFrame() {
         return this;
     }
@@ -94,14 +116,12 @@ public class formOneInvoice extends javax.swing.JFrame {
 //        sqlManager.closeConnection(conn);                           // Closes connection to the DB
 //        cbCategory.addItem("Add a new category...");                // Set one of the option to a custom category
 //    }
-
 //    // Sets these components to either visible or invisible depending on the boolean state
 //    public void setEditable(JTextField[] fields, boolean state) {
 //        for (JTextField field : fields) {
 //            field.setEditable(state);
 //        }
 //    }
-
 //    // Loads the customer data into the form
 //    public void loadCustomer() {
 //        txtCustomerID.setText(String.valueOf(CustomerID));
@@ -149,7 +169,6 @@ public class formOneInvoice extends javax.swing.JFrame {
 //        sqlManager.closeConnection(conn);                           // Closes connection to the DB
 //
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -159,36 +178,49 @@ public class formOneInvoice extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblCustomer = new javax.swing.JLabel();
-        lblEmployee = new javax.swing.JLabel();
+        txtInvoiceID = new javax.swing.JTextField();
         txtCustomer = new javax.swing.JTextField();
-        txtForename = new javax.swing.JTextField();
-        lblInvoiceID = new javax.swing.JLabel();
-        lblDateCreated = new javax.swing.JLabel();
-        lblDateDeadline = new javax.swing.JLabel();
-        lblSubtotal = new javax.swing.JLabel();
-        lblPayments = new javax.swing.JLabel();
-        lblTotal = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        txtEmployee = new javax.swing.JTextField();
         txtDateCreated = new javax.swing.JTextField();
         txtDateDeadline = new javax.swing.JTextField();
         txtSubtotal = new javax.swing.JTextField();
         txtPayments = new javax.swing.JTextField();
         txtTotal = new javax.swing.JTextField();
-        txtInvoiceID = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable_InvoiceDetails = new javax.swing.JTable();
+        lblInvoiceID = new javax.swing.JLabel();
+        lblCustomer = new javax.swing.JLabel();
+        lblEmployee = new javax.swing.JLabel();
+        lblDateCreated = new javax.swing.JLabel();
+        lblDateDeadline = new javax.swing.JLabel();
+        lblSubtotal = new javax.swing.JLabel();
+        lblPayments = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Customer");
+
+        jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Row", "Description", "Quantity", "Unit Price", "Item Total"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable_InvoiceDetails);
+
+        lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblInvoiceID.setText("Invoice ID:");
 
         lblCustomer.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomer.setText("Customer:");
 
         lblEmployee.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmployee.setText("Employee:");
-
-        lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblInvoiceID.setText("Invoice ID:");
 
         lblDateCreated.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblDateCreated.setText("Date created:");
@@ -204,19 +236,6 @@ public class formOneInvoice extends javax.swing.JFrame {
 
         lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblTotal.setText("Total:");
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Row", "Description", "Quantity", "Unit Price", "Item Total"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -257,7 +276,7 @@ public class formOneInvoice extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblEmployee)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblDateDeadline)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -276,7 +295,7 @@ public class formOneInvoice extends javax.swing.JFrame {
                     .addComponent(lblCustomer)
                     .addComponent(txtCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblEmployee)
-                    .addComponent(txtForename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDateCreated)
@@ -313,7 +332,6 @@ public class formOneInvoice extends javax.swing.JFrame {
         }
         return emptyFields;
     }
-
 
     /**
      * @param args the command line arguments
@@ -353,7 +371,7 @@ public class formOneInvoice extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable_InvoiceDetails;
     private javax.swing.JLabel lblCustomer;
     private javax.swing.JLabel lblDateCreated;
     private javax.swing.JLabel lblDateDeadline;
@@ -365,7 +383,7 @@ public class formOneInvoice extends javax.swing.JFrame {
     private javax.swing.JTextField txtCustomer;
     private javax.swing.JTextField txtDateCreated;
     private javax.swing.JTextField txtDateDeadline;
-    private javax.swing.JTextField txtForename;
+    private javax.swing.JTextField txtEmployee;
     private javax.swing.JTextField txtInvoiceID;
     private javax.swing.JTextField txtPayments;
     private javax.swing.JTextField txtSubtotal;
