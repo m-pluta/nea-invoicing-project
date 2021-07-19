@@ -215,29 +215,46 @@ public class formManageInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
-    
+    public boolean doesInvoiceContainSearch(String[] data, String sp) {
+        if (sp.equals("")) {
+            return true;
+        } else {
+            int matchCounter = 0;
+            for (String singleton : data) {
+                if (singleton.contains(sp)) {
+                    matchCounter++;
+                }
+            }
+            if (matchCounter > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void loadInvoices() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT invoice_id, customer_id, date_created, employee_id FROM tblInvoices";
-        
+        String query = "SELECT invoice_id, customer_id, date_created, payments, employee_id FROM tblInvoices";
+
         try {
             Statement stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(query);
-            int invoiceCounter = 0;                                // variable for counting how many invoices are being shown in the table
+            int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
-                System.out.println("-------------------------------");
-                System.out.println(rs.getString(1));
-                System.out.println(sqlManager.getCustomerFullName(conn, Utility.StringToInt(rs.getString(2))));
-                System.out.println("Total here");
-                System.out.println(rs.getString(3));                      // For debugging, shows each invoice's data
-                System.out.println(sqlManager.getEmployeeFullName(conn, Utility.StringToInt(rs.getString(4))));
+                String[] invoiceData = new String[5];
+                invoiceData[0] = String.valueOf(rs.getInt(1));      // Invoice ID
+                invoiceData[1] = sqlManager.getCustomerFullName(conn, rs.getInt(2)); // Customer name
+                invoiceData[2] = "";                                // Creation date
+                invoiceData[3] = String.valueOf(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(4));
+                invoiceData[4] = sqlManager.getEmployeeFullName(conn, rs.getInt(5)); 
+               if (doesInvoiceContainSearch(invoiceData, sp)) {
+                    
+                    model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
+                    invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
 
-                // model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)}); // Adds the invoice to the table
-                invoiceCounter++;                                  // Increments invoice counter as a new invoice was added to the table
+                }
 
             }
             lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
