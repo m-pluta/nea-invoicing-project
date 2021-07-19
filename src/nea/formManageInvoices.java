@@ -64,6 +64,9 @@ public class formManageInvoices extends javax.swing.JFrame {
             public void mouseClicked(MouseEvent e) {
                 int selectedID = getSelectedInvoice();              // Gets the id of the invoice which is currently selected in the table
                 if (selectedID != -1) {                             // id of the invoice is not '-1', this is the default return value from getSelectedInvoice()
+                    if (Invoice_in_view != null) {
+                        Invoice_in_view.dispose();
+                    }
                     formOneInvoice form = new formOneInvoice().getFrame();    // Opens a new instance of the formOneInvoice() form
                     form.setLocation(1630, 422);                    // Sets the location of the invoice view to the right of the current invoice management form
                     form.setVisible(true);                          // Makes the new invoice view visible
@@ -246,16 +249,14 @@ public class formManageInvoices extends javax.swing.JFrame {
                 String[] invoiceData = new String[5];
                 invoiceData[0] = String.valueOf(rs.getInt(1));      // Invoice ID
                 invoiceData[1] = sqlManager.getCustomerFullName(conn, rs.getInt(2)); // Customer name
-                invoiceData[2] = "";                                // Creation date
-                invoiceData[3] = String.valueOf(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(4));
-                invoiceData[4] = sqlManager.getEmployeeFullName(conn, rs.getInt(5)); 
+                invoiceData[2] = rs.getString(3);                                // Creation date
+                invoiceData[3] = String.valueOf(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(4)); // Invoice total
+                invoiceData[4] = sqlManager.getEmployeeFullName(conn, rs.getInt(5)); // Employee name
                if (doesInvoiceContainSearch(invoiceData, sp)) {
                     
                     model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
                     invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
-
                 }
-
             }
             lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
         } catch (SQLException e) {
