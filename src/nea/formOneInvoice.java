@@ -39,6 +39,16 @@ public class formOneInvoice extends javax.swing.JFrame {
         JTableHeader header = jTable_InvoiceDetails.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
+        JTextField[] fields = {txtInvoiceID, txtCustomer, txtEmployee, txtDateCreated, txtDateDeadline, txtSubtotal, txtPayments, txtTotal};
+        setEditable(fields, false);
+        
+    }
+
+    // Sets these components to either visible or invisible depending on the boolean state
+    public void setEditable(JTextField[] fields, boolean state) {
+        for (JTextField field : fields) {
+            field.setEditable(state);
+        }
     }
 
     public void loadInvoice() {
@@ -84,7 +94,7 @@ public class formOneInvoice extends javax.swing.JFrame {
             while (rs.next()) {                                        // If an document with the given id was found
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 InvoiceTotal += itemTotal;
-                
+
                 String itemCategory = sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
@@ -237,16 +247,11 @@ public class formOneInvoice extends javax.swing.JFrame {
         lblTotal = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("View Customer");
+        setTitle("View Invoice");
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
                 "Description", "Category", "Quantity", "Unit Price", "Item Total"
