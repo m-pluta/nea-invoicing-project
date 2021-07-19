@@ -117,31 +117,21 @@ public class formOneQuotation extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        txtQuotationID = new javax.swing.JTextField();
-        txtCustomer = new javax.swing.JTextField();
-        txtEmployee = new javax.swing.JTextField();
-        txtDateCreated = new javax.swing.JTextField();
-        txtTotal = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable_QuotationDetails = new javax.swing.JTable();
         lblInvoiceID = new javax.swing.JLabel();
         lblCustomer = new javax.swing.JLabel();
         lblEmployee = new javax.swing.JLabel();
         lblDateCreated = new javax.swing.JLabel();
         lblTotal = new javax.swing.JLabel();
+        txtQuotationID = new javax.swing.JTextField();
+        txtCustomer = new javax.swing.JTextField();
+        txtEmployee = new javax.swing.JTextField();
+        txtDateCreated = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable_QuotationDetails = new javax.swing.JTable();
+        txtTotal = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Quotation");
-
-        jTable_QuotationDetails.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Description", "Category", "Quantity", "Unit Price", "Item Total"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable_QuotationDetails);
 
         lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblInvoiceID.setText("Quotation ID:");
@@ -157,6 +147,16 @@ public class formOneQuotation extends javax.swing.JFrame {
 
         lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblTotal.setText("Total:");
+
+        jTable_QuotationDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Description", "Category", "Quantity", "Unit Price", "Item Total"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable_QuotationDetails);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

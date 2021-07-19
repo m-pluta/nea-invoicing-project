@@ -120,16 +120,6 @@ public class formOneInvoice extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        txtInvoiceID = new javax.swing.JTextField();
-        txtCustomer = new javax.swing.JTextField();
-        txtEmployee = new javax.swing.JTextField();
-        txtDateCreated = new javax.swing.JTextField();
-        txtDateDeadline = new javax.swing.JTextField();
-        txtSubtotal = new javax.swing.JTextField();
-        txtPayments = new javax.swing.JTextField();
-        txtTotal = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable_InvoiceDetails = new javax.swing.JTable();
         lblInvoiceID = new javax.swing.JLabel();
         lblCustomer = new javax.swing.JLabel();
         lblEmployee = new javax.swing.JLabel();
@@ -138,19 +128,19 @@ public class formOneInvoice extends javax.swing.JFrame {
         lblSubtotal = new javax.swing.JLabel();
         lblPayments = new javax.swing.JLabel();
         lblTotal = new javax.swing.JLabel();
+        txtInvoiceID = new javax.swing.JTextField();
+        txtCustomer = new javax.swing.JTextField();
+        txtEmployee = new javax.swing.JTextField();
+        txtDateCreated = new javax.swing.JTextField();
+        txtDateDeadline = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable_InvoiceDetails = new javax.swing.JTable();
+        txtSubtotal = new javax.swing.JTextField();
+        txtPayments = new javax.swing.JTextField();
+        txtTotal = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Invoice");
-
-        jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Description", "Category", "Quantity", "Unit Price", "Item Total"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable_InvoiceDetails);
 
         lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblInvoiceID.setText("Invoice ID:");
@@ -175,6 +165,16 @@ public class formOneInvoice extends javax.swing.JFrame {
 
         lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblTotal.setText("Total:");
+
+        jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Description", "Category", "Quantity", "Unit Price", "Item Total"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable_InvoiceDetails);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

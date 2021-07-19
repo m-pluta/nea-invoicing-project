@@ -176,6 +176,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblFullName = new javax.swing.JLabel();
         lblCustomerID = new javax.swing.JLabel();
         lblForename = new javax.swing.JLabel();
         lblSurname = new javax.swing.JLabel();
@@ -188,23 +189,25 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtCustomerID = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
         txtSurname = new javax.swing.JTextField();
+        txtAddress1 = new javax.swing.JTextField();
+        txtAddress2 = new javax.swing.JTextField();
+        txtAddress3 = new javax.swing.JTextField();
         txtCounty = new javax.swing.JTextField();
         txtPostcode = new javax.swing.JTextField();
         txtPhoneNumber = new javax.swing.JTextField();
         txtEmailAddress = new javax.swing.JTextField();
-        lblFullName = new javax.swing.JLabel();
-        btnSetInvoice = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
-        btnRemove = new javax.swing.JButton();
-        btnSetQuotation = new javax.swing.JButton();
         cbCategory = new javax.swing.JComboBox<>();
-        txtAddress1 = new javax.swing.JTextField();
-        txtAddress2 = new javax.swing.JTextField();
-        txtAddress3 = new javax.swing.JTextField();
+        btnRemove = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
         btnConfirmEdit = new javax.swing.JButton();
+        btnSetQuotation = new javax.swing.JButton();
+        btnSetInvoice = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Customer");
+
+        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblFullName.setText("Full name here");
 
         lblCustomerID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerID.setText("Customer ID:");
@@ -234,19 +237,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCategory.setText("Category:");
 
-        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblFullName.setText("Full name here");
-
-        btnSetInvoice.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnSetInvoice.setText("Set an Invoice");
-
-        btnEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnEdit.setText("Edit details");
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
-            }
-        });
+        txtAddress1.setToolTipText("");
 
         btnRemove.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnRemove.setText("Remove");
@@ -256,10 +247,13 @@ public class formOneCustomer extends javax.swing.JFrame {
             }
         });
 
-        btnSetQuotation.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnSetQuotation.setText("Set a Quotation");
-
-        txtAddress1.setToolTipText("");
+        btnEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnEdit.setText("Edit details");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnConfirmEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnConfirmEdit.setText("Confirm Edit");
@@ -268,6 +262,12 @@ public class formOneCustomer extends javax.swing.JFrame {
                 btnConfirmEditActionPerformed(evt);
             }
         });
+
+        btnSetQuotation.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnSetQuotation.setText("Set a Quotation");
+
+        btnSetInvoice.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnSetInvoice.setText("Set an Invoice");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -396,6 +396,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         setEditable(fields, true);                                  // Makes all the fields editable
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
+        txtForename.requestFocus();
 
     }//GEN-LAST:event_btnEditActionPerformed
 
@@ -474,6 +475,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                 previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
             }
         }
+        txtCustomerID.requestFocus();
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
     /**

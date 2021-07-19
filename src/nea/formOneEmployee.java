@@ -103,6 +103,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblFullName = new javax.swing.JLabel();
         lblEmployeeID = new javax.swing.JLabel();
         lblForename = new javax.swing.JLabel();
         lblSurname = new javax.swing.JLabel();
@@ -111,26 +112,28 @@ public class formOneEmployee extends javax.swing.JFrame {
         lblPostcode = new javax.swing.JLabel();
         lblPhoneNumber = new javax.swing.JLabel();
         lblEmailAddress = new javax.swing.JLabel();
+        lblLastLogin = new javax.swing.JLabel();
+        lblAdmin = new javax.swing.JLabel();
         txtEmployeeID = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
         txtSurname = new javax.swing.JTextField();
+        txtAddress1 = new javax.swing.JTextField();
+        txtAddress2 = new javax.swing.JTextField();
+        txtAddress3 = new javax.swing.JTextField();
         txtCounty = new javax.swing.JTextField();
         txtPostcode = new javax.swing.JTextField();
         txtPhoneNumber = new javax.swing.JTextField();
         txtEmailAddress = new javax.swing.JTextField();
-        lblFullName = new javax.swing.JLabel();
-        btnEdit = new javax.swing.JButton();
-        btnRemove = new javax.swing.JButton();
-        txtAddress1 = new javax.swing.JTextField();
-        txtAddress2 = new javax.swing.JTextField();
-        txtAddress3 = new javax.swing.JTextField();
-        btnConfirmEdit = new javax.swing.JButton();
-        lblLastLogin = new javax.swing.JLabel();
         txtLastLogin = new javax.swing.JTextField();
-        lblAdmin = new javax.swing.JLabel();
         cbAdmin = new javax.swing.JCheckBox();
+        btnRemove = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
+        btnConfirmEdit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblFullName.setText("Full name here");
 
         lblEmployeeID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmployeeID.setText("Employee ID:");
@@ -157,16 +160,13 @@ public class formOneEmployee extends javax.swing.JFrame {
         lblEmailAddress.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmailAddress.setText("Email address:");
 
-        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblFullName.setText("Full name here");
+        lblLastLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblLastLogin.setText("Last Login:");
 
-        btnEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnEdit.setText("Edit details");
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
-            }
-        });
+        lblAdmin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblAdmin.setText("Admin:");
+
+        txtAddress1.setToolTipText("");
 
         btnRemove.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnRemove.setText("Remove");
@@ -176,7 +176,13 @@ public class formOneEmployee extends javax.swing.JFrame {
             }
         });
 
-        txtAddress1.setToolTipText("");
+        btnEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnEdit.setText("Edit details");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnConfirmEdit.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnConfirmEdit.setText("Confirm Edit");
@@ -185,12 +191,6 @@ public class formOneEmployee extends javax.swing.JFrame {
                 btnConfirmEditActionPerformed(evt);
             }
         });
-
-        lblLastLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblLastLogin.setText("Last Login:");
-
-        lblAdmin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblAdmin.setText("Admin:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -204,9 +204,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                         .addComponent(lblAddress)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, 0))
+                            .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtAddress2)
                             .addComponent(txtAddress3)))
                     .addGroup(layout.createSequentialGroup()
@@ -279,8 +277,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnConfirmEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)))
+                        .addComponent(btnConfirmEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtAddress3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -317,6 +314,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         setEditable(fields, true);                                  // Makes all the fields editable
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
+        txtForename.requestFocus();
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
@@ -393,6 +391,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed
             }
         }
+        txtEmployeeID.requestFocus();
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
     /**

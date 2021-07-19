@@ -31,10 +31,7 @@
                       <Component id="lblAddress" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="txtAddress1" min="-2" pref="300" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="txtAddress1" alignment="0" min="-2" pref="300" max="-2" attributes="0"/>
                           <Component id="txtAddress2" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtAddress3" alignment="0" max="32767" attributes="0"/>
                       </Group>
@@ -128,7 +125,6 @@
                       <Component id="btnEdit" min="-2" pref="50" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnConfirmEdit" min="-2" pref="50" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -169,6 +165,14 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblFullName">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="24" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Full name here"/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JLabel" name="lblEmployeeID">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -234,11 +238,36 @@
         <Property name="text" type="java.lang.String" value="Email address:"/>
       </Properties>
     </Component>
+    <Component class="javax.swing.JLabel" name="lblLastLogin">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="18" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Last Login:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblAdmin">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="18" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Admin:"/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JTextField" name="txtEmployeeID">
     </Component>
     <Component class="javax.swing.JTextField" name="txtForename">
     </Component>
     <Component class="javax.swing.JTextField" name="txtSurname">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtAddress1">
+      <Properties>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtAddress2">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtAddress3">
     </Component>
     <Component class="javax.swing.JTextField" name="txtCounty">
     </Component>
@@ -248,24 +277,9 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtEmailAddress">
     </Component>
-    <Component class="javax.swing.JLabel" name="lblFullName">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="24" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Full name here"/>
-      </Properties>
+    <Component class="javax.swing.JTextField" name="txtLastLogin">
     </Component>
-    <Component class="javax.swing.JButton" name="btnEdit">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="16" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Edit details"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEditActionPerformed"/>
-      </Events>
+    <Component class="javax.swing.JCheckBox" name="cbAdmin">
     </Component>
     <Component class="javax.swing.JButton" name="btnRemove">
       <Properties>
@@ -278,14 +292,16 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoveActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JTextField" name="txtAddress1">
+    <Component class="javax.swing.JButton" name="btnEdit">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="16" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Edit details"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtAddress2">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtAddress3">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEditActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnConfirmEdit">
       <Properties>
@@ -297,26 +313,6 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfirmEditActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JLabel" name="lblLastLogin">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="18" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Last Login:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtLastLogin">
-    </Component>
-    <Component class="javax.swing.JLabel" name="lblAdmin">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="18" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Admin:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="cbAdmin">
     </Component>
   </SubComponents>
 </Form>
