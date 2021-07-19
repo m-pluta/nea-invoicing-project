@@ -126,6 +126,7 @@ public class formManageInvoices extends javax.swing.JFrame {
         btnAddNew = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Invoice Management");
 
         btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnBack.setText("Back");

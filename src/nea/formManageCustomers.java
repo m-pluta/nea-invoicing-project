@@ -173,7 +173,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Manage Customers");
+        setTitle("Customer Management");
 
         jTable_Customers.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_Customers.setModel(new javax.swing.table.DefaultTableModel(
