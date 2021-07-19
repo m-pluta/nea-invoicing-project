@@ -17,6 +17,8 @@ import java.sql.Statement;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -72,6 +74,21 @@ public class formAddCustomer extends javax.swing.JFrame {
             @Override
             public void windowDeactivated(WindowEvent e) {}
         });
+        
+        DocumentListener dListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                lblFullName.setText(txtForename.getText() + " " + txtSurname.getText());
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                lblFullName.setText(txtForename.getText() + " " + txtSurname.getText());
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {}  
+        };
+        txtForename.getDocument().addDocumentListener(dListener);
+        txtSurname.getDocument().addDocumentListener(dListener);
     }
 
     // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
