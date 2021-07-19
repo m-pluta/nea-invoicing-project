@@ -123,7 +123,7 @@ public class Utility {
         return null;
     }
 
-    private String formatCurrency(double cost) {
+    public static String formatCurrency(double cost) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String costString = formatter.format(cost);
         return costString;
