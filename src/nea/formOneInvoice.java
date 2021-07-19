@@ -5,12 +5,15 @@
  */
 package nea;
 
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -23,12 +26,18 @@ public class formOneInvoice extends javax.swing.JFrame {
      */
     int InvoiceID = 0;                                              // customer_id of currently loaded customer
     Connection conn = null;                                         // Stores the connection object
+    DefaultTableModel model;                                        // The table model
     formManageInvoices previousForm = null;                         // Stores the previous Form object
 
     public formOneInvoice() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
+
+        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();    // Fetches the table model of the table
+        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
+
+        JTableHeader header = jTable_InvoiceDetails.getTableHeader();
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
     }
 
@@ -43,10 +52,16 @@ public class formOneInvoice extends javax.swing.JFrame {
             if (rs.next()) {                                        // If an document with the given id was found
                 txtInvoiceID.setText(String.valueOf(InvoiceID));
                 txtCustomer.setText(sqlManager.getCustomerFullName(conn, rs.getInt(1)));
-                txtEmployee.setText(sqlManager.getCustomerFullName(conn, rs.getInt(2)));
+                txtEmployee.setText(sqlManager.getEmployeeFullName(conn, rs.getInt(2)));
                 txtDateCreated.setText(String.valueOf(rs.getDate(3)));
                 txtDateDeadline.setText(String.valueOf(rs.getDate(4)));
-                txtPayments.setText(String.valueOf(rs.getDouble(5)));  
+                txtPayments.setText(String.valueOf(rs.getDouble(5)));
+                
+                double subTotal = loadInvoiceDetails(InvoiceID);
+                
+                txtSubtotal.setText(Utility.formatCurrency(subTotal));
+                txtTotal.setText(Utility.formatCurrency(subTotal - rs.getDouble(5)));
+                
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("No invoice with this invoice_id was found");
@@ -55,6 +70,28 @@ public class formOneInvoice extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
+    }
+
+    public double loadInvoiceDetails(int invoiceID) {
+        double InvoiceTotal = 0;
+        conn = sqlManager.openConnection();
+        String query = "SELECT description, item_category_id, quantity, unit_price FROM tblInvoiceDetails WHERE invoice_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, InvoiceID);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {                                        // If an document with the given id was found
+                double itemTotal = rs.getInt(3) * rs.getDouble(4);
+                InvoiceTotal += itemTotal;
+                String sItemTotal = Utility.formatCurrency(itemTotal);
+                String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
+                model.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the invoice to the table
+            } 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return InvoiceTotal;
     }
 
 //    // Returns true if the 'Add new category' option in the combo box is selected
@@ -202,13 +239,10 @@ public class formOneInvoice extends javax.swing.JFrame {
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Row", "Description", "Quantity", "Unit Price", "Item Total"
+                "Description", "Category", "Quantity", "Unit Price", "Item Total"
             }
         ));
         jScrollPane1.setViewportView(jTable_InvoiceDetails);

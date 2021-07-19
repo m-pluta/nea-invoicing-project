@@ -141,9 +141,9 @@
               <Table columnCount="5" rowCount="0">
                 <Column editable="true" title="ID" type="java.lang.Object"/>
                 <Column editable="true" title="Customer" type="java.lang.Object"/>
-                <Column editable="true" title="Total" type="java.lang.Object"/>
-                <Column editable="true" title="Date created" type="java.lang.Object"/>
                 <Column editable="true" title="Employee" type="java.lang.Object"/>
+                <Column editable="true" title="Date created" type="java.lang.Object"/>
+                <Column editable="true" title="Total" type="java.lang.Object"/>
               </Table>
             </Property>
           </Properties>

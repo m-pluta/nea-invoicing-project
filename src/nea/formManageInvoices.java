@@ -154,7 +154,7 @@ public class formManageInvoices extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Customer", "Total", "Date created", "Employee"
+                "ID", "Customer", "Employee", "Date created", "Total"
             }
         ));
         jScrollPane1.setViewportView(jTable_Invoices);
@@ -224,7 +224,7 @@ public class formManageInvoices extends javax.swing.JFrame {
         } else {
             int matchCounter = 0;
             for (String singleton : data) {
-                if (singleton.contains(sp)) {
+                if (singleton.toLowerCase().contains(sp.toLowerCase())) {
                     matchCounter++;
                 }
             }
@@ -238,7 +238,7 @@ public class formManageInvoices extends javax.swing.JFrame {
     public void loadInvoices() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT invoice_id, customer_id, date_created, payments, employee_id FROM tblInvoices";
+        String query = "SELECT invoice_id, customer_id, employee_id, date_created, payments FROM tblInvoices";
 
         try {
             Statement stmt = conn.createStatement();
@@ -249,11 +249,11 @@ public class formManageInvoices extends javax.swing.JFrame {
                 String[] invoiceData = new String[5];
                 invoiceData[0] = String.valueOf(rs.getInt(1));      // Invoice ID
                 invoiceData[1] = sqlManager.getCustomerFullName(conn, rs.getInt(2)); // Customer name
-                invoiceData[2] = rs.getString(3);                                // Creation date
-                invoiceData[3] = String.valueOf(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(4)); // Invoice total
-                invoiceData[4] = sqlManager.getEmployeeFullName(conn, rs.getInt(5)); // Employee name
-               if (doesInvoiceContainSearch(invoiceData, sp)) {
-                    
+                invoiceData[2] = sqlManager.getEmployeeFullName(conn, rs.getInt(3)); // Employee name
+                invoiceData[3] = String.valueOf(rs.getDate(4)).replace("-", " - ");                     // Creation date
+                invoiceData[4] = String.valueOf(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(5)); // Invoice total
+                if (doesInvoiceContainSearch(invoiceData, sp)) {
+
                     model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
                     invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
                 }
@@ -280,6 +280,9 @@ public class formManageInvoices extends javax.swing.JFrame {
     }
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        if (Invoice_in_view != null) {                             // Checks whether there is another form opened showing the selected invoice
+            Invoice_in_view.dispose();                             // If there is another form then it gets rid of it
+        }
         previousForm.setVisible(true);                              // Makes main previous form visible
         this.dispose();                                             // Closes the document management form (current form)
     }//GEN-LAST:event_btnBackActionPerformed
