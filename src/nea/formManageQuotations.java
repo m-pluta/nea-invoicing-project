@@ -62,18 +62,18 @@ public class formManageQuotations extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedID = getSelectedQuotation();            // Gets the id of the invoice which is currently selected in the table
-                if (selectedID != -1) {                             // id of the invoice is not '-1', this is the default return value from getSelectedInvoice()
+                int selectedID = getSelectedQuotation();            // Gets the id of the quotation which is currently selected in the table
+                if (selectedID != -1) {                             // id of the quotation is not '-1', this is the default return value from getSelectedQuotation()
                     if (Quotation_in_view != null) {
                         Quotation_in_view.dispose();
                     }
                     formOneQuotation form = new formOneQuotation().getFrame();    // Opens a new instance of the formOneQuotation() form
-                    form.setLocation(1630, 422);                    // Sets the location of the invoice view to the right of the current invoice management form
-                    form.setVisible(true);                          // Makes the new invoice view visible
-                    form.InvoiceID = selectedID;                   // Tells the invoice view form which invoice to load
-                    form.previousForm = formManageQuotations.this;   // Informs the invoice view what the previous form is 
-                    form.loadInvoice();                            // Runs the loadInvoice() method which will load all of the specified invoice's details
-                    Quotation_in_view = form;                        // Sets the invoice in view to this
+                    form.setLocation(1630, 422);                    // Sets the location of the quotation view to the right of the current quotation management form
+                    form.setVisible(true);                          // Makes the new quotation view visible
+                    form.QuotationID = selectedID;                  // Tells the quotation view form which quotation to load
+                    form.previousForm = formManageQuotations.this;  // Informs the quotation view what the previous form is 
+                    form.loadQuotation();                           // Runs the loadQuotation() method which will load all of the specified quotation's details
+                    Quotation_in_view = form;                       // Sets the quotation in view to this
 
                 } else {
                     System.out.println("Something is truly wrong"); // Not sure how you would reach this point
@@ -267,7 +267,7 @@ public class formManageQuotations extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);                           // Closes connection to the DB
     }
 
-    // Returns the quotation_id of the selected invoice in the invoice table
+    // Returns the quotation_id of the selected quotation in the quotation table
     public int getSelectedQuotation() {
         int selectedRow = jTable_Quotations.getSelectedRow();       // Gets the selected row in the table
         if (selectedRow == -1) {                                    // If no row is selected in the table
