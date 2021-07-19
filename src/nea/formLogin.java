@@ -1,5 +1,8 @@
 package nea;
 
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +18,30 @@ public class formLogin extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         txtPassword.setEchoChar('•');
+
+        boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
+        lblCapsLock.setVisible(isCapsLockOn);
+
+        txtPassword.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
+                lblCapsLock.setVisible(isCapsLockOn);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
+                lblCapsLock.setVisible(isCapsLockOn);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
+                lblCapsLock.setVisible(isCapsLockOn);
+            }
+
+        });
     }
 
     /**
@@ -32,6 +59,7 @@ public class formLogin extends javax.swing.JFrame {
         lblPassword = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
         cbPassword = new javax.swing.JCheckBox();
+        lblCapsLock = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -62,33 +90,39 @@ public class formLogin extends javax.swing.JFrame {
             }
         });
 
+        lblCapsLock.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCapsLock.setForeground(new java.awt.Color(255, 39, 93));
+        lblCapsLock.setText("Caps Lock is on");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap(22, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cbPassword)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(lblPassword)
-                                    .addComponent(lblUsername))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtUsername)
-                                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(lblPassword)
+                            .addComponent(lblUsername))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtUsername)
+                            .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(71, 71, 71)
-                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(24, Short.MAX_VALUE))
+                        .addComponent(lblCapsLock)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cbPassword)))
+                .addContainerGap(23, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(127, Short.MAX_VALUE)
+                .addContainerGap(149, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblUsername)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -97,10 +131,12 @@ public class formLogin extends javax.swing.JFrame {
                     .addComponent(lblPassword)
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbPassword)
-                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbPassword)
+                    .addComponent(lblCapsLock))
+                .addGap(32, 32, 32)
                 .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -135,9 +171,9 @@ public class formLogin extends javax.swing.JFrame {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If any results were fetched from the DB
                 if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
-                
-                fetchedID = rs.getInt(1);      // Gets the id of whoever logged in
-                found = true;
+
+                    fetchedID = rs.getInt(1);      // Gets the id of whoever logged in
+                    found = true;
                 }
             }
         } catch (SQLException e) {
@@ -164,7 +200,7 @@ public class formLogin extends javax.swing.JFrame {
         if (cbPassword.isSelected()) {
             txtPassword.setEchoChar((char) 0);                      // If the user wants to see their password
         } else {
-            txtPassword.setEchoChar('•');       
+            txtPassword.setEchoChar('•');
         }
     }//GEN-LAST:event_cbPasswordActionPerformed
 
@@ -206,6 +242,7 @@ public class formLogin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogin;
     private javax.swing.JCheckBox cbPassword;
+    private javax.swing.JLabel lblCapsLock;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblUsername;
     private javax.swing.JPasswordField txtPassword;
