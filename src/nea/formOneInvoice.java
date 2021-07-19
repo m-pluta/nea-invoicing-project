@@ -56,12 +56,12 @@ public class formOneInvoice extends javax.swing.JFrame {
                 txtDateCreated.setText(String.valueOf(rs.getDate(3)));
                 txtDateDeadline.setText(String.valueOf(rs.getDate(4)));
                 txtPayments.setText(String.valueOf(rs.getDouble(5)));
-                
+
                 double subTotal = loadInvoiceDetails(InvoiceID);
-                
+
                 txtSubtotal.setText(Utility.formatCurrency(subTotal));
                 txtTotal.setText(Utility.formatCurrency(subTotal - rs.getDouble(5)));
-                
+
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("No invoice with this invoice_id was found");
@@ -84,10 +84,12 @@ public class formOneInvoice extends javax.swing.JFrame {
             while (rs.next()) {                                        // If an document with the given id was found
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 InvoiceTotal += itemTotal;
+                
+                String itemCategory = sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
-                model.addRow(new Object[]{rs.getString(1), rs.getInt(2), rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the invoice to the table
-            } 
+                model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the invoice to the table
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -239,7 +241,12 @@ public class formOneInvoice extends javax.swing.JFrame {
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
                 "Description", "Category", "Quantity", "Unit Price", "Item Total"
