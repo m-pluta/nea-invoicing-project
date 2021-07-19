@@ -153,6 +153,15 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblFullName">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="24" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value=" "/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JLabel" name="lblCustomerID">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -232,6 +241,15 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtSurname">
     </Component>
+    <Component class="javax.swing.JTextField" name="txtAddress1">
+      <Properties>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtAddress2">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtAddress3">
+    </Component>
     <Component class="javax.swing.JTextField" name="txtCounty">
     </Component>
     <Component class="javax.swing.JTextField" name="txtPostcode">
@@ -239,15 +257,6 @@
     <Component class="javax.swing.JTextField" name="txtPhoneNumber">
     </Component>
     <Component class="javax.swing.JTextField" name="txtEmailAddress">
-    </Component>
-    <Component class="javax.swing.JLabel" name="lblFullName">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="24" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value=" "/>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbCategory">
       <Properties>
@@ -258,15 +267,6 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtAddress1">
-      <Properties>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtAddress2">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtAddress3">
     </Component>
     <Component class="javax.swing.JButton" name="btnAddCustomer">
       <Properties>

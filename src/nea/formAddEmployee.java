@@ -83,6 +83,7 @@ public class formAddEmployee extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblFullName = new javax.swing.JLabel();
         lblEmployeeID = new javax.swing.JLabel();
         lblForename = new javax.swing.JLabel();
         lblSurname = new javax.swing.JLabel();
@@ -91,22 +92,24 @@ public class formAddEmployee extends javax.swing.JFrame {
         lblPostcode = new javax.swing.JLabel();
         lblPhoneNumber = new javax.swing.JLabel();
         lblEmailAddress = new javax.swing.JLabel();
+        lblAdmin = new javax.swing.JLabel();
         txtEmployeeID = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
         txtSurname = new javax.swing.JTextField();
+        txtAddress1 = new javax.swing.JTextField();
+        txtAddress2 = new javax.swing.JTextField();
+        txtAddress3 = new javax.swing.JTextField();
         txtCounty = new javax.swing.JTextField();
         txtPostcode = new javax.swing.JTextField();
         txtPhoneNumber = new javax.swing.JTextField();
         txtEmailAddress = new javax.swing.JTextField();
-        lblFullName = new javax.swing.JLabel();
-        txtAddress1 = new javax.swing.JTextField();
-        txtAddress2 = new javax.swing.JTextField();
-        txtAddress3 = new javax.swing.JTextField();
-        lblAdmin = new javax.swing.JLabel();
         cbAdmin = new javax.swing.JCheckBox();
         btnAddEmployee = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblFullName.setText(" ");
 
         lblEmployeeID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmployeeID.setText("Employee ID:");
@@ -133,13 +136,10 @@ public class formAddEmployee extends javax.swing.JFrame {
         lblEmailAddress.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEmailAddress.setText("Email address:");
 
-        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblFullName.setText(" ");
-
-        txtAddress1.setToolTipText("");
-
         lblAdmin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblAdmin.setText("Admin:");
+
+        txtAddress1.setToolTipText("");
 
         btnAddEmployee.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnAddEmployee.setText("Add employee");

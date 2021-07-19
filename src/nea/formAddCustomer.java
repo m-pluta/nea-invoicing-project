@@ -140,6 +140,7 @@ public class formAddCustomer extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblFullName = new javax.swing.JLabel();
         lblCustomerID = new javax.swing.JLabel();
         lblForename = new javax.swing.JLabel();
         lblSurname = new javax.swing.JLabel();
@@ -152,19 +153,22 @@ public class formAddCustomer extends javax.swing.JFrame {
         txtCustomerID = new javax.swing.JTextField();
         txtForename = new javax.swing.JTextField();
         txtSurname = new javax.swing.JTextField();
+        txtAddress1 = new javax.swing.JTextField();
+        txtAddress2 = new javax.swing.JTextField();
+        txtAddress3 = new javax.swing.JTextField();
         txtCounty = new javax.swing.JTextField();
         txtPostcode = new javax.swing.JTextField();
         txtPhoneNumber = new javax.swing.JTextField();
         txtEmailAddress = new javax.swing.JTextField();
-        lblFullName = new javax.swing.JLabel();
         cbCategory = new javax.swing.JComboBox<>();
-        txtAddress1 = new javax.swing.JTextField();
-        txtAddress2 = new javax.swing.JTextField();
-        txtAddress3 = new javax.swing.JTextField();
         btnAddCustomer = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Add Customer");
+
+        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblFullName.setText(" ");
+        lblFullName.setToolTipText("");
 
         lblCustomerID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerID.setText("Customer ID:");
@@ -193,10 +197,6 @@ public class formAddCustomer extends javax.swing.JFrame {
 
         lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCategory.setText("Category:");
-
-        lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblFullName.setText(" ");
-        lblFullName.setToolTipText("");
 
         txtAddress1.setToolTipText("");
 

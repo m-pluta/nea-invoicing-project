@@ -116,25 +116,17 @@ public class formManageInvoices extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnBack = new javax.swing.JButton();
         lblManageInvoices = new javax.swing.JLabel();
         lblSearch = new javax.swing.JLabel();
-        txtSearch = new javax.swing.JTextField();
         lblInvoiceCount = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        btnAddNew = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Invoices = new javax.swing.JTable();
-        btnAddNew = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Invoice Management");
-
-        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        btnBack.setText("Back");
-        btnBack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
-            }
-        });
 
         lblManageInvoices.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblManageInvoices.setText("Manage Invoices");
@@ -142,12 +134,20 @@ public class formManageInvoices extends javax.swing.JFrame {
         lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblSearch.setText("Search");
 
-        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        txtSearch.setName(""); // NOI18N
-
         lblInvoiceCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblInvoiceCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblInvoiceCount.setText("Number of invoices:");
+
+        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        txtSearch.setName(""); // NOI18N
+
+        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewActionPerformed(evt);
+            }
+        });
 
         jTable_Invoices.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_Invoices.setModel(new javax.swing.table.DefaultTableModel(
@@ -160,11 +160,11 @@ public class formManageInvoices extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable_Invoices);
 
-        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnAddNew.setText("Add New");
-        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddNewActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 

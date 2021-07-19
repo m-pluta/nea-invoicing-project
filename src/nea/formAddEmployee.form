@@ -146,6 +146,14 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblFullName">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="24" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value=" "/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JLabel" name="lblEmployeeID">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -211,27 +219,19 @@
         <Property name="text" type="java.lang.String" value="Email address:"/>
       </Properties>
     </Component>
+    <Component class="javax.swing.JLabel" name="lblAdmin">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="18" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Admin:"/>
+      </Properties>
+    </Component>
     <Component class="javax.swing.JTextField" name="txtEmployeeID">
     </Component>
     <Component class="javax.swing.JTextField" name="txtForename">
     </Component>
     <Component class="javax.swing.JTextField" name="txtSurname">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtCounty">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtPostcode">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtPhoneNumber">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtEmailAddress">
-    </Component>
-    <Component class="javax.swing.JLabel" name="lblFullName">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="24" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value=" "/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtAddress1">
       <Properties>
@@ -242,13 +242,13 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtAddress3">
     </Component>
-    <Component class="javax.swing.JLabel" name="lblAdmin">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="18" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Admin:"/>
-      </Properties>
+    <Component class="javax.swing.JTextField" name="txtCounty">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtPostcode">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtPhoneNumber">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtEmailAddress">
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbAdmin">
     </Component>

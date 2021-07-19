@@ -116,25 +116,17 @@ public class formManageQuotations extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnBack = new javax.swing.JButton();
         lblManageQuotations = new javax.swing.JLabel();
         lblSearch = new javax.swing.JLabel();
-        txtSearch = new javax.swing.JTextField();
         lblQuotationCount = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        btnAddNew = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Quotations = new javax.swing.JTable();
-        btnAddNew = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Quotation Management");
-
-        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        btnBack.setText("Back");
-        btnBack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
-            }
-        });
 
         lblManageQuotations.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblManageQuotations.setText("Manage Quotations");
@@ -143,12 +135,20 @@ public class formManageQuotations extends javax.swing.JFrame {
         lblSearch.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblSearch.setText("Search");
 
-        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        txtSearch.setName(""); // NOI18N
-
         lblQuotationCount.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblQuotationCount.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblQuotationCount.setText("Number of quotations:");
+
+        txtSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        txtSearch.setName(""); // NOI18N
+
+        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnAddNew.setText("Add New");
+        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewActionPerformed(evt);
+            }
+        });
 
         jTable_Quotations.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable_Quotations.setModel(new javax.swing.table.DefaultTableModel(
@@ -161,11 +161,11 @@ public class formManageQuotations extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable_Quotations);
 
-        btnAddNew.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnAddNew.setText("Add New");
-        btnAddNew.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddNewActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 
