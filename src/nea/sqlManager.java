@@ -232,6 +232,7 @@ public class sqlManager {
         return false;
     }
 
+    // Returns the full name of the employee with the given employee_id
     public static String getEmployeeFullName(Connection conn, int employee_id) {
         String query = "SELECT forename, surname FROM tblEmployees WHERE employee_id = ?";
         try {
@@ -240,10 +241,10 @@ public class sqlManager {
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a employee with the given id was found
-                return rs.getString(1) + " " + rs.getString(2);
+                return rs.getString(1) + " " + rs.getString(2);     // Concatenates the forename and surname into the full name
             } else {
                 System.out.println("-------------------------------");
-                System.out.println("Error getching employee name with id: " + employee_id);
+                System.out.println("Error fetching employee name with id: " + employee_id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -251,6 +252,7 @@ public class sqlManager {
         return null;
     }
 
+    // Returns the full name of the customer with the given customer_id
     public static String getCustomerFullName(Connection conn, int customer_id) {
         String query = "SELECT forename, surname FROM tblCustomers WHERE customer_id = ?";
         try {
@@ -258,11 +260,11 @@ public class sqlManager {
             pstmt.setInt(1, customer_id);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {                                        // If a employee with the given id was found
-                return rs.getString(1) + " " + rs.getString(2);
+            if (rs.next()) {                                        // If a customer with the given id was found
+                return rs.getString(1) + " " + rs.getString(2);     // Concatenates the forename and surname into the full name
             } else {
                 System.out.println("-------------------------------");
-                System.out.println("Error getching customer name with id: " + customer_id);
+                System.out.println("Error fetching customer name with id: " + customer_id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -270,6 +272,7 @@ public class sqlManager {
         return null;
     }
 
+    // Returns the total value of all the items in a given document (invoice/quotation). This is the sum of all the quantity * unit_price
     public static double totalDocument(Connection conn, String tableName, String PK_name, int document_id) {
         String query = "SELECT quantity, unit_price FROM " + tableName + " WHERE " + PK_name + " = ?";
         try {
@@ -278,13 +281,13 @@ public class sqlManager {
 
             ResultSet rs = pstmt.executeQuery();
             double total = 0.00;
-            while (rs.next()) {                                        // If an document with the given id was found
-                total += rs.getInt(1) * rs.getDouble(2);
+            while (rs.next()) {                                     // If an document with the given id was found
+                total += rs.getInt(1) * rs.getDouble(2);            // Adds the quantity * unit_price to the total
             }
-            return total;
+            return total;                                           // Returns the total value of the document
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return - 1;
+        return -1;
     }
 }

@@ -61,6 +61,9 @@ public class Utility {
         return output;                                              // Return the converted integer
     }
 
+    // Takes the Title of the dialog box and all the field names as parameters
+    // Creates a dialog box with all the field names as the label and a corresponding JTextField for each field#
+    // Returns the String[] of all the user inputs
     public static String[] JOptionPaneMultiInput(String windowTitle, String[] Fieldnames) {
         int NoInputs = Fieldnames.length;                           // Number of inputs the user must enter
 
@@ -123,6 +126,7 @@ public class Utility {
         return null;
     }
 
+    // Formats a double to a string with the user's default currency and does some rounding as well
     public static String formatCurrency(double cost) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String costString = formatter.format(cost);
