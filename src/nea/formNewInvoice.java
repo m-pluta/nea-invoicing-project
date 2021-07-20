@@ -8,6 +8,7 @@ package nea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -44,13 +45,62 @@ public class formNewInvoice extends javax.swing.JFrame {
                 if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
                     if (!CurrentlyAddingCustomer) {
                         formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
-                        form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
-                        form.setVisible(true);                          // Makes the new customer view visible
+                        form.setLocationRelativeTo(null);           // Sets the location of the customer view to the right of the current customer management form
+                        form.setVisible(true);                      // Makes the new customer view visible
+                        form.previousForm2 = formNewInvoice.this;
                         CurrentlyAddingCustomer = true;
                     }
                 }
             }
         });
+
+        cbItemCategories.addActionListener(new ActionListener() {   // When an action happens within the combo box - e.g. the selectedIndex changed
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbItemCategories.getSelectedIndex() == cbItemCategories.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
+                    if (!CurrentlyAddingCustomer) {
+                        formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
+                        form.setLocationRelativeTo(null);           // Sets the location of the customer view to the right of the current customer management form
+                        form.setVisible(true);                      // Makes the new customer view visible
+                        form.previousForm2 = formNewInvoice.this;
+                        CurrentlyAddingCustomer = true;
+                    }
+                }
+            }
+        });
+
+    }
+
+    public void addNewItemCategory() {
+        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
+        if (inputCategory != null) {                                // If the dialog input was valid 
+            conn = sqlManager.openConnection();                     // Opens connection to DB
+
+            inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
+
+            if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                System.out.println("-------------------------------");
+                System.out.println("Category under this name already exists");
+            } else {                                                // If it is a unique category
+                String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "item_category_id");   // Gets the next available value of the primary key
+                    pstmt.setInt(1, newID);
+                    pstmt.setString(2, inputCategory);
+                    pstmt.setString(3, Utility.getCurrentDate());
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row inserted.");
+                    loadItemCategoriesIntoCB();                     // Refreshes Table
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            sqlManager.closeConnection(conn);                       // Closes connection to DB
+        }
 
     }
 

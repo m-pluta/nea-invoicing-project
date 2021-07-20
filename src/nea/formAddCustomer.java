@@ -31,11 +31,15 @@ public class formAddCustomer extends javax.swing.JFrame {
      */
     int CustomerID = 0;                                             // customer_id of new customer being added
     Connection conn = null;                                         // Stores the connection object
-    formManageCustomers previousForm1 = null;                        // Stores the previous Form object
+    formManageCustomers previousForm1;                       // Stores the previous Form object
+    formNewInvoice previousForm2;                            // Stores the previous Form object
 
     public formAddCustomer() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        previousForm1 = null; previousForm2 = null;
+        
 
         loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
 
@@ -60,7 +64,12 @@ public class formAddCustomer extends javax.swing.JFrame {
             
             @Override
             public void windowClosing(WindowEvent e) {
-                previousForm1.CurrentlyAddingCustomer = false;
+                if (previousForm1 != null) {
+                    previousForm1.CurrentlyAddingCustomer = false;
+                }
+                if (previousForm2 != null) {
+                    previousForm2.CurrentlyAddingCustomer = false;
+                }
             }
             
             @Override
@@ -383,9 +392,16 @@ public class formAddCustomer extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
                 sqlManager.closeConnection(conn);                   // Closes connection to the DB
-                previousForm1.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
-                previousForm1.CurrentlyAddingCustomer = false;
-                this.dispose();                                             // Closes the add new customer form (current form)
+                if (previousForm1 != null) {
+                    previousForm1.loadCustomers();                  // Refreshes the customer table in the previous form since a customer details were changed
+                    previousForm1.CurrentlyAddingCustomer = false;
+                }
+                if (previousForm2 != null) {
+                    previousForm2.loadCustomersIntoCB();            // Refreshes the customer table in the previous form since a customer details were changed
+                    previousForm2.CurrentlyAddingCustomer = false;
+                }
+                
+                this.dispose();                                     // Closes the add new customer form (current form)
             }
         }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
