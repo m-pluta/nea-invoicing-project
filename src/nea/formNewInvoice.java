@@ -5,6 +5,7 @@
  */
 package nea;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -13,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 /**
  *
@@ -25,13 +28,20 @@ public class formNewInvoice extends javax.swing.JFrame {
      */
     int InvoiceID = 1;
     formMainMenu previousForm = null;                               // Stores the previously open form
+    DefaultTableModel model;                                        // The table model
     Connection conn = null;                                         // Stores the connection object
     boolean CurrentlyAddingCustomer = false;
 
     public formNewInvoice() {
         initComponents();
         this.setLocationRelativeTo(null);
+        
+        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();    // Fetches the table model of the table
+        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
 
+        JTableHeader header = jTable_InvoiceDetails.getTableHeader();
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        
         JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal, txtItemTotal};
         setEditable(fields, false);
         InvoiceID = sqlManager.getNextPKValue(sqlManager.openConnection(), "tblInvoices", "invoice_id");
@@ -62,7 +72,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 }
             }
         });
-
+        
     }
 
     public void addNewItemCategory() {
@@ -101,6 +111,18 @@ public class formNewInvoice extends javax.swing.JFrame {
     public formNewInvoice getFrame() {
         return this;
     }
+    
+    public double calculateSubtotal() {
+        double subTotal = 0.0;
+        int NoRows = model.getRowCount();
+        for (int i=0; i < NoRows; i++) {
+            String value = model.getValueAt(i, 4).toString();
+            System.out.println(value);
+        }
+        
+        return subTotal;
+    }
+    
 
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
