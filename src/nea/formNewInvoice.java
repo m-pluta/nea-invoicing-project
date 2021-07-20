@@ -6,6 +6,9 @@
 package nea;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JTextField;
 
 /**
@@ -17,22 +20,69 @@ public class formNewInvoice extends javax.swing.JFrame {
     /**
      * Creates new form formNewDocument
      */
+    int InvoiceID = 1;
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
 
     public formNewInvoice() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
-        JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal};
+
+        JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal, txtItemTotal};
         setEditable(fields, false);
-        
+        InvoiceID = sqlManager.getNextPKValue(sqlManager.openConnection(), "tblInvoices", "invoice_id");
+        txtInvoiceID.setText(String.valueOf(InvoiceID));
+        loadCustomersIntoCB();
+        loadItemCategoriesIntoCB();
+
     }
 
     public formNewInvoice getFrame() {
         return this;
     }
-    
+
+    public void loadCustomersIntoCB() {
+        cbCustomers.removeAllItems();
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        String query = "SELECT forename, surname FROM tblCustomers";
+        try {
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(query);
+            String FullName = "";
+            System.out.println("-------------------------------");
+            while (rs.next()) {
+                FullName = rs.getString(1) + " " + rs.getString(2);
+                System.out.println(FullName);                       // For debugging
+                cbCustomers.addItem(FullName);                      // Adds the customer to the combo box
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        cbCustomers.addItem("Add a new customer...");               // Set one of the options to a new customer
+    }
+
+    public void loadItemCategoriesIntoCB() {
+        cbItemCategories.removeAllItems();
+        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        String query = "SELECT category_name FROM tblItemCategories";
+        try {
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(query);
+            System.out.println("-------------------------------");
+            while (rs.next()) {
+                System.out.println(rs.getString(1));                // For debugging
+                cbItemCategories.addItem(rs.getString(1));          // Ads the category to the combo box
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        cbItemCategories.addItem("Add a new category...");          // Set one of the options to a add a new category
+    }
+
     // Sets these components to either visible or invisible depending on the boolean state
     public void setEditable(JTextField[] fields, boolean state) {
         for (JTextField field : fields) {
@@ -54,7 +104,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         lblDateCreated = new javax.swing.JLabel();
         lblDateDeadline = new javax.swing.JLabel();
         txtInvoiceID = new javax.swing.JTextField();
-        cbCustomer = new javax.swing.JComboBox<>();
+        cbCustomers = new javax.swing.JComboBox<>();
         dcDateCreated = new com.toedter.calendar.JDateChooser();
         dcDateDeadline = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -94,7 +144,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         lblDateDeadline.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblDateDeadline.setText("Date Deadline:");
 
-        cbCustomer.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        cbCustomers.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         dcDateCreated.setDateFormatString("yyyy-MM-dd");
 
@@ -174,7 +224,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lblCustomer)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(lblDateDeadline)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -223,7 +273,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(lblCustomer)
-                                    .addComponent(cbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(lblDateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -313,7 +363,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> cbCustomer;
+    private javax.swing.JComboBox<String> cbCustomers;
     private javax.swing.JComboBox<String> cbItemCategories;
     private com.toedter.calendar.JDateChooser dcDateCreated;
     private com.toedter.calendar.JDateChooser dcDateDeadline;
