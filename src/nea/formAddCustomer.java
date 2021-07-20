@@ -31,7 +31,7 @@ public class formAddCustomer extends javax.swing.JFrame {
      */
     int CustomerID = 0;                                             // customer_id of new customer being added
     Connection conn = null;                                         // Stores the connection object
-    formManageCustomers previousForm = null;                        // Stores the previous Form object
+    formManageCustomers previousForm1 = null;                        // Stores the previous Form object
 
     public formAddCustomer() {
         initComponents();
@@ -60,7 +60,7 @@ public class formAddCustomer extends javax.swing.JFrame {
             
             @Override
             public void windowClosing(WindowEvent e) {
-                previousForm.CurrentlyAddingCustomer = false;
+                previousForm1.CurrentlyAddingCustomer = false;
             }
             
             @Override
@@ -383,8 +383,8 @@ public class formAddCustomer extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
                 sqlManager.closeConnection(conn);                   // Closes connection to the DB
-                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
-                previousForm.CurrentlyAddingCustomer = false;
+                previousForm1.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
+                previousForm1.CurrentlyAddingCustomer = false;
                 this.dispose();                                             // Closes the add new customer form (current form)
             }
         }

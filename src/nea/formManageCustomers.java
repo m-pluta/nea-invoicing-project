@@ -280,7 +280,7 @@ public class formManageCustomers extends javax.swing.JFrame {
             formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
             form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
             form.setVisible(true);                          // Makes the new customer view visible
-            form.previousForm = this;
+            form.previousForm1 = this;
             CurrentlyAddingCustomer = true;
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
