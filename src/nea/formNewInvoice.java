@@ -5,6 +5,8 @@
  */
 package nea;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +25,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     int InvoiceID = 1;
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
+    boolean CurrentlyAddingCustomer = false;
 
     public formNewInvoice() {
         initComponents();
@@ -34,6 +37,20 @@ public class formNewInvoice extends javax.swing.JFrame {
         txtInvoiceID.setText(String.valueOf(InvoiceID));
         loadCustomersIntoCB();
         loadItemCategoriesIntoCB();
+
+        cbCustomers.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
+                    if (!CurrentlyAddingCustomer) {
+                        formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
+                        form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
+                        form.setVisible(true);                          // Makes the new customer view visible
+                        CurrentlyAddingCustomer = true;
+                    }
+                }
+            }
+        });
 
     }
 
