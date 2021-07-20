@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -28,6 +30,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     formMainMenu previousForm = null;                               // Stores the previous Form object
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model = null;                                 // The table model
+    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
 
     public formManageItemCategories() {
         initComponents();
@@ -38,7 +41,24 @@ public class formManageItemCategories extends javax.swing.JFrame {
         JTableHeader header = jTable_ItemCategories.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        loadCategories();                                           // Loads all the categories from the DB into the table
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+            @Override
+            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+                loadCategories();                                   // Refreshes the category table as the search term has changed
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
+                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
+                loadCategories();                                   // Refreshes the category table as the search term has changed
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+        });
     }
 
     public formManageItemCategories getFrame() {
@@ -49,10 +69,19 @@ public class formManageItemCategories extends javax.swing.JFrame {
         conn = sqlManager.openConnection();                         // Opens connection to the DB
         model.setRowCount(0);                                       // Empties the table
         String query = "SELECT item_category_id, category_name, date_created FROM tblItemCategories";
+        
+        if (!sp.equals("")) {                                       // When searchParameter is something
+            query += " WHERE";
+            query += " item_category_id LIKE '%" + sp + "%'";       // \
+            query += " OR category_name LIKE '%" + sp + "%'";       //  |-- Check whether a column value contains the searchParameter
+            query += " OR date_created LIKE '%" + sp + "%'";        // /
+        }
+        
         try {
             Statement stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(query);
+            int categoryCounter = 0;                                // variable for counting how many category are being shown in the table
             while (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
@@ -60,7 +89,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 System.out.println(rs.getString(3));
 
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});  // Adds the category data as a new row in the table
+                categoryCounter++;                                  // Increments category counter as a new category was added to the table
             }
+            lblCategoryCount.setText("Number of categories: " + String.valueOf(categoryCounter)); // Updates category counter label
         } catch (SQLException e) {
             e.printStackTrace();
         }

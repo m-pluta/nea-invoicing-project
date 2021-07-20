@@ -333,6 +333,8 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnManageItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageItemCategoriesActionPerformed
         formManageItemCategories form = new formManageItemCategories().getFrame();          // Opens new Item Category Management form
         form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+        form.sp = "";                                                       // Empties search parameter in next form
+        form.loadCategories();                                              // Load all the categories into the table
         this.setVisible(false);                                             // Makes main menu invisible
         form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageItemCategoriesActionPerformed
@@ -340,6 +342,8 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnManageCustomerCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomerCategoriesActionPerformed
         formManageCustomerCategories form = new formManageCustomerCategories().getFrame();  // Opens new Customer Category Management form
         form.previousForm = this;                                           // Makes this form the previousForm so the back buttons work
+        form.sp = "";                                                       // Empties search parameter in next form
+        form.loadCategories();                                              // Load all the categories into the table
         this.setVisible(false);                                             // Makes main menu invisible
         form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
@@ -437,7 +441,6 @@ public class formMainMenu extends javax.swing.JFrame {
         form.setVisible(true);                                              // makes the next form visible
     }//GEN-LAST:event_btnManageQuotationsActionPerformed
 
-    
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();                 // Opens connection to the DB
         String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = " + id;
