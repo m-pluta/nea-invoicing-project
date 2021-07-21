@@ -651,6 +651,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnBackActionPerformed
 
+    // This button sets the invoice given all the inputs are valid and insert a row into the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
         int checks = 0;
         if (cbCustomers.getSelectedIndex() != cbCustomers.getItemCount() - 1) {
@@ -695,6 +696,9 @@ public class formNewInvoice extends javax.swing.JFrame {
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
                 System.out.println(rowsAffected + " row inserted.");
+                if (rowsAffected > 0) {
+                    uploadInvoiceDetails(new_invoiceID);
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -703,6 +707,39 @@ public class formNewInvoice extends javax.swing.JFrame {
             System.out.println("Didn't pass checks - " + checks + "/7 checks passed");
         }
     }//GEN-LAST:event_btnFinishActionPerformed
+
+    public void uploadInvoiceDetails(int invoiceID) {
+        int NoRows = model.getRowCount();
+
+        conn = sqlManager.openConnection();
+        for (int i = 0; i < NoRows; i++) {
+            String Item = model.getValueAt(i, 0).toString();
+            int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
+            double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
+            int category = sqlManager.getIDofCategory(conn, model.getValueAt(i, 1).toString());
+
+            String query = "INSERT INTO tblInvoiceDetails (row_id,invoice_id,description,quantity,unit_price,item_category_id) VALUES (?,?,?,?,?,?)";
+            try {
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                int new_rowID = sqlManager.getNextPKValue(conn, "tblInvoiceDetails", "row_id");   // Gets the next available value of the primary key
+                pstmt.setInt(1, new_rowID);
+                pstmt.setInt(2, invoiceID);
+                pstmt.setString(3, Item);
+                pstmt.setInt(4, quantity);
+                pstmt.setDouble(5, unit_price);
+                pstmt.setInt(6, category);
+
+                System.out.println(pstmt);
+                int rowsAffected = pstmt.executeUpdate();
+                System.out.println("-------------------------------");
+                System.out.println(rowsAffected + " row inserted.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
 
     // Method for resetting all the fields in the side view
     public void resetSideView() {
