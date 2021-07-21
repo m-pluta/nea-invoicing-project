@@ -373,8 +373,7 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Boilers", "Materials", "29", "80.87", "2345.23"},
-                {"Fuel", "Travel", "1", "60.00", "60.00"}
+
             },
             new String [] {
                 "Description", "Category", "Quantity", "Unit Price", "Item Total"
