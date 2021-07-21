@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -60,14 +61,26 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void mousePressed(MouseEvent e) {
                 int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
                 if (selectedRow != -1) {                            // -1 = no row selected
-                    txtItem.setText(model.getValueAt(selectedRow, 0).toString());
-                    Connection conn = sqlManager.openConnection();
-                    int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
-                    sqlManager.closeConnection(conn);
-                    cbItemCategories.setSelectedIndex(category_id - 1);
-                    txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
-                    txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
-                    txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
+                    boolean LoadIntoSideView = true;
+                    if (!txtItem.getText().equals("") || !txtQuantity.getText().equals("") || !txtUnitPrice.getText().equals("") || !txtItemTotal.getText().equals("") || cbItemCategories.getSelectedIndex() != 0) {
+                        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to load this row and overwrite what you have written in the side view", "Loading into side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+                        if (YesNo != 0) {
+                            LoadIntoSideView = false;
+                        }
+                    }
+                    if (LoadIntoSideView) {
+                        txtItem.setText(model.getValueAt(selectedRow, 0).toString());
+                        Connection conn = sqlManager.openConnection();
+                        int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
+                        sqlManager.closeConnection(conn);
+                        cbItemCategories.setSelectedIndex(category_id - 1);
+                        txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
+                        txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
+                        txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
+                        btnRemoveItem.setVisible(true);
+                        btnEditItem.setVisible(true);
+                        btnAddItem.setVisible(false);
+                    }
 
                 } else {
                     System.out.println("No row is selected");
@@ -392,9 +405,9 @@ public class formNewInvoice extends javax.swing.JFrame {
                     .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(33, 33, 33)
                         .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(33, 33, 33)
                         .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12))
                     .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -465,10 +478,11 @@ public class formNewInvoice extends javax.swing.JFrame {
                     .addComponent(lblCategory)
                     .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAddItem)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditItem))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnAddItem)
+                        .addComponent(btnEditItem)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
