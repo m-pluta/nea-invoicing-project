@@ -117,7 +117,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         int NoRows = model.getRowCount();
         for (int i=0; i < NoRows; i++) {
             String value = model.getValueAt(i, 4).toString();
-            System.out.println(value);
+            subTotal += Double.valueOf(value);
         }
         
         return subTotal;
@@ -233,7 +233,8 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null}
+                {null, null, null, null, "2345.23"},
+                {null, null, null, null, "6.45"}
             },
             new String [] {
                 "Description", "Category", "Quantity", "Unit Price", "Item Total"
