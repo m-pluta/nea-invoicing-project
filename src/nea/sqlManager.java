@@ -290,4 +290,25 @@ public class sqlManager {
         }
         return -1;
     }
+    
+    // Returns the id of the item category given its name
+    public static int getIDofCategory(Connection conn, String category) {
+        String query = "SELECT item_category_id FROM tblItemCategories WHERE category_name = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, category);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If an id is found
+                return rs.getInt(1);
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error fetching category id of category with name: " + category);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
 }

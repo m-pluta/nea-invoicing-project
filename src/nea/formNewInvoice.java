@@ -8,6 +8,8 @@ package nea;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,19 +37,56 @@ public class formNewInvoice extends javax.swing.JFrame {
     public formNewInvoice() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
+
         model = (DefaultTableModel) jTable_InvoiceDetails.getModel();    // Fetches the table model of the table
         jTable_InvoiceDetails.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
 
         JTableHeader header = jTable_InvoiceDetails.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
-        
+
         JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal, txtItemTotal};
         setEditable(fields, false);
         InvoiceID = sqlManager.getNextPKValue(sqlManager.openConnection(), "tblInvoices", "invoice_id");
         txtInvoiceID.setText(String.valueOf(InvoiceID));
         loadCustomersIntoCB();
         loadItemCategoriesIntoCB();
+
+        jTable_InvoiceDetails.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the invoice table
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
+                if (selectedRow != -1) {                            // -1 = no row selected
+                    txtItem.setText(model.getValueAt(selectedRow, 0).toString());
+                    Connection conn = sqlManager.openConnection();
+                    int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
+                    sqlManager.closeConnection(conn);
+                    cbItemCategories.setSelectedIndex(category_id - 1);
+                    txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
+                    txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
+                    txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
+
+                } else {
+                    System.out.println("No row is selected");
+                }
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+        });
 
         cbCustomers.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
@@ -72,7 +111,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 }
             }
         });
-        
+
     }
 
     public void addNewItemCategory() {
@@ -111,18 +150,17 @@ public class formNewInvoice extends javax.swing.JFrame {
     public formNewInvoice getFrame() {
         return this;
     }
-    
+
     public double calculateSubtotal() {
         double subTotal = 0.0;
         int NoRows = model.getRowCount();
-        for (int i=0; i < NoRows; i++) {
+        for (int i = 0; i < NoRows; i++) {
             String value = model.getValueAt(i, 4).toString();
             subTotal += Double.valueOf(value);
         }
-        
+
         return subTotal;
     }
-    
 
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
@@ -233,8 +271,8 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, "2345.23"},
-                {null, null, null, null, "6.45"}
+                {"Boilers", "Materials", "29", "80.87", "2345.23"},
+                {"Fuel", "Travel", "1", "60.00", "60.00"}
             },
             new String [] {
                 "Description", "Category", "Quantity", "Unit Price", "Item Total"
