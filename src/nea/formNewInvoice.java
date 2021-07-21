@@ -143,28 +143,68 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void changedUpdate(DocumentEvent e) {
             }
         };
-
         txtQuantity.getDocument().addDocumentListener(listener);
         txtUnitPrice.getDocument().addDocumentListener(listener);
+
+        txtPayments.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateTableTotals();
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateTableTotals();
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
 
     }
 
     public void calculateItemTotal() {
         String sQuantity = txtQuantity.getText();
-        String sUnitPrice = txtUnitPrice.getText();
+        String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");
         if (sQuantity.equals("") || sUnitPrice.equals("")) {
             txtItemTotal.setText("");
         } else {
-            if (Pattern.matches("^[0-9]+(.|,)?[0-9]?$", sUnitPrice)) {
+            if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sUnitPrice)) {
 
                 int quantity = Utility.StringToInt(sQuantity);
                 double unit_price = Double.valueOf(sUnitPrice);
 
                 double item_subtotal = quantity * unit_price;
 
-                txtItemTotal.setText(String.valueOf(item_subtotal));
+                txtItemTotal.setText(Utility.formatCurrency(item_subtotal));
             }
         }
+    }
+
+    public void updateTableTotals() {
+        double subtotal = calculateSubtotal();
+        txtSubtotal.setText(Utility.formatCurrency(subtotal));
+        
+        String sPayments = txtPayments.getText().replace("£", "").replace(",", "");
+        double payments = 0;
+        if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {
+            payments = Double.valueOf(sPayments);
+        }
+        
+        double total = subtotal - payments;
+        txtTotal.setText(Utility.formatCurrency(total));
+        
+
+    }
+
+    public double calculateSubtotal() {
+        double subTotal = 0.0;
+        int NoRows = model.getRowCount();
+        for (int i = 0; i < NoRows; i++) {
+            String value = model.getValueAt(i, 4).toString();
+            subTotal += Double.valueOf(value);
+        }
+
+        return subTotal;
     }
 
     public void addNewItemCategory() {
@@ -202,17 +242,6 @@ public class formNewInvoice extends javax.swing.JFrame {
 
     public formNewInvoice getFrame() {
         return this;
-    }
-
-    public double calculateSubtotal() {
-        double subTotal = 0.0;
-        int NoRows = model.getRowCount();
-        for (int i = 0; i < NoRows; i++) {
-            String value = model.getValueAt(i, 4).toString();
-            subTotal += Double.valueOf(value);
-        }
-
-        return subTotal;
     }
 
     public void loadCustomersIntoCB() {
