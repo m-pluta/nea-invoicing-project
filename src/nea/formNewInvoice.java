@@ -15,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -32,6 +34,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     /**
      * Creates new form formNewDocument
      */
+    int EmployeeID = 1;
     int InvoiceID = 1;
     formMainMenu previousForm1 = null;                              // Stores the previously open form
     DefaultTableModel model;                                        // The table model
@@ -351,6 +354,8 @@ public class formNewInvoice extends javax.swing.JFrame {
         btnAddItem = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
         btnBack = new javax.swing.JButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        btnFinish = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("New Invoice");
@@ -370,6 +375,8 @@ public class formNewInvoice extends javax.swing.JFrame {
         cbCustomers.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         dcDateCreated.setDateFormatString("yyyy-MM-dd");
+
+        dcDateDeadline.setDateFormatString("yyyy-MM-dd");
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -432,6 +439,14 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
+        btnFinish.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnFinish.setText("Finish Invoice");
+        btnFinish.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFinishActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -478,40 +493,46 @@ public class formNewInvoice extends javax.swing.JFrame {
                         .addComponent(btnBack)
                         .addGap(823, 823, 823)))
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblAddItem)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(lblQuantity)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                                            .addComponent(lblUnitPrice))
-                                        .addComponent(lblItemTotal))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(222, 222, 222)
+                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(14, 14, 14)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(txtItemTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblCategory)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
-                        .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
-                        .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(lblAddItem)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addComponent(lblQuantity)
+                                                    .addGap(18, 18, 18)
+                                                    .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                                                    .addComponent(lblUnitPrice))
+                                                .addComponent(lblItemTotal))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(txtItemTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(txtUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(lblCategory)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jSeparator2)))
+                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(33, 33, 33)
+                                    .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(33, 33, 33)
+                                    .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -585,7 +606,11 @@ public class formNewInvoice extends javax.swing.JFrame {
                                 .addComponent(btnEditItem)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(45, 45, 45)
+                        .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22)))
                 .addContainerGap())
         );
 
@@ -625,6 +650,59 @@ public class formNewInvoice extends javax.swing.JFrame {
             this.dispose();                                         // Closes the document management form (current form)
         }
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
+        int checks = 0;
+        if (cbCustomers.getSelectedIndex() != cbCustomers.getItemCount() - 1) {
+            checks++;
+        }
+        if (dcDateCreated.getDate() != null) {
+            checks++;
+        }
+        if (dcDateDeadline.getDate() != null) {
+            checks++;
+        }
+        if (model.getRowCount() != 0) {
+            checks++;
+        }
+        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtSubtotal.getText())) {
+            checks++;
+        }
+        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {
+            checks++;
+        }
+        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtTotal.getText())) {
+            checks++;
+        }
+        if (checks == 7) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDateCreated = dateFormat.format(dcDateCreated.getDate());
+            String strDateDeadline = dateFormat.format(dcDateDeadline.getDate());
+
+            conn = sqlManager.openConnection();
+            String query = "INSERT INTO tblInvoices (invoice_id,customer_id,date_created,date_deadline,payments,employee_id) VALUES (?,?,?,?,?,?)";
+            try {
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoices", "invoice_id");   // Gets the next available value of the primary key
+                pstmt.setInt(1, new_invoiceID);
+                pstmt.setInt(2, cbCustomers.getSelectedIndex() + 1);
+                pstmt.setString(3, strDateCreated);
+                pstmt.setString(4, strDateDeadline);
+                pstmt.setDouble(5, txtPayments.getText().equals("") ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
+                pstmt.setInt(6, EmployeeID);
+
+                System.out.println(pstmt);
+                int rowsAffected = pstmt.executeUpdate();
+                System.out.println("-------------------------------");
+                System.out.println(rowsAffected + " row inserted.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            sqlManager.closeConnection(conn);
+        } else {
+            System.out.println("Didn't pass checks - " + checks + "/7 checks passed");
+        }
+    }//GEN-LAST:event_btnFinishActionPerformed
 
     // Method for resetting all the fields in the side view
     public void resetSideView() {
@@ -677,11 +755,13 @@ public class formNewInvoice extends javax.swing.JFrame {
     private javax.swing.JButton btnAddItem;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnEditItem;
+    private javax.swing.JButton btnFinish;
     private javax.swing.JButton btnRemoveItem;
     private javax.swing.JComboBox<String> cbCustomers;
     private javax.swing.JComboBox<String> cbItemCategories;
     private com.toedter.calendar.JDateChooser dcDateCreated;
     private com.toedter.calendar.JDateChooser dcDateDeadline;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
