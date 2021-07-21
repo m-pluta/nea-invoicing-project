@@ -179,13 +179,14 @@ public class formLogin extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to DB
 
         if (!found) {                                               // If a user was not found
             System.out.println("Incorrect username and/or password.");
         } else {                                                    // If a user was found with those login details
             System.out.println("-------------------------------");
             System.out.println("User ID: " + fetchedID);
+
+            sqlManager.updateLastLogin(conn, fetchedID);
 
             formMainMenu MainMenu = new formMainMenu().getFrame();  // Creates a new instance of the main menu form
             MainMenu.loggedIn_UserID = fetchedID;                   // The employee_id of whoever is logged in
@@ -194,6 +195,7 @@ public class formLogin extends javax.swing.JFrame {
             MainMenu.setVisible(true);                              // Makes the main menu visible
             this.dispose();                                         // Closes login form and disposes instance from system memory pool
         }
+        sqlManager.closeConnection(conn);                           // Closes connection to DB
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed

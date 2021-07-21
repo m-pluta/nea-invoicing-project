@@ -290,7 +290,7 @@ public class sqlManager {
         }
         return -1;
     }
-    
+
     // Returns the id of the item category given its name
     public static int getIDofCategory(Connection conn, String category) {
         String query = "SELECT item_category_id FROM tblItemCategories WHERE category_name = ?";
@@ -310,5 +310,20 @@ public class sqlManager {
         }
         return -1;
     }
-    
+
+    // Updates the date when the user last logged in given the employee_id
+    public static void updateLastLogin(Connection conn, int employee_id) {
+        String query = "UPDATE tblLogins SET date_last_logged_in = ? WHERE employee_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, Utility.getCurrentDate());
+            pstmt.setInt(2, employee_id);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println(rowsAffected + " row updated.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
