@@ -112,7 +112,6 @@
                       <Component id="btnEditItem" min="-2" pref="150" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                       <Component id="btnAddItem" min="-2" pref="150" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jSeparator4" min="-2" pref="518" max="-2" attributes="0"/>
               </Group>

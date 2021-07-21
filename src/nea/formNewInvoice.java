@@ -15,8 +15,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -125,6 +128,43 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
+        DocumentListener listener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                calculateItemTotal();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                calculateItemTotal();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        };
+
+        txtQuantity.getDocument().addDocumentListener(listener);
+        txtUnitPrice.getDocument().addDocumentListener(listener);
+
+    }
+
+    public void calculateItemTotal() {
+        String sQuantity = txtQuantity.getText();
+        String sUnitPrice = txtUnitPrice.getText();
+        if (sQuantity.equals("") || sUnitPrice.equals("")) {
+            txtItemTotal.setText("");
+        } else {
+            if (Pattern.matches("^[0-9]+(.|,)?[0-9]?$", sUnitPrice)) {
+
+                int quantity = Utility.StringToInt(sQuantity);
+                double unit_price = Double.valueOf(sUnitPrice);
+
+                double item_subtotal = quantity * unit_price;
+
+                txtItemTotal.setText(String.valueOf(item_subtotal));
+            }
+        }
     }
 
     public void addNewItemCategory() {
