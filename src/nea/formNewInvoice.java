@@ -84,9 +84,15 @@ public class formNewInvoice extends javax.swing.JFrame {
                         txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
                         txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
                         txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
-                        btnRemoveItem.setVisible(true);
-                        btnEditItem.setVisible(true);
-                        btnAddItem.setVisible(false);
+
+                        txtItem.setEditable(false);
+                        JTextField[] fields = {txtQuantity, txtUnitPrice, txtItemTotal};
+                        setEditable(fields, false);
+                        cbItemCategories.setEditable(false);
+
+                        btnRemoveItem.setEnabled(true);
+                        btnEditItem.setEnabled(true);
+                        btnAddItem.setEnabled(true);
                     }
 
                 } else {
@@ -708,6 +714,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
+    // Uploads each individual row of the table to tblInvoiceDetails
     public void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
 
