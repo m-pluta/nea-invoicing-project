@@ -55,6 +55,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         loadCustomersIntoCB();
         loadItemCategoriesIntoCB();
 
+        // Mouse Listener for when someone clicks on a row in the table
         jTable_InvoiceDetails.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the invoice table
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -104,6 +105,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
+        // Add new customer row
         cbCustomers.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -118,7 +120,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 }
             }
         });
-
+        // Add new item category row
         cbItemCategories.addActionListener(new ActionListener() {   // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,15 +130,16 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
+        // Updates the totals for the item currently being added if the value in txtQuantity and txtUnitPrice is changed
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                calculateItemTotal();
+                updateItemTotals();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                calculateItemTotal();
+                updateItemTotals();
             }
 
             @Override
@@ -146,23 +149,31 @@ public class formNewInvoice extends javax.swing.JFrame {
         txtQuantity.getDocument().addDocumentListener(listener);
         txtUnitPrice.getDocument().addDocumentListener(listener);
 
+        // If the payments value changes then the overall total is recalculated
         txtPayments.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 updateTableTotals();
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateTableTotals();
             }
+
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
         });
-
+        
+        
+        updateTableTotals();
+        btnRemoveItem.setEnabled(false);
+        btnEditItem.setEnabled(false);
     }
-
-    public void calculateItemTotal() {
+    
+    // Updates the values in txtItemTotal by first checking if the quantity and unit price are valid values
+    public void updateItemTotals() {
         String sQuantity = txtQuantity.getText();
         String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");
         if (sQuantity.equals("") || sUnitPrice.equals("")) {
@@ -180,33 +191,35 @@ public class formNewInvoice extends javax.swing.JFrame {
         }
     }
 
+    // Calculates the Subtotal and Total for the entire invoice by summing all the values in the table
     public void updateTableTotals() {
         double subtotal = calculateSubtotal();
         txtSubtotal.setText(Utility.formatCurrency(subtotal));
-        
+
         String sPayments = txtPayments.getText().replace("£", "").replace(",", "");
         double payments = 0;
         if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {
             payments = Double.valueOf(sPayments);
         }
-        
+
         double total = subtotal - payments;
         txtTotal.setText(Utility.formatCurrency(total));
-        
 
     }
-
+    
+    // Functionn for calculating the subtotal of the invoice by summing all the values in the table
     public double calculateSubtotal() {
         double subTotal = 0.0;
         int NoRows = model.getRowCount();
         for (int i = 0; i < NoRows; i++) {
-            String value = model.getValueAt(i, 4).toString();
+            String value = model.getValueAt(i, 4).toString().replace("£", "");
             subTotal += Double.valueOf(value);
         }
 
         return subTotal;
     }
 
+    // Method for alllowing the user to add a new Item Category into the system
     public void addNewItemCategory() {
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
         if (inputCategory != null) {                                // If the dialog input was valid 
@@ -244,6 +257,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         return this;
     }
 
+    // Method for loading all the customers currently in the system into the form
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
         conn = sqlManager.openConnection();                         // Opens connection to the DB
@@ -266,6 +280,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         cbCustomers.addItem("Add a new customer...");               // Set one of the options to a new customer
     }
 
+    // Method for loading all the item categories currently in the system into the form
     public void loadItemCategoriesIntoCB() {
         cbItemCategories.removeAllItems();
         conn = sqlManager.openConnection();                         // Opens connection to the DB
@@ -404,6 +419,11 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         btnAddItem.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnAddItem.setText("Add Item");
+        btnAddItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddItemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -477,8 +497,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                         .addGap(33, 33, 33)
                         .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(33, 33, 33)
-                        .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12))
+                        .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
@@ -560,6 +579,41 @@ public class formNewInvoice extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Add the item in the side view into the table if it is valid
+    private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
+        int checks = 0;
+        if (!txtItem.getText().equals("")) {
+            checks++;
+        }
+        if (Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
+            checks++;
+        }
+        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) {
+            checks++;
+        }
+        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtItemTotal.getText())) {
+            checks++;
+        }
+        if (checks == 4) {
+            conn = sqlManager.openConnection();
+            model.addRow(new Object[]{txtItem.getText(), sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", cbItemCategories.getSelectedIndex() + 1), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
+            sqlManager.closeConnection(conn);
+            resetSideView();
+            updateTableTotals();
+        } else {
+            System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
+        }
+    }//GEN-LAST:event_btnAddItemActionPerformed
+
+    // Method for resetting all the fields in the side view
+    public void resetSideView() {
+        txtItem.setText("");
+        txtQuantity.setText("");
+        txtUnitPrice.setText("");
+        txtItemTotal.setText("");
+        cbItemCategories.setSelectedIndex(0);
+    }
+    
     /**
      * @param args the command line arguments
      */
