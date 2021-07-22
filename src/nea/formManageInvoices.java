@@ -219,45 +219,38 @@ public class formManageInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public boolean doesInvoiceContainSearch(String[] data, String sp) {
-        if (sp.equals("")) {
-            return true;
-        } else {
-            int matchCounter = 0;
-            for (String singleton : data) {
-                if (singleton.toLowerCase().contains(sp.toLowerCase())) {
-                    matchCounter++;
-                }
-            }
-            if (matchCounter > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public void loadInvoices() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT invoice_id, customer_id, employee_id, date_created, payments FROM tblInvoices";
+        String query = "SELECT invoice_id, CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
+                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created, payments FROM tblInvoices"
+                + " INNER JOIN tblCustomers ON tblInvoices.customer_id=tblCustomers.customer_id"
+                + " INNER JOIN tblEmployees ON tblInvoices.employee_id=tblEmployees.employee_id";
+
+        if (!sp.equals("")) {                                       // When searchParameter is something
+            query += " WHERE";
+            query += " invoice_id LIKE '%" + sp + "%'";                                                 // \
+            query += " OR CONCAT(tblCustomers.forename,' ',tblCustomers.surname) LIKE '%" + sp + "%'";  //  |
+            query += " OR CONCAT(tblEmployees.forename,' ',tblEmployees.surname) LIKE '%" + sp + "%'";  //  |-- Check whether a column value contains the searchParameter
+            query += " OR date_created LIKE '%" + sp + "%'";                                            //  |
+            query += " OR payments LIKE '%" + sp + "%'";                                                // /
+        }
 
         try {
             Statement stmt = conn.createStatement();
-
+            
             ResultSet rs = stmt.executeQuery(query);
             int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
                 String[] invoiceData = new String[5];
                 invoiceData[0] = String.valueOf(rs.getInt(1));      // Invoice ID
-                invoiceData[1] = sqlManager.getCustomerFullName(conn, rs.getInt(2)); // Customer name
-                invoiceData[2] = sqlManager.getEmployeeFullName(conn, rs.getInt(3)); // Employee name
-                invoiceData[3] = String.valueOf(rs.getDate(4)).replace("-", " - ");                     // Creation date
+                invoiceData[1] = rs.getString(2); // Customer name
+                invoiceData[2] = rs.getString(3); // Employee name
+                invoiceData[3] = rs.getString(4);                   // Creation date
                 invoiceData[4] = Utility.formatCurrency(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(5)); // Invoice total
-                if (doesInvoiceContainSearch(invoiceData, sp)) {
-
-                    model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
-                    invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
-                }
+                model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
+                invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
             }
             lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
         } catch (SQLException e) {
@@ -289,13 +282,8 @@ public class formManageInvoices extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-//        if (!CurrentlyAddingCustomer) {
-//            formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
-//            form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
-//            form.setVisible(true);                          // Makes the new customer view visible
-//            form.previousForm = this;
-//            CurrentlyAddingCustomer = true;
-//        }
+        
+        
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     /**
