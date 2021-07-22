@@ -108,28 +108,20 @@ public class formManageCustomers extends javax.swing.JFrame {
         return this;
     }
 
-    public boolean doesCustomerContainSearch(String[] data, String sp) {
-        if (sp.equals("")) {
-            return true;
-        } else {
-            int matchCounter = 0;
-            for (String singleton : data) {
-                if (singleton.toLowerCase().contains(sp.toLowerCase())) {
-                    matchCounter++;
-                }
-            }
-            if (matchCounter > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     // Loads all the customers in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
     public void loadCustomers() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT customer_id, forename, surname, postcode, phone_number, email_address FROM tblCustomers";
+        String query = "SELECT customer_id, CONCAT(forename,' ', surname) AS FullName, postcode, phone_number, email_address FROM tblCustomers";
+
+        if (!sp.equals("")) {                                       // When searchParameter is something
+            query += " WHERE";
+            query += " customer_id LIKE '%" + sp + "%'";                        // \
+            query += " OR CONCAT(forename,' ', surname) LIKE '%" + sp + "%'";   //  |
+            query += " OR postcode LIKE '%" + sp + "%'";                        //  |-- Check whether a column value contains the searchParameter
+            query += " OR phone_number LIKE '%" + sp + "%'";                    //  |
+            query += " OR email_address LIKE '%" + sp + "%'";                   // /
+        }
 
         try {
             Statement stmt = conn.createStatement();
@@ -137,19 +129,15 @@ public class formManageCustomers extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             int customerCounter = 0;                                // variable for counting how many customers are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
-                String[] customerData = new String[5];
-                customerData[0] = String.valueOf(rs.getInt(1));     // Customer ID
-                String FullName = rs.getString(2) + " " + rs.getString(3);
-                customerData[1] = FullName;
-                customerData[2] = rs.getString(4);
-                customerData[3] = rs.getString(5);
-                customerData[4] = rs.getString(6);
+                System.out.println("-------------------------------");
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));                // For debugging, shows each customer's data
+                System.out.println(rs.getString(4));
+                System.out.println(rs.getString(5));
 
-                if (doesCustomerContainSearch(customerData, sp)) {
-                    model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), rs.getString(6)}); // Adds the customer to the table
-                    customerCounter++;                                  // Increments customer counter as a new customer was added to the table
-
-                }
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)}); // Adds the customer to the table
+                customerCounter++;                                  // Increments customer counter as a new customer was added to the table
 
             }
             lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter)); // Updates customer counter label
