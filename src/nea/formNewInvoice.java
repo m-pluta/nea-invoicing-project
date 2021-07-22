@@ -762,12 +762,13 @@ public class formNewInvoice extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditItemActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear all the entered data in the side view?", "Clear side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the side view?", "Clear side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
         if (YesNo == 0) {
             resetSideView();
         }
     }//GEN-LAST:event_btnClearActionPerformed
 
+    // Method for clearing/resetting all the fields and buttons in the side view to their original state
     public void resetSideView() {
         txtItem.setText("");
         txtItem.setEditable(true);
