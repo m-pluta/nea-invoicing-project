@@ -173,7 +173,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         updateTableTotals();
         btnRemoveItem.setEnabled(false);
         btnEditItem.setEnabled(false);
-        
+
         dcDateCreated.setDate(new Date());
     }
 
@@ -356,6 +356,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         btnAddItem = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
         btnFinish = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("New Invoice");
@@ -452,14 +453,21 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap(7, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -478,20 +486,17 @@ public class formNewInvoice extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(txtInvoiceID, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 845, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                            .addComponent(lblDateCreated)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(dcDateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(lblCustomer)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGap(282, 282, 282))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(lblDateCreated)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(dcDateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblCustomer)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(25, 25, 25))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(10, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnBack)
                         .addGap(823, 823, 823)))
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -502,7 +507,10 @@ public class formNewInvoice extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                             .addGap(14, 14, 14)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblAddItem)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblAddItem)
+                                    .addGap(361, 361, 361)
+                                    .addComponent(btnClear))
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -510,7 +518,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                                             .addComponent(lblQuantity)
                                             .addGap(18, 18, 18)
                                             .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(lblUnitPrice))
                                         .addComponent(lblItemTotal))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -530,7 +538,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                             .addGap(33, 33, 33)
                             .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -571,8 +579,10 @@ public class formNewInvoice extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblAddItem)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblAddItem)
+                            .addComponent(btnClear, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -707,12 +717,12 @@ public class formNewInvoice extends javax.swing.JFrame {
                 cbItemCategories.setSelectedIndex(0);
                 btnRemoveItem.setEnabled(false);
                 btnEditItem.setEnabled(false);
-                
+
                 txtItem.setEditable(true);
                 txtQuantity.setEditable(true);
                 txtUnitPrice.setEditable(true);
                 txtItemTotal.setEditable(true);
-                
+
                 selectedItem = 0;
             }
         }
@@ -751,17 +761,17 @@ public class formNewInvoice extends javax.swing.JFrame {
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);
                 model.setValueAt(txtUnitPrice.getText(), selectedItem, 3);
                 model.setValueAt(txtItemTotal.getText(), selectedItem, 4);
-                
+
                 updateTableTotals();
 
                 CurrentlyEditing = false;
-                
+
                 txtItem.setText("");
                 txtQuantity.setText("");
                 txtUnitPrice.setText("");
                 txtItemTotal.setText("");
                 cbItemCategories.setSelectedIndex(0);
-                
+
                 btnEditItem.setEnabled(false);
                 btnRemoveItem.setEnabled(false);
                 btnAddItem.setEnabled(true);
@@ -772,6 +782,30 @@ public class formNewInvoice extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnEditItemActionPerformed
 
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear all the entered data in the side view?", "Clear side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+        if (YesNo == 0) {
+            txtItem.setText("");
+            txtItem.setEditable(true);
+
+            txtQuantity.setText("");
+            txtQuantity.setEditable(true);
+
+            txtUnitPrice.setText("");
+            txtUnitPrice.setEditable(true);
+
+            txtItemTotal.setText("");
+            txtItemTotal.setEditable(true);
+            
+            cbItemCategories.setSelectedIndex(0);
+            
+            btnRemoveItem.setEnabled(false);
+            btnEditItem.setEnabled(false);
+            btnAddItem.setEnabled(true);
+
+        }
+    }//GEN-LAST:event_btnClearActionPerformed
+        
     // Uploads each individual row of the table to tblInvoiceDetails
     public void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
@@ -856,6 +890,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddItem;
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnEditItem;
     private javax.swing.JButton btnFinish;
     private javax.swing.JButton btnRemoveItem;
