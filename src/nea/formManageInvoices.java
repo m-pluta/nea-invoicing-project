@@ -245,8 +245,8 @@ public class formManageInvoices extends javax.swing.JFrame {
             while (rs.next()) {                                     // If there is another result from the DBMS
                 String[] invoiceData = new String[5];
                 invoiceData[0] = String.valueOf(rs.getInt(1));      // Invoice ID
-                invoiceData[1] = rs.getString(2); // Customer name
-                invoiceData[2] = rs.getString(3); // Employee name
+                invoiceData[1] = rs.getString(2);                   // Customer name
+                invoiceData[2] = rs.getString(3);                   // Employee name
                 invoiceData[3] = rs.getString(4);                   // Creation date
                 invoiceData[4] = Utility.formatCurrency(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(5)); // Invoice total
                 model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
