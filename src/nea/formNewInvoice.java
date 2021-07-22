@@ -40,6 +40,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     DefaultTableModel model;                                        // The table model
     Connection conn = null;                                         // Stores the connection object
     boolean CurrentlyAddingCustomer = false;
+    int selectedItem = 0;
 
     public formNewInvoice() {
         initComponents();
@@ -66,30 +67,32 @@ public class formNewInvoice extends javax.swing.JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
-                if (selectedRow != -1) {                            // -1 = no row selected
-                    txtItem.setText(model.getValueAt(selectedRow, 0).toString());
-                    Connection conn = sqlManager.openConnection();
-                    int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
-                    sqlManager.closeConnection(conn);
-                    cbItemCategories.setSelectedIndex(category_id - 1);
-                    txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
-                    txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
-                    txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
+                if (!CurrentlyEditing) {
+                    int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
+                    if (selectedRow != -1) {                            // -1 = no row selected
+                        selectedItem = selectedRow;
+                        txtItem.setText(model.getValueAt(selectedRow, 0).toString());
+                        Connection conn = sqlManager.openConnection();
+                        int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
+                        sqlManager.closeConnection(conn);
+                        cbItemCategories.setSelectedIndex(category_id - 1);
+                        txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
+                        txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
+                        txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
 
-                    txtItem.setEditable(false);
-                    JTextField[] fields = {txtQuantity, txtUnitPrice, txtItemTotal};
-                    setEditable(fields, false);
-                    cbItemCategories.setEditable(false);
+                        txtItem.setEditable(false);
+                        JTextField[] fields = {txtQuantity, txtUnitPrice, txtItemTotal};
+                        setEditable(fields, false);
+                        cbItemCategories.setEditable(false);
 
-                    btnRemoveItem.setEnabled(true);
-                    btnEditItem.setEnabled(true);
-                    btnAddItem.setEnabled(true);
+                        btnRemoveItem.setEnabled(true);
+                        btnEditItem.setEnabled(true);
+                        btnAddItem.setEnabled(true);
 
-                } else {
-                    System.out.println("No row is selected");
+                    } else {
+                        System.out.println("No row is selected");
+                    }
                 }
-
             }
 
             @Override
@@ -316,6 +319,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnBack = new javax.swing.JButton();
         lblInvoiceID = new javax.swing.JLabel();
         lblCustomer = new javax.swing.JLabel();
         lblDateCreated = new javax.swing.JLabel();
@@ -350,12 +354,18 @@ public class formNewInvoice extends javax.swing.JFrame {
         btnEditItem = new javax.swing.JButton();
         btnAddItem = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        btnBack = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         btnFinish = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("New Invoice");
+
+        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
 
         lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblInvoiceID.setText("Invoice ID:");
@@ -424,20 +434,17 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         btnEditItem.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnEditItem.setText("Edit Item");
+        btnEditItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditItemActionPerformed(evt);
+            }
+        });
 
         btnAddItem.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnAddItem.setText("Add Item");
         btnAddItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddItemActionPerformed(evt);
-            }
-        });
-
-        btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        btnBack.setText("Back");
-        btnBack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
             }
         });
 
@@ -495,46 +502,41 @@ public class formNewInvoice extends javax.swing.JFrame {
                         .addComponent(btnBack)
                         .addGap(823, 823, 823)))
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(222, 222, 222)
-                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(14, 14, 14)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(lblAddItem)
-                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(lblQuantity)
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                                                    .addComponent(lblUnitPrice))
-                                                .addComponent(lblItemTotal))
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(txtItemTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(txtUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(14, 14, 14)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblAddItem)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addGroup(layout.createSequentialGroup()
-                                            .addComponent(lblCategory)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jSeparator2)))
-                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblQuantity)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                                            .addComponent(lblUnitPrice))
+                                        .addComponent(lblItemTotal))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtItemTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(33, 33, 33)
-                                    .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(33, 33, 33)
-                                    .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(lblCategory)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jSeparator2)))
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(33, 33, 33)
+                            .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(33, 33, 33)
+                            .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -608,9 +610,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                                 .addComponent(btnEditItem)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(45, 45, 45)
+                        .addGap(51, 51, 51)
                         .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(22, 22, 22)))
                 .addContainerGap())
@@ -724,9 +724,61 @@ public class formNewInvoice extends javax.swing.JFrame {
                 cbItemCategories.setSelectedIndex(0);
                 btnRemoveItem.setEnabled(false);
                 btnEditItem.setEnabled(false);
+                selectedItem = 0;
             }
         }
     }//GEN-LAST:event_btnRemoveItemActionPerformed
+
+    boolean CurrentlyEditing = false;
+    private void btnEditItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditItemActionPerformed
+        if (!CurrentlyEditing) {
+            CurrentlyEditing = true;
+            txtItem.setEditable(true);
+            txtQuantity.setEditable(true);
+            txtUnitPrice.setEditable(true);
+            txtItemTotal.setEditable(true);
+            btnEditItem.setText("Confirm Edit");
+            btnRemoveItem.setEnabled(false);
+            btnAddItem.setEnabled(false);
+        } else {
+            int checks = 0;
+            if (!txtItem.getText().equals("")) {
+                checks++;
+            }
+            if (Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
+                checks++;
+            }
+            if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) {
+                checks++;
+            }
+            if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtItemTotal.getText())) {
+                checks++;
+            }
+            if (checks == 4) {
+                model.setValueAt(txtItem.getText(), selectedItem, 0);
+                conn = sqlManager.openConnection();
+                model.setValueAt(sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", cbItemCategories.getSelectedIndex() + 1), selectedItem, 1);
+                sqlManager.closeConnection(conn);
+                model.setValueAt(txtQuantity.getText(), selectedItem, 2);
+                model.setValueAt(txtUnitPrice.getText(), selectedItem, 3);
+                model.setValueAt(txtItemTotal.getText(), selectedItem, 4);
+                
+                updateTableTotals();
+
+                CurrentlyEditing = false;
+                txtItem.setEditable(false);
+                txtQuantity.setEditable(false);
+                txtUnitPrice.setEditable(false);
+                txtItemTotal.setEditable(false);
+                btnEditItem.setText("Edit Item");
+                btnRemoveItem.setEnabled(true);
+                btnAddItem.setEnabled(true);
+            } else {
+                System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
+            }
+        }
+
+    }//GEN-LAST:event_btnEditItemActionPerformed
 
     // Uploads each individual row of the table to tblInvoiceDetails
     public void uploadInvoiceDetails(int invoiceID) {
@@ -819,7 +871,6 @@ public class formNewInvoice extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbItemCategories;
     private com.toedter.calendar.JDateChooser dcDateCreated;
     private com.toedter.calendar.JDateChooser dcDateDeadline;
-    private javax.swing.Box.Filler filler1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
