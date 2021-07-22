@@ -68,32 +68,23 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void mousePressed(MouseEvent e) {
                 int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
                 if (selectedRow != -1) {                            // -1 = no row selected
-                    boolean LoadIntoSideView = true;
-                    if (!txtItem.getText().equals("") || !txtQuantity.getText().equals("") || !txtUnitPrice.getText().equals("") || !txtItemTotal.getText().equals("") || cbItemCategories.getSelectedIndex() != 0) {
-                        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to load this row and overwrite what you have written in the side view", "Loading into side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-                        if (YesNo != 0) {
-                            LoadIntoSideView = false;
-                        }
-                    }
-                    if (LoadIntoSideView) {
-                        txtItem.setText(model.getValueAt(selectedRow, 0).toString());
-                        Connection conn = sqlManager.openConnection();
-                        int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
-                        sqlManager.closeConnection(conn);
-                        cbItemCategories.setSelectedIndex(category_id - 1);
-                        txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
-                        txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
-                        txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
+                    txtItem.setText(model.getValueAt(selectedRow, 0).toString());
+                    Connection conn = sqlManager.openConnection();
+                    int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
+                    sqlManager.closeConnection(conn);
+                    cbItemCategories.setSelectedIndex(category_id - 1);
+                    txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
+                    txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
+                    txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
 
-                        txtItem.setEditable(false);
-                        JTextField[] fields = {txtQuantity, txtUnitPrice, txtItemTotal};
-                        setEditable(fields, false);
-                        cbItemCategories.setEditable(false);
+                    txtItem.setEditable(false);
+                    JTextField[] fields = {txtQuantity, txtUnitPrice, txtItemTotal};
+                    setEditable(fields, false);
+                    cbItemCategories.setEditable(false);
 
-                        btnRemoveItem.setEnabled(true);
-                        btnEditItem.setEnabled(true);
-                        btnAddItem.setEnabled(true);
-                    }
+                    btnRemoveItem.setEnabled(true);
+                    btnEditItem.setEnabled(true);
+                    btnAddItem.setEnabled(true);
 
                 } else {
                     System.out.println("No row is selected");
@@ -425,6 +416,11 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         btnRemoveItem.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnRemoveItem.setText("Remove Item");
+        btnRemoveItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveItemActionPerformed(evt);
+            }
+        });
 
         btnEditItem.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         btnEditItem.setText("Edit Item");
@@ -713,6 +709,24 @@ public class formNewInvoice extends javax.swing.JFrame {
             System.out.println("Didn't pass checks - " + checks + "/7 checks passed");
         }
     }//GEN-LAST:event_btnFinishActionPerformed
+
+    private void btnRemoveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItemActionPerformed
+        int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the index of the selected row
+        if (selectedRow != -1) {                                    // -1 = no row selected
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?", "Remove invoice item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) {
+                model.removeRow(selectedRow);
+                updateTableTotals();
+                txtItem.setText("");
+                txtQuantity.setText("");
+                txtUnitPrice.setText("");
+                txtItemTotal.setText("");
+                cbItemCategories.setSelectedIndex(0);
+                btnRemoveItem.setEnabled(false);
+                btnEditItem.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_btnRemoveItemActionPerformed
 
     // Uploads each individual row of the table to tblInvoiceDetails
     public void uploadInvoiceDetails(int invoiceID) {
