@@ -37,7 +37,7 @@ public class formNewInvoice extends javax.swing.JFrame {
      */
     int EmployeeID = 1;
     int InvoiceID = 1;
-    formMainMenu previousForm = null;                               // Stores the previously open form
+    formMainMenu previousForm1 = null;                               // Stores the previously open form
     DefaultTableModel model;                                        // The table model
     Connection conn = null;                                         // Stores the connection object
     boolean CurrentlyAddingCustomer = false;
@@ -648,7 +648,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back? All entered data will be lost", "Confirm going back", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
         if (YesNo == 0) {
-            previousForm.setVisible(true);                          // Makes main previous form visible
+            previousForm1.setVisible(true);                          // Makes main previous form visible
             this.dispose();                                         // Closes the document management form (current form)
         }
     }//GEN-LAST:event_btnBackActionPerformed
@@ -701,7 +701,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 e.printStackTrace();
             }
             sqlManager.closeConnection(conn);
-            previousForm.setVisible(true);                         // Makes main previous form visible
+            previousForm1.setVisible(true);                         // Makes main previous form visible
             this.dispose();                                         // Closes the new invoice form (current form)
         } else {
             System.out.println("Didn't pass checks - " + checks + "/6 checks passed");
