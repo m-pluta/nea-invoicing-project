@@ -112,15 +112,14 @@ public class formManageEmployees extends javax.swing.JFrame {
     public void loadEmployees() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT employee_id, forename, surname, phone_number, email_address FROM tblEmployees";
+        String query = "SELECT employee_id, CONCAT(forename,' ', surname) AS FullName, phone_number, email_address FROM tblEmployees";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";
-            query += " employee_id LIKE '%" + sp + "%'";            // \
-            query += " OR forename LIKE '%" + sp + "%'";            //  |
-            query += " OR surname LIKE '%" + sp + "%'";             //  |-- Check whether a column value contains the searchParameter
-            query += " OR phone_number LIKE '%" + sp + "%'";        //  |
-            query += " OR email_address LIKE '%" + sp + "%'";       // /
+            query += " employee_id LIKE '%" + sp + "%'";                        // \
+            query += " OR CONCAT(forename,' ', surname) LIKE '%" + sp + "%'";   //  |-- Check whether a column value contains the searchParameter
+            query += " OR phone_number LIKE '%" + sp + "%'";                    //  |
+            query += " OR email_address LIKE '%" + sp + "%'";                   // /
         }
 
         try {
@@ -131,13 +130,12 @@ public class formManageEmployees extends javax.swing.JFrame {
             while (rs.next()) {                                     // If there is another result from the DBMS
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                String FullName = rs.getString(2) + " " + rs.getString(3);
-                System.out.println(FullName);                       // For debugging, shows each employee's data
+                System.out.println(rs.getString(2));                // For debugging, shows each employee's data
+                System.out.println(rs.getString(3));
                 System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
                 String last_login_date = sqlManager.getLastLogin(conn, Utility.StringToInt(rs.getString(1)));
 
-                model.addRow(new Object[]{rs.getString(1), FullName, rs.getString(4), rs.getString(5), last_login_date}); // Adds the employee to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), last_login_date}); // Adds the employee to the table
                 employeeCounter++;                                  // Increments employee counter as a new employee was added to the table
 
             }
