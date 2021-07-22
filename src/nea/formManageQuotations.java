@@ -220,27 +220,21 @@ public class formManageQuotations extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public boolean doesQuotationContainSearch(String[] data, String sp) {
-        if (sp.equals("")) {
-            return true;
-        } else {
-            int matchCounter = 0;
-            for (String singleton : data) {
-                if (singleton.toLowerCase().contains(sp.toLowerCase())) {
-                    matchCounter++;
-                }
-            }
-            if (matchCounter > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void loadQuotations() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT quotation_id, customer_id, employee_id, date_created FROM tblQuotations";
+        String query = "SELECT quotation_id, CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
+                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created FROM tblQuotations "
+                + " INNER JOIN tblCustomers ON tblQuotations.customer_id=tblCustomers.customer_id"
+                + " INNER JOIN tblEmployees ON tblQuotations.employee_id=tblEmployees.employee_id";
+
+        if (!sp.equals("")) {                                       // When searchParameter is something
+            query += " WHERE";                                                                          // \ 
+            query += " quotation_id LIKE '%" + sp + "%'";                                               //  |
+            query += " OR CONCAT(tblCustomers.forename,' ',tblCustomers.surname) LIKE '%" + sp + "%'";  //  |-- Check whether a column value contains the searchParameter
+            query += " OR CONCAT(tblEmployees.forename,' ',tblEmployees.surname) LIKE '%" + sp + "%'";  //  |
+            query += " OR date_created LIKE '%" + sp + "%'";                                            // /
+        }
 
         try {
             Statement stmt = conn.createStatement();
@@ -250,15 +244,12 @@ public class formManageQuotations extends javax.swing.JFrame {
             while (rs.next()) {                                     // If there is another result from the DBMS
                 String[] quotationData = new String[5];
                 quotationData[0] = String.valueOf(rs.getInt(1));    // Quotation ID
-                quotationData[1] = sqlManager.getCustomerFullName(conn, rs.getInt(2)); // Customer name
-                quotationData[2] = sqlManager.getEmployeeFullName(conn, rs.getInt(3)); // Employee name
-                quotationData[3] = String.valueOf(rs.getDate(4)).replace("-", " - ");                     // Creation date
+                quotationData[1] = rs.getString(2);                 // Customer name
+                quotationData[2] = rs.getString(3);                 // Employee name
+                quotationData[3] = rs.getString(4);                 // Creation date
                 quotationData[4] = String.valueOf(sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1))); // quotation total
-                if (doesQuotationContainSearch(quotationData, sp)) {
-
-                    model.addRow(new Object[]{quotationData[0], quotationData[1], quotationData[2], quotationData[3], quotationData[4]}); // Adds the quotation to the table
-                    quotationCounter++;                             // Increments quotation counter as a new quotation was added to the table
-                }
+                model.addRow(new Object[]{quotationData[0], quotationData[1], quotationData[2], quotationData[3], quotationData[4]}); // Adds the quotation to the table
+                quotationCounter++;                             // Increments quotation counter as a new quotation was added to the table
             }
             lblQuotationCount.setText("Number of quotations: " + String.valueOf(quotationCounter)); // Updates quotation counter label
         } catch (SQLException e) {
@@ -290,13 +281,7 @@ public class formManageQuotations extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-//        if (!CurrentlyAddingCustomer) {
-//            formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
-//            form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
-//            form.setVisible(true);                          // Makes the new customer view visible
-//            form.previousForm = this;
-//            CurrentlyAddingCustomer = true;
-//        }
+
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     /**
