@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -172,6 +173,8 @@ public class formNewInvoice extends javax.swing.JFrame {
         updateTableTotals();
         btnRemoveItem.setEnabled(false);
         btnEditItem.setEnabled(false);
+        
+        dcDateCreated.setDate(new Date());
     }
 
     // Updates the values in txtItemTotal by first checking if the quantity and unit price are valid values
