@@ -171,10 +171,9 @@ public class formNewInvoice extends javax.swing.JFrame {
         });
 
         updateTableTotals();
-        btnRemoveItem.setEnabled(false);
-        btnEditItem.setEnabled(false);
+        resetSideView();
 
-        dcDateCreated.setDate(new Date());
+        dcDateCreated.setDate(new Date());                          // Puts the current date as the date created value in case the user forgets to specify it himself
     }
 
     // Updates the values in txtItemTotal by first checking if the quantity and unit price are valid values
@@ -710,19 +709,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             if (YesNo == 0) {
                 model.removeRow(selectedRow);
                 updateTableTotals();
-                txtItem.setText("");
-                txtQuantity.setText("");
-                txtUnitPrice.setText("");
-                txtItemTotal.setText("");
-                cbItemCategories.setSelectedIndex(0);
-                btnRemoveItem.setEnabled(false);
-                btnEditItem.setEnabled(false);
-
-                txtItem.setEditable(true);
-                txtQuantity.setEditable(true);
-                txtUnitPrice.setEditable(true);
-                txtItemTotal.setEditable(true);
-
+                resetSideView();
                 selectedItem = 0;
             }
         }
@@ -766,15 +753,7 @@ public class formNewInvoice extends javax.swing.JFrame {
 
                 CurrentlyEditing = false;
 
-                txtItem.setText("");
-                txtQuantity.setText("");
-                txtUnitPrice.setText("");
-                txtItemTotal.setText("");
-                cbItemCategories.setSelectedIndex(0);
-
-                btnEditItem.setEnabled(false);
-                btnRemoveItem.setEnabled(false);
-                btnAddItem.setEnabled(true);
+                resetSideView();
             } else {
                 System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
             }
@@ -785,27 +764,30 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear all the entered data in the side view?", "Clear side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
         if (YesNo == 0) {
-            txtItem.setText("");
-            txtItem.setEditable(true);
-
-            txtQuantity.setText("");
-            txtQuantity.setEditable(true);
-
-            txtUnitPrice.setText("");
-            txtUnitPrice.setEditable(true);
-
-            txtItemTotal.setText("");
-            txtItemTotal.setEditable(true);
-            
-            cbItemCategories.setSelectedIndex(0);
-            
-            btnRemoveItem.setEnabled(false);
-            btnEditItem.setEnabled(false);
-            btnAddItem.setEnabled(true);
-
+            resetSideView();
         }
     }//GEN-LAST:event_btnClearActionPerformed
-        
+
+    public void resetSideView() {
+        txtItem.setText("");
+        txtItem.setEditable(true);
+
+        txtQuantity.setText("");
+        txtQuantity.setEditable(true);
+
+        txtUnitPrice.setText("");
+        txtUnitPrice.setEditable(true);
+
+        txtItemTotal.setText("");
+        txtItemTotal.setEditable(true);
+
+        cbItemCategories.setSelectedIndex(0);
+
+        btnRemoveItem.setEnabled(false);
+        btnEditItem.setEnabled(false);
+        btnAddItem.setEnabled(true);
+    }
+
     // Uploads each individual row of the table to tblInvoiceDetails
     public void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
@@ -838,15 +820,6 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         }
 
-    }
-
-    // Method for resetting all the fields in the side view
-    public void resetSideView() {
-        txtItem.setText("");
-        txtQuantity.setText("");
-        txtUnitPrice.setText("");
-        txtItemTotal.setText("");
-        cbItemCategories.setSelectedIndex(0);
     }
 
     /**
