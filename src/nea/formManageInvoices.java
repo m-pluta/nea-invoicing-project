@@ -27,6 +27,7 @@ public class formManageInvoices extends javax.swing.JFrame {
     /**
      * Creates new form formManageInvoices
      */
+    int EmployeeID = 1;
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model;                                        // The table model
@@ -219,7 +220,6 @@ public class formManageInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
     public void loadInvoices() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
@@ -239,7 +239,7 @@ public class formManageInvoices extends javax.swing.JFrame {
 
         try {
             Statement stmt = conn.createStatement();
-            
+
             ResultSet rs = stmt.executeQuery(query);
             int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
@@ -282,8 +282,12 @@ public class formManageInvoices extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        
-        
+        formNewInvoice form = new formNewInvoice().getFrame();
+        form.EmployeeID = EmployeeID;
+        form.previousForm2 = this;                                  // Makes this form the previousForm so the back buttons work
+        this.setVisible(false);                                     // Makes main menu invisible
+        form.setVisible(true);                                      // makes the next form visible
+
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     /**

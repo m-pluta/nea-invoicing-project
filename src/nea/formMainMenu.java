@@ -410,7 +410,7 @@ public class formMainMenu extends javax.swing.JFrame {
 
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();      // Opens new NewDocument form
-        form.previousForm = this;                                  // Makes this form the previousForm so the back buttons work
+        form.previousForm1 = this;                                  // Makes this form the previousForm so the back buttons work
         form.EmployeeID = loggedIn_UserID;
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -428,6 +428,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageInvoices form = new formManageInvoices().getFrame();      // Opens new Invoice Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
+        form.EmployeeID = loggedIn_UserID;
         form.loadInvoices();                                        // Load all the invoices into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -437,6 +438,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageQuotations form = new formManageQuotations().getFrame();  // Opens new Quotations Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
+//        form.EmployeeID = loggedIn_UserID;
         form.loadQuotations();                                      // Load all the quotations into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible

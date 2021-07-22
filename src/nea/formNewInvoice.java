@@ -37,11 +37,28 @@ public class formNewInvoice extends javax.swing.JFrame {
      */
     int EmployeeID = 1;
     int InvoiceID = 1;
-    formMainMenu previousForm1 = null;                               // Stores the previously open form
+    formMainMenu previousForm1 = null;                              // Stores the previously open form
+    formManageInvoices previousForm2 = null;                        // Stores the previously open form
+    formOneCustomer previousForm3 = null;                           // Stores the previously open form
     DefaultTableModel model;                                        // The table model
     Connection conn = null;                                         // Stores the connection object
     boolean CurrentlyAddingCustomer = false;
     int selectedItem = 0;
+
+    private void goBack() {
+        if (previousForm1 != null) {
+            previousForm1.setVisible(true);
+            this.dispose();
+        }
+        if (previousForm2 != null) {
+            previousForm2.setVisible(true);
+            this.dispose();
+        }
+//        if (previousForm3 != null) {
+//            previousForm3.setVisible(true);
+//            this.dispose();
+//        }
+    }
 
     public formNewInvoice() {
         initComponents();
@@ -648,8 +665,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back? All entered data will be lost", "Confirm going back", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
         if (YesNo == 0) {
-            previousForm1.setVisible(true);                          // Makes main previous form visible
-            this.dispose();                                         // Closes the document management form (current form)
+            goBack();
         }
     }//GEN-LAST:event_btnBackActionPerformed
 
@@ -701,8 +717,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 e.printStackTrace();
             }
             sqlManager.closeConnection(conn);
-            previousForm1.setVisible(true);                         // Makes main previous form visible
-            this.dispose();                                         // Closes the new invoice form (current form)
+            goBack();
         } else {
             System.out.println("Didn't pass checks - " + checks + "/6 checks passed");
         }
