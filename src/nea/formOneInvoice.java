@@ -39,7 +39,7 @@ public class formOneInvoice extends javax.swing.JFrame {
         JTableHeader header = jTable_InvoiceDetails.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        JTextField[] fields = {txtInvoiceID, txtCustomer, txtEmployee, txtDateCreated, txtDateDeadline, txtSubtotal, txtPayments, txtTotal};
+        JTextField[] fields = {txtInvoiceID, txtCustomer, txtEmployee, txtDateCreated, txtSubtotal, txtPayments, txtTotal};
         setEditable(fields, false);
         
     }
@@ -53,7 +53,7 @@ public class formOneInvoice extends javax.swing.JFrame {
 
     public void loadInvoice() {
         conn = sqlManager.openConnection();
-        String query = "SELECT customer_id, employee_id, date_created, date_deadline, payments FROM tblInvoices WHERE invoice_id = ?";
+        String query = "SELECT customer_id, employee_id, date_created, payments FROM tblInvoices WHERE invoice_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, InvoiceID);
@@ -64,13 +64,12 @@ public class formOneInvoice extends javax.swing.JFrame {
                 txtCustomer.setText(sqlManager.getCustomerFullName(conn, rs.getInt(1)));
                 txtEmployee.setText(sqlManager.getEmployeeFullName(conn, rs.getInt(2)));
                 txtDateCreated.setText(String.valueOf(rs.getDate(3)));
-                txtDateDeadline.setText(String.valueOf(rs.getDate(4)));
-                txtPayments.setText(Utility.formatCurrency(rs.getDouble(5)));
+                txtPayments.setText(Utility.formatCurrency(rs.getDouble(4)));
 
                 double subTotal = loadInvoiceDetails(InvoiceID);
 
                 txtSubtotal.setText(Utility.formatCurrency(subTotal));
-                txtTotal.setText(Utility.formatCurrency(subTotal - rs.getDouble(5)));
+                txtTotal.setText(Utility.formatCurrency(subTotal - rs.getDouble(4)));
 
             } else {
                 System.out.println("-------------------------------");
@@ -124,7 +123,6 @@ public class formOneInvoice extends javax.swing.JFrame {
         lblCustomer = new javax.swing.JLabel();
         lblEmployee = new javax.swing.JLabel();
         lblDateCreated = new javax.swing.JLabel();
-        lblDateDeadline = new javax.swing.JLabel();
         lblSubtotal = new javax.swing.JLabel();
         lblPayments = new javax.swing.JLabel();
         lblTotal = new javax.swing.JLabel();
@@ -132,7 +130,6 @@ public class formOneInvoice extends javax.swing.JFrame {
         txtCustomer = new javax.swing.JTextField();
         txtEmployee = new javax.swing.JTextField();
         txtDateCreated = new javax.swing.JTextField();
-        txtDateDeadline = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_InvoiceDetails = new javax.swing.JTable();
         txtSubtotal = new javax.swing.JTextField();
@@ -153,9 +150,6 @@ public class formOneInvoice extends javax.swing.JFrame {
 
         lblDateCreated.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblDateCreated.setText("Date created:");
-
-        lblDateDeadline.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblDateDeadline.setText("Deadline Date:");
 
         lblSubtotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblSubtotal.setText("Sub total:");
@@ -210,16 +204,10 @@ public class formOneInvoice extends javax.swing.JFrame {
                                 .addComponent(lblCustomer)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(txtCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 215, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblEmployee)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblDateDeadline)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtDateDeadline, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 216, Short.MAX_VALUE)
+                        .addComponent(lblEmployee)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -238,9 +226,7 @@ public class formOneInvoice extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDateCreated)
-                    .addComponent(lblDateDeadline)
-                    .addComponent(txtDateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtDateDeadline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -313,7 +299,6 @@ public class formOneInvoice extends javax.swing.JFrame {
     private javax.swing.JTable jTable_InvoiceDetails;
     private javax.swing.JLabel lblCustomer;
     private javax.swing.JLabel lblDateCreated;
-    private javax.swing.JLabel lblDateDeadline;
     private javax.swing.JLabel lblEmployee;
     private javax.swing.JLabel lblInvoiceID;
     private javax.swing.JLabel lblPayments;
@@ -321,7 +306,6 @@ public class formOneInvoice extends javax.swing.JFrame {
     private javax.swing.JLabel lblTotal;
     private javax.swing.JTextField txtCustomer;
     private javax.swing.JTextField txtDateCreated;
-    private javax.swing.JTextField txtDateDeadline;
     private javax.swing.JTextField txtEmployee;
     private javax.swing.JTextField txtInvoiceID;
     private javax.swing.JTextField txtPayments;

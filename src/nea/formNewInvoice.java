@@ -323,11 +323,9 @@ public class formNewInvoice extends javax.swing.JFrame {
         lblInvoiceID = new javax.swing.JLabel();
         lblCustomer = new javax.swing.JLabel();
         lblDateCreated = new javax.swing.JLabel();
-        lblDateDeadline = new javax.swing.JLabel();
         txtInvoiceID = new javax.swing.JTextField();
         cbCustomers = new javax.swing.JComboBox<>();
         dcDateCreated = new com.toedter.calendar.JDateChooser();
-        dcDateDeadline = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_InvoiceDetails = new javax.swing.JTable();
         lblSubtotal = new javax.swing.JLabel();
@@ -376,14 +374,9 @@ public class formNewInvoice extends javax.swing.JFrame {
         lblDateCreated.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblDateCreated.setText("Date Created:");
 
-        lblDateDeadline.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblDateDeadline.setText("Date Deadline:");
-
         cbCustomers.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         dcDateCreated.setDateFormatString("yyyy-MM-dd");
-
-        dcDateDeadline.setDateFormatString("yyyy-MM-dd");
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -476,13 +469,13 @@ public class formNewInvoice extends javax.swing.JFrame {
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(txtTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
                                         .addComponent(txtPayments, javax.swing.GroupLayout.Alignment.TRAILING))))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(lblInvoiceID)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(txtInvoiceID, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 845, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                             .addComponent(lblDateCreated)
@@ -492,10 +485,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                                             .addComponent(lblCustomer)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                             .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(lblDateDeadline)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(dcDateDeadline, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGap(282, 282, 282))))
                         .addGap(25, 25, 25))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(10, Short.MAX_VALUE)
@@ -551,18 +541,13 @@ public class formNewInvoice extends javax.swing.JFrame {
                             .addComponent(lblInvoiceID)
                             .addComponent(txtInvoiceID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lblCustomer)
-                                    .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(lblDateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(dcDateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(dcDateDeadline, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                .addComponent(lblDateDeadline, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblCustomer)
+                            .addComponent(cbCustomers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblDateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(dcDateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGap(20, 20, 20)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -662,9 +647,6 @@ public class formNewInvoice extends javax.swing.JFrame {
         if (dcDateCreated.getDate() != null) {
             checks++;
         }
-        if (dcDateDeadline.getDate() != null) {
-            checks++;
-        }
         if (model.getRowCount() != 0) {
             checks++;
         }
@@ -677,22 +659,20 @@ public class formNewInvoice extends javax.swing.JFrame {
         if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtTotal.getText())) {
             checks++;
         }
-        if (checks == 7) {
+        if (checks == 6) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate());
-            String strDateDeadline = dateFormat.format(dcDateDeadline.getDate());
 
             conn = sqlManager.openConnection();
-            String query = "INSERT INTO tblInvoices (invoice_id,customer_id,date_created,date_deadline,payments,employee_id) VALUES (?,?,?,?,?,?)";
+            String query = "INSERT INTO tblInvoices (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
             try {
                 PreparedStatement pstmt = conn.prepareStatement(query);
                 int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoices", "invoice_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_invoiceID);
                 pstmt.setInt(2, cbCustomers.getSelectedIndex() + 1);
                 pstmt.setString(3, strDateCreated);
-                pstmt.setString(4, strDateDeadline);
-                pstmt.setDouble(5, txtPayments.getText().equals("") ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
-                pstmt.setInt(6, EmployeeID);
+                pstmt.setDouble(4, txtPayments.getText().equals("") ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
+                pstmt.setInt(5, EmployeeID);
 
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
@@ -706,7 +686,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
             sqlManager.closeConnection(conn);
         } else {
-            System.out.println("Didn't pass checks - " + checks + "/7 checks passed");
+            System.out.println("Didn't pass checks - " + checks + "/6 checks passed");
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
@@ -870,7 +850,6 @@ public class formNewInvoice extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbCustomers;
     private javax.swing.JComboBox<String> cbItemCategories;
     private com.toedter.calendar.JDateChooser dcDateCreated;
-    private com.toedter.calendar.JDateChooser dcDateDeadline;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
@@ -882,7 +861,6 @@ public class formNewInvoice extends javax.swing.JFrame {
     private javax.swing.JLabel lblCategory;
     private javax.swing.JLabel lblCustomer;
     private javax.swing.JLabel lblDateCreated;
-    private javax.swing.JLabel lblDateDeadline;
     private javax.swing.JLabel lblInvoiceID;
     private javax.swing.JLabel lblItemTotal;
     private javax.swing.JLabel lblPayments;
