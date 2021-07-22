@@ -707,6 +707,12 @@ public class formNewInvoice extends javax.swing.JFrame {
                 cbItemCategories.setSelectedIndex(0);
                 btnRemoveItem.setEnabled(false);
                 btnEditItem.setEnabled(false);
+                
+                txtItem.setEditable(true);
+                txtQuantity.setEditable(true);
+                txtUnitPrice.setEditable(true);
+                txtItemTotal.setEditable(true);
+                
                 selectedItem = 0;
             }
         }
@@ -749,12 +755,15 @@ public class formNewInvoice extends javax.swing.JFrame {
                 updateTableTotals();
 
                 CurrentlyEditing = false;
-                txtItem.setEditable(false);
-                txtQuantity.setEditable(false);
-                txtUnitPrice.setEditable(false);
-                txtItemTotal.setEditable(false);
-                btnEditItem.setText("Edit Item");
-                btnRemoveItem.setEnabled(true);
+                
+                txtItem.setText("");
+                txtQuantity.setText("");
+                txtUnitPrice.setText("");
+                txtItemTotal.setText("");
+                cbItemCategories.setSelectedIndex(0);
+                
+                btnEditItem.setEnabled(false);
+                btnRemoveItem.setEnabled(false);
                 btnAddItem.setEnabled(true);
             } else {
                 System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
