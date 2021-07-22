@@ -252,7 +252,7 @@ public class formManageInvoices extends javax.swing.JFrame {
                 invoiceData[1] = sqlManager.getCustomerFullName(conn, rs.getInt(2)); // Customer name
                 invoiceData[2] = sqlManager.getEmployeeFullName(conn, rs.getInt(3)); // Employee name
                 invoiceData[3] = String.valueOf(rs.getDate(4)).replace("-", " - ");                     // Creation date
-                invoiceData[4] = String.valueOf(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(5)); // Invoice total
+                invoiceData[4] = Utility.formatCurrency(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(5)); // Invoice total
                 if (doesInvoiceContainSearch(invoiceData, sp)) {
 
                     model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table

@@ -65,7 +65,7 @@ public class formOneInvoice extends javax.swing.JFrame {
                 txtEmployee.setText(sqlManager.getEmployeeFullName(conn, rs.getInt(2)));
                 txtDateCreated.setText(String.valueOf(rs.getDate(3)));
                 txtDateDeadline.setText(String.valueOf(rs.getDate(4)));
-                txtPayments.setText(String.valueOf(rs.getDouble(5)));
+                txtPayments.setText(Utility.formatCurrency(rs.getDouble(5)));
 
                 double subTotal = loadInvoiceDetails(InvoiceID);
 
