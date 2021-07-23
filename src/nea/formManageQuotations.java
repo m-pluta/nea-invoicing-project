@@ -237,6 +237,8 @@ public class formManageQuotations extends javax.swing.JFrame {
             query += " OR date_created LIKE '%" + sp + "%'";                                            // /
         }
 
+        query += " ORDER BY quotation_id";
+        
         try {
             Statement stmt = conn.createStatement();
 

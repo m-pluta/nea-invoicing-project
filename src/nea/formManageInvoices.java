@@ -236,6 +236,8 @@ public class formManageInvoices extends javax.swing.JFrame {
             query += " OR date_created LIKE '%" + sp + "%'";                                            //  |
             query += " OR payments LIKE '%" + sp + "%'";                                                // /
         }
+        
+        query += " ORDER BY invoice_id";
 
         try {
             Statement stmt = conn.createStatement();
