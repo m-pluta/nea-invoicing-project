@@ -283,8 +283,8 @@ public class formManageInvoices extends javax.swing.JFrame {
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
-        form.EmployeeID = EmployeeID;
         form.previousForm2 = this;                                  // Makes this form the previousForm so the back buttons work
+        form.EmployeeID = EmployeeID;
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
 

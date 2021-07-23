@@ -409,7 +409,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
 
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
-        formNewInvoice form = new formNewInvoice().getFrame();      // Opens new NewDocument form
+        formNewInvoice form = new formNewInvoice().getFrame();
         form.previousForm1 = this;                                  // Makes this form the previousForm so the back buttons work
         form.EmployeeID = loggedIn_UserID;
         this.setVisible(false);                                     // Makes main menu invisible
