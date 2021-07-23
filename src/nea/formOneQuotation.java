@@ -41,7 +41,7 @@ public class formOneQuotation extends javax.swing.JFrame {
 
         JTextField[] fields = {txtQuotationID, txtCustomer, txtEmployee, txtDateCreated, txtTotal};
         setEditable(fields, false);
-        
+
     }
 
     // Sets these components to either visible or invisible depending on the boolean state
@@ -53,7 +53,12 @@ public class formOneQuotation extends javax.swing.JFrame {
 
     public void loadQuotation() {
         conn = sqlManager.openConnection();
-        String query = "SELECT customer_id, employee_id, date_created FROM tblQuotations WHERE quotation_id = ?";
+        String query = "SELECT CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
+                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created FROM tblQuotations"
+                + " INNER JOIN tblCustomers ON tblQuotations.customer_id=tblCustomers.customer_id"
+                + " INNER JOIN tblEmployees ON tblQuotations.employee_id=tblEmployees.employee_id"
+                + " WHERE quotation_id = ?";
+
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, QuotationID);
@@ -61,8 +66,8 @@ public class formOneQuotation extends javax.swing.JFrame {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If an document with the given id was found
                 txtQuotationID.setText(String.valueOf(QuotationID));
-                txtCustomer.setText(sqlManager.getCustomerFullName(conn, rs.getInt(1)));
-                txtEmployee.setText(sqlManager.getEmployeeFullName(conn, rs.getInt(2)));
+                txtCustomer.setText(rs.getString(1));
+                txtEmployee.setText(rs.getString(2));
                 txtDateCreated.setText(String.valueOf(rs.getDate(3)));
 
                 double Total = loadQuotationDetails(QuotationID);
@@ -106,7 +111,6 @@ public class formOneQuotation extends javax.swing.JFrame {
     public formOneQuotation getFrame() {
         return this;
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.

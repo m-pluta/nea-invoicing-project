@@ -53,7 +53,11 @@ public class formOneInvoice extends javax.swing.JFrame {
 
     public void loadInvoice() {
         conn = sqlManager.openConnection();
-        String query = "SELECT customer_id, employee_id, date_created, payments FROM tblInvoices WHERE invoice_id = ?";
+        String query = "SELECT CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
+                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created, payments FROM tblInvoices"
+                + " INNER JOIN tblCustomers ON tblInvoices.customer_id=tblCustomers.customer_id"
+                + " INNER JOIN tblEmployees ON tblInvoices.employee_id=tblEmployees.employee_id"
+                + " WHERE invoice_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, InvoiceID);
@@ -61,9 +65,9 @@ public class formOneInvoice extends javax.swing.JFrame {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If an document with the given id was found
                 txtInvoiceID.setText(String.valueOf(InvoiceID));
-                txtCustomer.setText(sqlManager.getCustomerFullName(conn, rs.getInt(1)));
-                txtEmployee.setText(sqlManager.getEmployeeFullName(conn, rs.getInt(2)));
-                txtDateCreated.setText(String.valueOf(rs.getDate(3)));
+                txtCustomer.setText(rs.getString(1));
+                txtEmployee.setText(rs.getString(2));
+                txtDateCreated.setText(rs.getString(3));
                 txtPayments.setText(Utility.formatCurrency(rs.getDouble(4)));
 
                 double subTotal = loadInvoiceDetails(InvoiceID);
