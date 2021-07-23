@@ -663,8 +663,12 @@ public class formNewInvoice extends javax.swing.JFrame {
 
     // Back button for going back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back? All entered data will be lost", "Confirm going back", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-        if (YesNo == 0) {
+        if (model.getRowCount() != 0) {
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back? All entered data will be lost", "Confirm going back", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            if (YesNo == 0) {
+                goBack();
+            }
+        } else {
             goBack();
         }
     }//GEN-LAST:event_btnBackActionPerformed
