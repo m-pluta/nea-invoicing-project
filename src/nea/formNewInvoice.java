@@ -298,17 +298,15 @@ public class formNewInvoice extends javax.swing.JFrame {
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT forename, surname FROM tblCustomers";
+        String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomers";
         try {
             Statement stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(query);
-            String FullName = "";
             System.out.println("-------------------------------");
             while (rs.next()) {
-                FullName = rs.getString(1) + " " + rs.getString(2);
-                System.out.println(FullName);                       // For debugging
-                cbCustomers.addItem(FullName);                      // Adds the customer to the combo box
+                System.out.println(rs.getString(1));                // For debugging
+                cbCustomers.addItem(rs.getString(1));               // Adds the customer to the combo box
             }
         } catch (SQLException e) {
             e.printStackTrace();
