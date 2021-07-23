@@ -417,11 +417,11 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewInvoiceActionPerformed
 
     private void btnNewQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewQuotationActionPerformed
-//        formNewDocument form = new formNewDocument().getFrame();  // Opens new NewDocument form
-//        form.previousForm = this;                                 // Makes this form the previousForm so the back buttons work
-//        form.setTitle("New Quotation");                           // Sets the title of the form
-//        this.setVisible(false);                                   // Makes main menu invisible
-//        form.setVisible(true);                                    // makes the next form visible
+        formNewQuotation form = new formNewQuotation().getFrame();  // Opens new NewQuotation form
+        form.previousForm1 = this;                                   // Makes this form the previousForm so the back buttons work
+        form.EmployeeID = loggedIn_UserID;
+        this.setVisible(false);                                     // Makes main menu invisible
+        form.setVisible(true);                                      // makes the next form visible
     }//GEN-LAST:event_btnNewQuotationActionPerformed
 
     private void btnManageInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageInvoicesActionPerformed
@@ -438,7 +438,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageQuotations form = new formManageQuotations().getFrame();  // Opens new Quotations Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
-//        form.EmployeeID = loggedIn_UserID;
+        form.EmployeeID = loggedIn_UserID;
         form.loadQuotations();                                      // Load all the quotations into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
