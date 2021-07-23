@@ -59,6 +59,8 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
             }
 
         });
+        
+        jTable_CustomerCategories = Utility.setColumnWidths(jTable_CustomerCategories, new int[]{40, 120, 120});
     }
 
     public formManageCustomerCategories getFrame() {
@@ -133,7 +135,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Category ID", "Category name", "Date created"
+                "ID", "Category name", "Date created"
             }
         ) {
             boolean[] canEdit = new boolean [] {

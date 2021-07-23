@@ -14,6 +14,7 @@ import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 /**
@@ -131,5 +132,46 @@ public class Utility {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String costString = formatter.format(cost);
         return costString;
+    }
+
+    public static JTable setColumnWidths(JTable table, int[] widths) {
+        int NoCols = table.getModel().getColumnCount();
+        if (NoCols == 0 || widths == null) {
+            return null;
+        }
+
+        //current width of the table:
+        int totalWidth = table.getWidth();
+        System.out.println(totalWidth);
+
+        int totalWidthRequested = 0;
+        int nrRequestedWidths = widths.length;
+        int defaultWidth = (int) Math.floor((double) totalWidth / (double) NoCols);
+
+        for (int col = 0; col < NoCols; col++) {
+            int width = 0;
+            if (widths.length > col) {
+                width = widths[col];
+            }
+            totalWidthRequested += width;
+        }
+        //Note: for the not defined columns: use the defaultWidth
+        if (nrRequestedWidths < NoCols) {
+            totalWidthRequested += ((NoCols - nrRequestedWidths) * defaultWidth);
+        }
+        //calculate the scale for the column width
+        double factor = (double) totalWidth / (double) totalWidthRequested;
+
+        for (int col = 0; col < NoCols; col++) {
+            int width = defaultWidth;
+            if (widths.length > col) {
+                //scale the requested width to the current table width
+                width = (int) Math.floor(factor * (double) widths[col]);
+            }
+            table.getColumnModel().getColumn(col).setPreferredWidth(width);
+            table.getColumnModel().getColumn(col).setWidth(width);
+        }
+
+        return table;
     }
 }

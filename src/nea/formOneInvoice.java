@@ -42,6 +42,8 @@ public class formOneInvoice extends javax.swing.JFrame {
         JTextField[] fields = {txtInvoiceID, txtCustomer, txtEmployee, txtDateCreated, txtSubtotal, txtPayments, txtTotal};
         setEditable(fields, false);
         
+        jTable_InvoiceDetails = Utility.setColumnWidths(jTable_InvoiceDetails, new int[]{300, 100, 60, 90, 90});
+        
     }
 
     // Sets these components to either visible or invisible depending on the boolean state

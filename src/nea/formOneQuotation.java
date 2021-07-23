@@ -42,6 +42,7 @@ public class formOneQuotation extends javax.swing.JFrame {
         JTextField[] fields = {txtQuotationID, txtCustomer, txtEmployee, txtDateCreated, txtTotal};
         setEditable(fields, false);
 
+        jTable_QuotationDetails = Utility.setColumnWidths(jTable_QuotationDetails, new int[]{300, 100, 60, 90, 90});
     }
 
     // Sets these components to either visible or invisible depending on the boolean state

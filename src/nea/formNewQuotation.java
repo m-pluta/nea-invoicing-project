@@ -190,6 +190,8 @@ public class formNewQuotation extends javax.swing.JFrame {
         resetSideView();                                            // Resets the side view
 
         dcDateCreated.setDate(new Date());                          // Puts the current date as the date created value in case the user forgets to specify it himself
+    
+        jTable_QuotationDetails = Utility.setColumnWidths(jTable_QuotationDetails, new int[]{300, 100, 60, 90, 90});
     }
 
     // Checks if the quantity and unit price are valid values

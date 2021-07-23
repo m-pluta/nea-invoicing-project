@@ -104,8 +104,10 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
 
         });
+        
+        jTable_Customers = Utility.setColumnWidths(jTable_Customers, new int[]{40, 120, 100, 100, 175});
     }
-
+    
     public formManageCustomers getFrame() {
         return this;
     }

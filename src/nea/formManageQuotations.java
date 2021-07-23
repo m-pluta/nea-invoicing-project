@@ -102,6 +102,7 @@ public class formManageQuotations extends javax.swing.JFrame {
 
         });
 
+        jTable_Quotations = Utility.setColumnWidths(jTable_Quotations, new int[]{40, 120, 120, 120, 80});
     }
 
     public formManageQuotations getFrame() {

@@ -102,6 +102,7 @@ public class formManageInvoices extends javax.swing.JFrame {
 
         });
 
+        jTable_Invoices = Utility.setColumnWidths(jTable_Invoices, new int[]{40, 120, 120, 120, 80});
     }
 
     public formManageInvoices getFrame() {

@@ -102,6 +102,8 @@ public class formManageEmployees extends javax.swing.JFrame {
             }
 
         });
+        
+        jTable_Employees = Utility.setColumnWidths(jTable_Employees, new int[]{40, 120, 100, 175, 120});
     }
 
     public formManageEmployees getFrame() {
