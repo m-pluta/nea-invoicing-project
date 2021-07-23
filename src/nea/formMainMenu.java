@@ -36,30 +36,14 @@ public class formMainMenu extends javax.swing.JFrame {
     // Fetches the full name of whoever is currently logged in and updates label
     public void whoLoggedIn() {
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT forename, surname FROM tblEmployees WHERE employee_id = ?";
-        Boolean found = false;                                      //
-        String fetchedForename = "", fetchedSurname = "";           // Init
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, loggedIn_UserID);
-
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {                                        // Once the user under the id is found
-                fetchedForename = rs.getString(1);                  //
-                fetchedSurname = rs.getString(2);                   // Stores the full name into variables
-                found = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String employeeFullName = sqlManager.getEmployeeFullName(conn, loggedIn_UserID);
         sqlManager.closeConnection(conn);                           // Closes connection to DB
 
-        if (found) {
+        if (employeeFullName != null) {
             System.out.println("-------------------------------");
             System.out.println(loggedIn_UserID);                    // Debug code
-            System.out.println(fetchedForename);
-            System.out.println(fetchedSurname);
-            lblLoggedInAs.setText("Logged in as " + fetchedForename + " " + fetchedSurname);    // Updates label to say who is currently logged in
+            System.out.println(employeeFullName);
+            lblLoggedInAs.setText("Logged in as " + employeeFullName);    // Updates label to say who is currently logged in
         } else {
             System.out.println("Error logging in.");
             // This point should theoretically not be reachable as the user would not be able to login if the user's name data didnt exist
