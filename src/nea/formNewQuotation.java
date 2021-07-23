@@ -54,10 +54,24 @@ public class formNewQuotation extends javax.swing.JFrame {
             previousForm2.setVisible(true);
             this.dispose();
         }
-//        if (previousForm3 != null) {
-//            previousForm3.setVisible(true);
-//            this.dispose();
-//        }
+        if (previousForm3 != null) {
+            previousForm3.setVisible(true);
+            previousForm3.previousForm.setVisible(true);
+            this.dispose();
+        }
+    }
+
+    public void selectCustomer(int customerID) {
+        conn = sqlManager.openConnection();
+        String customer = sqlManager.getCustomerFullName(conn, customerID);
+        sqlManager.closeConnection(conn);
+
+        int NoCustomers = cbCustomers.getItemCount() - 1;
+        for (int i = 0; i < NoCustomers; i++) {
+            if (cbCustomers.getItemAt(i).equals(customer)) {
+                cbCustomers.setSelectedIndex(i);
+            }
+        }
     }
 
     public formNewQuotation() {

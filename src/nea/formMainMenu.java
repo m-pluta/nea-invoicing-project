@@ -317,6 +317,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageCustomers form = new formManageCustomers().getFrame();        // Opens new Customer Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
+        form.EmployeeID = loggedIn_UserID;
         form.loadCustomers();                                       // Load all the customers into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
