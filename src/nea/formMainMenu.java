@@ -58,7 +58,7 @@ public class formMainMenu extends javax.swing.JFrame {
             btnManageCustomers.setEnabled(true);
             btnManageEmployees.setEnabled(true);
             btnManageItemCategories.setEnabled(true);
-            btnManageCustomerCategories.setEnabled(true);;
+            btnManageCustomerCategories.setEnabled(true);
         }
     }
 
