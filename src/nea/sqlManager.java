@@ -234,14 +234,14 @@ public class sqlManager {
 
     // Returns the full name of the employee with the given employee_id
     public static String getEmployeeFullName(Connection conn, int employee_id) {
-        String query = "SELECT forename, surname FROM tblEmployees WHERE employee_id = ?";
+        String query = "SELECT CONCAT(forename,' ', surname) FROM tblEmployees WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a employee with the given id was found
-                return rs.getString(1) + " " + rs.getString(2);     // Concatenates the forename and surname into the full name
+                return rs.getString(1);                             // Returns the full name
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error fetching employee name with id: " + employee_id);
@@ -254,14 +254,14 @@ public class sqlManager {
 
     // Returns the full name of the customer with the given customer_id
     public static String getCustomerFullName(Connection conn, int customer_id) {
-        String query = "SELECT forename, surname FROM tblCustomers WHERE customer_id = ?";
+        String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomers WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, customer_id);
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a customer with the given id was found
-                return rs.getString(1) + " " + rs.getString(2);     // Concatenates the forename and surname into the full name
+                return rs.getString(1);                             // Returns the full name
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error fetching customer name with id: " + customer_id);
