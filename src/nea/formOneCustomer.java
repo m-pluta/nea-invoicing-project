@@ -126,7 +126,7 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         conn = sqlManager.openConnection();
 
-        String query = "SELECT forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
+        String query = "SELECT CONCAT(forename,' ', surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
 
@@ -144,19 +144,19 @@ public class formOneCustomer extends javax.swing.JFrame {
                 System.out.println(rs.getString(8));
                 System.out.println(rs.getString(9));
                 System.out.println(rs.getString(10));
+                System.out.println(rs.getString(11));
 
-                String FullName = rs.getString(1) + " " + rs.getString(2); // Formats the name components into one full name
-                lblFullName.setText(FullName);
-                txtForename.setText(rs.getString(1));
-                txtSurname.setText(rs.getString(2));
-                txtAddress1.setText(rs.getString(3));
-                txtAddress2.setText(rs.getString(4));
-                txtAddress3.setText(rs.getString(5));
-                txtCounty.setText(rs.getString(6));
-                txtPostcode.setText(rs.getString(7));
-                txtPhoneNumber.setText(rs.getString(8));
-                txtEmailAddress.setText(rs.getString(9));
-                cbCategory.setSelectedIndex(rs.getInt(10) - 1);
+                lblFullName.setText(rs.getString(1));
+                txtForename.setText(rs.getString(2));
+                txtSurname.setText(rs.getString(3));
+                txtAddress1.setText(rs.getString(4));
+                txtAddress2.setText(rs.getString(5));
+                txtAddress3.setText(rs.getString(6));
+                txtCounty.setText(rs.getString(7));
+                txtPostcode.setText(rs.getString(8));
+                txtPhoneNumber.setText(rs.getString(9));
+                txtEmailAddress.setText(rs.getString(10));
+                cbCategory.setSelectedIndex(rs.getInt(11) - 1);
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error occurred fetching customer data");

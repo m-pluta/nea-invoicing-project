@@ -52,7 +52,7 @@ public class formOneEmployee extends javax.swing.JFrame {
 
         conn = sqlManager.openConnection();
 
-        String query = "SELECT forename, surname, address1, address2, address3, county, postcode, phone_number, email_address FROM tblEmployees WHERE employee_id = ?";
+        String query = "SELECT CONCAT(forename,' ',surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address FROM tblEmployees WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
 
@@ -69,18 +69,18 @@ public class formOneEmployee extends javax.swing.JFrame {
                 System.out.println(rs.getString(7));
                 System.out.println(rs.getString(8));
                 System.out.println(rs.getString(9));
+                System.out.println(rs.getString(10));
 
-                String FullName = rs.getString(1) + " " + rs.getString(2); // Formats the name components into one full name
-                lblFullName.setText(FullName);
-                txtForename.setText(rs.getString(1));
-                txtSurname.setText(rs.getString(2));
-                txtAddress1.setText(rs.getString(3));
-                txtAddress2.setText(rs.getString(4));
-                txtAddress3.setText(rs.getString(5));
-                txtCounty.setText(rs.getString(6));
-                txtPostcode.setText(rs.getString(7));
-                txtPhoneNumber.setText(rs.getString(8));
-                txtEmailAddress.setText(rs.getString(9));
+                lblFullName.setText(rs.getString(1));
+                txtForename.setText(rs.getString(2));
+                txtSurname.setText(rs.getString(3));
+                txtAddress1.setText(rs.getString(4));
+                txtAddress2.setText(rs.getString(5));
+                txtAddress3.setText(rs.getString(6));
+                txtCounty.setText(rs.getString(7));
+                txtPostcode.setText(rs.getString(8));
+                txtPhoneNumber.setText(rs.getString(9));
+                txtEmailAddress.setText(rs.getString(10));
                 txtLastLogin.setText(sqlManager.getLastLogin(conn, EmployeeID));
                 cbAdmin.setSelected(sqlManager.isAdmin(conn, EmployeeID));
             } else {
