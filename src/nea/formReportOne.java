@@ -7,6 +7,15 @@ package nea;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -24,6 +33,7 @@ public class formReportOne extends javax.swing.JFrame {
     /**
      * Creates new form formReportOne
      */
+    Connection conn = null;
     formMainMenu previousForm = null;
     int EmployeeID = 1;
 
@@ -31,29 +41,53 @@ public class formReportOne extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
 
-        JFreeChart barChart = ChartFactory.createBarChart(
-                "Sales",
-                "Category",
-                "Score",
-                createDataset(),
-                PlotOrientation.VERTICAL,
-                true, true, false);
+        lblStart.setVisible(false);
+        dcStart.setVisible(false);
+        lblEnd.setVisible(false);
+        dcEnd.setVisible(false);
 
-        CategoryPlot p = barChart.getCategoryPlot();
-        p.setRangeGridlinePaint(Color.black);
+        cbTime.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {   // If the user selected the last item ('Other')
+                    lblStart.setVisible(true);
+                    dcStart.setVisible(true);
+                    lblEnd.setVisible(true);
+                    dcEnd.setVisible(true);
+                } else {
+                    lblStart.setVisible(false);
+                    dcStart.setVisible(false);
+                    lblEnd.setVisible(false);
+                    dcEnd.setVisible(false);
+                }
+            }
+        });
+    }
 
-        ChartPanel barPanel = new ChartPanel(barChart);
-        pOutput.removeAll();
-        pOutput.add(barPanel, BorderLayout.CENTER);
-        pOutput.validate();
+    private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end) {
+        System.out.println(getInvoices);
+        System.out.println(getQuotations);
 
-        // To open a new form with the report
-//        CategoryPlot p = barChart.getCategoryPlot();
-//        p.setRangeGridlinePaint(Color.black);
-//        ChartFrame frame = new ChartFrame("Bar chart", barChart);
-//        frame.setLocationRelativeTo(null);
-//        frame.setVisible(true);
-//        frame.setSize(450, 350);
+        String query = "SELECT invoice_id, payments FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
+
+        conn = sqlManager.openConnection();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setObject(1, start);
+            pstmt.setObject(2, end);
+            System.out.println(pstmt);
+            
+            ResultSet rs = null;
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getInt(1) + " - Total: " + (sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2)));
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL exception: " + e);
+        }
+
+        return null;
     }
 
     private CategoryDataset createDataset() {
@@ -64,8 +98,7 @@ public class formReportOne extends javax.swing.JFrame {
         final String millage = "Millage";
         final String userrating = "User Rating";
         final String safety = "safety";
-        final DefaultCategoryDataset dataset
-                = new DefaultCategoryDataset();
+        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         dataset.addValue(1.0, fiat, speed);
         dataset.addValue(3.0, fiat, userrating);
@@ -97,7 +130,7 @@ public class formReportOne extends javax.swing.JFrame {
         lblSalesAnalysis = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
         pParam = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnAnalyze = new javax.swing.JButton();
         lblDataToAnalyse = new javax.swing.JLabel();
         cbData = new javax.swing.JComboBox<>();
         cbTime = new javax.swing.JComboBox<>();
@@ -122,9 +155,15 @@ public class formReportOne extends javax.swing.JFrame {
         });
 
         pParam.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        pParam.setMinimumSize(new java.awt.Dimension(0, 200));
 
-        jButton1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jButton1.setText("Analyze");
+        btnAnalyze.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnAnalyze.setText("Analyze");
+        btnAnalyze.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnalyzeActionPerformed(evt);
+            }
+        });
 
         lblDataToAnalyse.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblDataToAnalyse.setText("Data to analyse:");
@@ -132,7 +171,7 @@ public class formReportOne extends javax.swing.JFrame {
         cbData.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         cbData.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Invoices", "Quotations", "Both" }));
 
-        cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past quarter", "Past year", "This month", "This year", "This financial year", "All Time", "Other", " " }));
+        cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past year", "This month", "This quarter", "This year", "This financial year", "All Time", "Other" }));
 
         cbTimePeriod.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         cbTimePeriod.setText("Time Period:");
@@ -152,7 +191,7 @@ public class formReportOne extends javax.swing.JFrame {
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pParamLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                        .addComponent(btnAnalyze))
                     .addGroup(pParamLayout.createSequentialGroup()
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblDataToAnalyse)
@@ -179,7 +218,7 @@ public class formReportOne extends javax.swing.JFrame {
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDataToAnalyse)
                     .addComponent(cbData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25)
+                .addGap(18, 18, 18)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbTimePeriod))
@@ -191,11 +230,12 @@ public class formReportOne extends javax.swing.JFrame {
                     .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(dcEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addComponent(lblEnd)))
-                .addGap(25, 25, 25)
-                .addComponent(jButton1)
+                .addGap(18, 18, 18)
+                .addComponent(btnAnalyze)
                 .addContainerGap())
         );
 
+        pOutput.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         pOutput.setMinimumSize(new java.awt.Dimension(0, 0));
         pOutput.setLayout(new java.awt.BorderLayout());
 
@@ -206,13 +246,13 @@ public class formReportOne extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pParam, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(btnBack)
                         .addGap(151, 151, 151)
                         .addComponent(lblSalesAnalysis)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -225,7 +265,7 @@ public class formReportOne extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -237,6 +277,76 @@ public class formReportOne extends javax.swing.JFrame {
         this.dispose();                                             // Closes the customer management form (current form)
 
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
+        CategoryDataset data = null;
+        boolean getInvoices = false;
+        boolean getQuotations = false;
+        LocalDateTime start = null;
+        LocalDateTime end = LocalDateTime.now();
+        // Sets the boolean for whether to load invoices, quotations or both
+        if (cbData.getSelectedIndex() == 0) {
+            getInvoices = true;
+        } else if (cbData.getSelectedIndex() == 1) {
+            getQuotations = true;
+        } else if (cbData.getSelectedIndex() == 2) {
+            getInvoices = true;
+            getQuotations = true;
+        }
+
+        boolean valid = true;                                       // If the input is valid
+        if (cbTime.getSelectedIndex() == 0) {                                           // Past month
+            start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 1) {                                    // Past year
+            start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 2) {                                    // This month
+            start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 3) {                                    // This quarter
+            start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 4) {                                    // This year
+            start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 5) {                                    // This financial year
+            start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
+            start = LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
+            if (dcStart.getDate() == null || dcEnd.getDate() == null) {
+                valid = false;
+                System.out.println("Start date or end date missing");
+            } else {
+                start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
+                end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
+            }
+        }
+        if (valid) {
+            data = getData(getInvoices, getQuotations, start, end);
+            JFreeChart barChart = ChartFactory.createBarChart(
+                    "Sales",
+                    "Category",
+                    "Score",
+                    data,
+                    PlotOrientation.VERTICAL,
+                    cbData.getSelectedIndex() == 2, // only shows legend if the user wanted both types of data 
+                    true,
+                    false);
+
+            CategoryPlot p = barChart.getCategoryPlot();
+            p.setRangeGridlinePaint(Color.black);
+
+            ChartPanel barPanel = new ChartPanel(barChart);
+            pOutput.removeAll();
+            pOutput.add(barPanel, BorderLayout.CENTER);
+            pOutput.validate();
+        }
+
+//        To open a new form with the report
+//        CategoryPlot p = barChart.getCategoryPlot();
+//        p.setRangeGridlinePaint(Color.black);
+//        ChartFrame frame = new ChartFrame("Bar chart", barChart);
+//        frame.setLocationRelativeTo(null);
+//        frame.setVisible(true);
+//        frame.setSize(450, 350);
+    }//GEN-LAST:event_btnAnalyzeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -278,13 +388,13 @@ public class formReportOne extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAnalyze;
     private javax.swing.JButton btnBack;
     private javax.swing.JComboBox<String> cbData;
     private javax.swing.JComboBox<String> cbTime;
     private javax.swing.JLabel cbTimePeriod;
     private com.toedter.calendar.JDateChooser dcEnd;
     private com.toedter.calendar.JDateChooser dcStart;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel lblDataToAnalyse;
     private javax.swing.JLabel lblEnd;
     private javax.swing.JLabel lblSalesAnalysis;

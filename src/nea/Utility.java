@@ -7,6 +7,9 @@ package nea;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.ChronoField;
 import java.util.Date;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
@@ -23,7 +26,38 @@ import javax.swing.JTextField;
  */
 public class Utility {
 
-    // Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
+    public static LocalDate getFinancialYear(LocalDate input) {
+        if (input.isAfter(LocalDate.of(input.getYear(), Month.APRIL, 5))) {
+            return LocalDate.of(input.getYear(), Month.APRIL, 6);
+        } else {
+            return LocalDate.of(input.getYear() - 1, Month.APRIL, 6);
+        }
+    }
+
+    public static LocalDate getQuarterStart(LocalDate input) {
+        int month = input.get(ChronoField.MONTH_OF_YEAR);
+        switch (Month.of(month)) {
+            case JANUARY:
+            case FEBRUARY:
+            case MARCH:
+            default:
+                return LocalDate.now().withMonth(1).withDayOfMonth(1);
+            case APRIL:
+            case MAY:
+            case JUNE:
+                return LocalDate.now().withMonth(4).withDayOfMonth(1);
+            case JULY:
+            case AUGUST:
+            case SEPTEMBER:
+                return LocalDate.now().withMonth(7).withDayOfMonth(1);
+            case OCTOBER:
+            case NOVEMBER:
+            case DECEMBER:
+                return LocalDate.now().withMonth(10).withDayOfMonth(1);
+        }
+    }
+
+// Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
     public static String getCurrentDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();

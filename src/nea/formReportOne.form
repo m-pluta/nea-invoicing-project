@@ -26,7 +26,6 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="pOutput" max="32767" attributes="0"/>
                   <Component id="pParam" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="btnBack" min="-2" max="-2" attributes="0"/>
@@ -34,6 +33,7 @@
                       <Component id="lblSalesAnalysis" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
+                  <Component id="pOutput" alignment="1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -50,7 +50,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="pParam" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="pOutput" max="32767" attributes="0"/>
+              <Component id="pOutput" pref="387" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -83,6 +83,9 @@
             <TitledBorder/>
           </Border>
         </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[0, 200]"/>
+        </Property>
       </Properties>
 
       <Layout>
@@ -93,7 +96,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnAnalyze" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -129,7 +132,7 @@
                       <Component id="lblDataToAnalyse" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbData" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="cbTime" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbTimePeriod" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -145,21 +148,24 @@
                           <Component id="lblEnd" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
-                  <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Component id="btnAnalyze" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="btnAnalyze">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="18" style="1"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Analyze"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAnalyzeActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblDataToAnalyse">
           <Properties>
@@ -189,16 +195,15 @@
         <Component class="javax.swing.JComboBox" name="cbTime">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="9">
+              <StringArray count="8">
                 <StringItem index="0" value="Past month"/>
-                <StringItem index="1" value="Past quarter"/>
-                <StringItem index="2" value="Past year"/>
-                <StringItem index="3" value="This month"/>
+                <StringItem index="1" value="Past year"/>
+                <StringItem index="2" value="This month"/>
+                <StringItem index="3" value="This quarter"/>
                 <StringItem index="4" value="This year"/>
                 <StringItem index="5" value="This financial year"/>
                 <StringItem index="6" value="All Time"/>
                 <StringItem index="7" value="Other"/>
-                <StringItem index="8" value=" "/>
               </StringArray>
             </Property>
           </Properties>
@@ -238,6 +243,11 @@
     </Container>
     <Container class="javax.swing.JPanel" name="pOutput">
       <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder/>
+          </Border>
+        </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[0, 0]"/>
         </Property>
