@@ -75,11 +75,14 @@ public class formLogin extends javax.swing.JFrame {
         lblCapsLock.setText("Caps Lock is on");
 
         txtUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        txtUsername.setNextFocusableComponent(txtPassword);
 
         txtPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        txtPassword.setNextFocusableComponent(cbPassword);
 
         cbPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         cbPassword.setText("Show Password");
+        cbPassword.setNextFocusableComponent(btnLogin);
         cbPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbPasswordActionPerformed(evt);
@@ -88,6 +91,7 @@ public class formLogin extends javax.swing.JFrame {
 
         btnLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnLogin.setText("Login");
+        btnLogin.setNextFocusableComponent(cbPassword);
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLoginActionPerformed(evt);
@@ -114,7 +118,7 @@ public class formLogin extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cbPassword)))
                 .addContainerGap(20, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))

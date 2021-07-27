@@ -219,7 +219,12 @@ public class formMainMenu extends javax.swing.JFrame {
         pReports.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 24))); // NOI18N
 
         btnReport1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport1.setText("Report 1");
+        btnReport1.setText("Sales Analysis");
+        btnReport1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReport1ActionPerformed(evt);
+            }
+        });
 
         btnReport2.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnReport2.setText("Report 2");
@@ -235,9 +240,8 @@ public class formMainMenu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(pReportsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnReport1, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                    .addGroup(pReportsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btnReport2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                        .addComponent(btnReport3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(btnReport2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+                    .addComponent(btnReport3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pReportsLayout.setVerticalGroup(
@@ -428,6 +432,14 @@ public class formMainMenu extends javax.swing.JFrame {
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
     }//GEN-LAST:event_btnManageQuotationsActionPerformed
+
+    private void btnReport1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport1ActionPerformed
+        formReportOne form = new formReportOne().getFrame();
+        form.previousForm = this;
+        form.EmployeeID = loggedIn_UserID;
+        this.setVisible(false);
+        form.setVisible(true);
+    }//GEN-LAST:event_btnReport1ActionPerformed
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();                         // Opens connection to the DB
