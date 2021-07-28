@@ -306,15 +306,15 @@ public class formReportOne extends javax.swing.JFrame {
             int daysBetweenDates = (int) dr.toDays();
 
             int barSpacing = 1;                                     // Sets the spacing of the bars in the bar chart
-            if (daysBetweenDates <= 7) {                            // 0 - max 7 bars, one per day, shows the day and month dd/mm
+            if (daysBetweenDates < 7) {                            // 0 - max 7 bars, one per day, shows the day and month dd/mm
                 barSpacing = 0;                                     // 1 - max 12 bars, one per week, shows the w/c day of each month
-            } else if (daysBetweenDates <= 84) {                    // 2 - max 12 bars, one per month, shown the month name
+            } else if (daysBetweenDates < 84) {                    // 2 - max 12 bars, one per month, shown the month name
                 barSpacing = 1;                                     // 3 - max 12 bars, one per quarter, shows the quarter and year
-            } else if (daysBetweenDates <= 366) {                   // 4 - no maximum, one per year
+            } else if (daysBetweenDates < 366) {                   // 4 - no maximum, one per year
                 barSpacing = 2;
-            } else if (daysBetweenDates <= 365 * 3) {
+            } else if (daysBetweenDates < 365 * 3) {
                 barSpacing = 3;
-            } else if (daysBetweenDates > 365 * 3) {
+            } else if (daysBetweenDates >= 365 * 3) {
                 barSpacing = 4;
             }
 
