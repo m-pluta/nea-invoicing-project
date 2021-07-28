@@ -71,19 +71,20 @@ public class formReportOne extends javax.swing.JFrame {
         });
     }
 
+    // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
     private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
-        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");
+        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");          // For formatting dates into an appropriate format
         DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
 
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        LinkedHashMap<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);
-        System.out.println(dataArr.toString());
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();              // the final output dataset
+        LinkedHashMap<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);  // Makes an empty hashmap with all the categories as the key
+        System.out.println(dataArr.toString());                     // Debug
 
-        conn = sqlManager.openConnection();
+        conn = sqlManager.openConnection();                         // Opens connection to DB
 
         try {
             String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
-            PreparedStatement pstmt = conn.prepareStatement(query);
+            PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates and sorts them in ascending order
             pstmt.setObject(1, start);
             pstmt.setObject(2, end);
 
@@ -91,20 +92,20 @@ public class formReportOne extends javax.swing.JFrame {
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 if (barSpacing == 0) {
-                    String key = rs.getDate(3).toLocalDate().format(daymonth);
-                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);
-                    dataArr.put(key, dataArr.get(key) + invoiceTotal);
+                    String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
+                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                 }
             }
         } catch (SQLException e) {
             System.out.println("SQL exception: " + e);
         }
-        sqlManager.closeConnection(conn);
+        sqlManager.closeConnection(conn);                           // Close connection to DB
 
-        System.out.println(dataArr.toString());
+        System.out.println(dataArr.toString());                     // Debug - the populated hashmap
 
-        for (Map.Entry<String, Double> i : dataArr.entrySet()) {
-            dataset.addValue(i.getValue(), "Invoice", i.getKey());
+        for (Map.Entry<String, Double> i : dataArr.entrySet()) {    // Goes through each Entry in the hashmap
+            dataset.addValue(i.getValue(), "Invoice", i.getKey());  // Adds it to the dataset
         }
 
         return dataset;
