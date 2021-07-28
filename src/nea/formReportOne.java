@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -64,12 +65,11 @@ public class formReportOne extends javax.swing.JFrame {
         });
     }
 
-    private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end) {
-        System.out.println(getInvoices);
-        System.out.println(getQuotations);
+    private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
 
-        String query = "SELECT invoice_id, payments FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
+        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
+        String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
         conn = sqlManager.openConnection();
 
         try {
@@ -77,43 +77,17 @@ public class formReportOne extends javax.swing.JFrame {
             pstmt.setObject(1, start);
             pstmt.setObject(2, end);
             System.out.println(pstmt);
-            
+
             ResultSet rs = null;
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 System.out.println(rs.getInt(1) + " - Total: " + (sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2)));
+
+                dataset.addValue(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2), "Invoice", rs.getString(3));
             }
         } catch (SQLException e) {
             System.out.println("SQL exception: " + e);
         }
-
-        return null;
-    }
-
-    private CategoryDataset createDataset() {
-        final String fiat = "FIAT";
-        final String audi = "AUDI";
-        final String ford = "FORD";
-        final String speed = "Speed";
-        final String millage = "Millage";
-        final String userrating = "User Rating";
-        final String safety = "safety";
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-        dataset.addValue(1.0, fiat, speed);
-        dataset.addValue(3.0, fiat, userrating);
-        dataset.addValue(5.0, fiat, millage);
-        dataset.addValue(5.0, fiat, safety);
-
-        dataset.addValue(5.0, audi, speed);
-        dataset.addValue(6.0, audi, userrating);
-        dataset.addValue(10.0, audi, millage);
-        dataset.addValue(4.0, audi, safety);
-
-        dataset.addValue(4.0, ford, speed);
-        dataset.addValue(2.0, ford, userrating);
-        dataset.addValue(3.0, ford, millage);
-        dataset.addValue(6.0, ford, safety);
 
         return dataset;
     }
@@ -319,11 +293,27 @@ public class formReportOne extends javax.swing.JFrame {
             }
         }
         if (valid) {
-            data = getData(getInvoices, getQuotations, start, end);
+            Duration dr = Duration.between(start, end);
+            int daysBetweenDates = (int) dr.toDays();
+
+            int barSpacing = 1;                                     // Sets the spacing of the bars in the bar chart
+            if (daysBetweenDates <= 7) {                            // 0 - max 7 bars, one per day, shows the day and month dd/mm
+                barSpacing = 0;                                     // 1 - max 12 bars, one per week, shows the w/c day of each month
+            } else if (daysBetweenDates <= 84) {                    // 2 - max 12 bars, one per month, shown the month name
+                barSpacing = 1;                                     // 3 - max 12 bars, one per quarter, shows the quarter and year
+            } else if (daysBetweenDates <= 366) {                   // 4 - no maximum, one per year
+                barSpacing = 2;
+            } else if (daysBetweenDates <= 365 * 3) {
+                barSpacing = 3;
+            } else if (daysBetweenDates > 365 * 3) {
+                barSpacing = 4;
+            }
+
+            data = getData(getInvoices, getQuotations, start, end, barSpacing);
             JFreeChart barChart = ChartFactory.createBarChart(
-                    "Sales",
-                    "Category",
-                    "Score",
+                    "Value invoiced/quoted vs. time",
+                    "Date",
+                    "Value invoiced/quoted",
                     data,
                     PlotOrientation.VERTICAL,
                     cbData.getSelectedIndex() == 2, // only shows legend if the user wanted both types of data 
