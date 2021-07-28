@@ -18,7 +18,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -97,24 +99,44 @@ public class formReportOne extends javax.swing.JFrame {
 
     public LinkedHashMap<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
         LinkedHashMap<String, Double> output = new LinkedHashMap<String, Double>();
+        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");
+        DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
+
+        System.out.println(start.format(DateTimeFormatter.ISO_DATE));
+        System.out.println(end.format(DateTimeFormatter.ISO_DATE));
 
         if (barSpacing == 0) {
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
+
             LocalDateTime counter = start;
-            output.put(counter.format(fmt), 0.00);
+            output.put(counter.format(daymonth), 0.00);
 
             while (!counter.toLocalDate().isEqual(end.toLocalDate())) {
                 counter = counter.plusDays(1);
-                output.put(counter.format(fmt), 0.00);
+                output.put(counter.format(daymonth), 0.00);
             }
         } else if (barSpacing == 1) {
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
             LocalDateTime counter = start;
 
             while (counter.toLocalDate().isBefore(end.toLocalDate()) || counter.toLocalDate().isEqual(end.toLocalDate())) {
-                output.put(counter.format(fmt), 0.00);
-                counter = counter.plusDays(7);
+                output.put(counter.format(daymonth), 0.00);
+                counter = counter.plusWeeks(1);
             }
+        } else if (barSpacing == 2) {
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
+                counter = counter.plusMonths(1);
+            }
+            output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + "-" + end.format(year), 0.00);
+        } else if (barSpacing == 3) {
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                output.put(Utility.getQuarter(counter.toLocalDate()) + "-" + counter.format(year), 0.00);
+                counter = counter.plusMonths(3);
+            }
+            output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
         }
 
         return output;
