@@ -33,6 +33,19 @@ public class Utility {
         }
     }
 
+    public static String getQuarter(LocalDate input) {
+        int month = input.getMonthValue();
+        if (month > 9 ) {
+            return "Q4";
+        } else if (month > 6) {
+            return "Q3";
+        } else if (month > 3) {
+            return "Q2";
+        } else {
+            return "Q1";
+        }
+    }
+
     public static LocalDate getQuarterStart(LocalDate input) {
         int month = input.getMonthValue();
         if (month <= 3) {
@@ -41,10 +54,9 @@ public class Utility {
             return LocalDate.now().withMonth(4).withDayOfMonth(1);
         } else if (month <= 6) {
             return LocalDate.now().withMonth(7).withDayOfMonth(1);
-        } else if (month <= 6) {
+        } else {
             return LocalDate.now().withMonth(10).withDayOfMonth(1);
         }
-        return null;
     }
 
 // Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
