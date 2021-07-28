@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -71,30 +72,41 @@ public class formReportOne extends javax.swing.JFrame {
     }
 
     private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
-        final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");
+        DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
 
-        String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
-        conn = sqlManager.openConnection();
-
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         LinkedHashMap<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);
         System.out.println(dataArr.toString());
+
+        conn = sqlManager.openConnection();
+
         try {
+            String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, start);
             pstmt.setObject(2, end);
 
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
             ResultSet rs = null;
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 if (barSpacing == 0) {
-                    dataset.addValue(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2), "Invoice", rs.getDate(3).toLocalDate().format(fmt));
+                    String key = rs.getDate(3).toLocalDate().format(daymonth);
+                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);
+                    dataArr.put(key, dataArr.get(key) + invoiceTotal);
                 }
             }
         } catch (SQLException e) {
             System.out.println("SQL exception: " + e);
         }
         sqlManager.closeConnection(conn);
+
+        System.out.println(dataArr.toString());
+
+        for (Map.Entry<String, Double> i : dataArr.entrySet()) {
+            dataset.addValue(i.getValue(), "Invoice", i.getKey());
+        }
+
         return dataset;
     }
 
@@ -138,6 +150,8 @@ public class formReportOne extends javax.swing.JFrame {
                 counter = counter.plusMonths(3);
             }
             output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
+        } else {
+            return null;
         }
 
         return output;
@@ -341,14 +355,14 @@ public class formReportOne extends javax.swing.JFrame {
                 ResultSet rs = null;
                 rs = stmt.executeQuery(query);
                 if (rs.next()) {
-                    start = rs.getDate(1).toLocalDate().atTime(0,0,0);
+                    start = rs.getDate(1).toLocalDate().atTime(0, 0, 0);
                     found = true;
                 }
             } catch (SQLException e) {
                 System.out.println("SQL Exception: " + e);
             }
             if (!found) {
-                start = LocalDate.of(1970,1,1).atTime(0,0,0);
+                start = LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
             }
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {
@@ -375,6 +389,8 @@ public class formReportOne extends javax.swing.JFrame {
             } else if (daysBetweenDates >= 365 * 3) {
                 barSpacing = 4;
             }
+
+            System.out.println("barSpacing: " +barSpacing);
 
             data = getData(getInvoices, getQuotations, start, end, barSpacing);
             JFreeChart barChart = ChartFactory.createBarChart(
