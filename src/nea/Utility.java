@@ -9,7 +9,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.temporal.ChronoField;
 import java.util.Date;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
@@ -35,26 +34,17 @@ public class Utility {
     }
 
     public static LocalDate getQuarterStart(LocalDate input) {
-        int month = input.get(ChronoField.MONTH_OF_YEAR);
-        switch (Month.of(month)) {
-            case JANUARY:
-            case FEBRUARY:
-            case MARCH:
-            default:
-                return LocalDate.now().withMonth(1).withDayOfMonth(1);
-            case APRIL:
-            case MAY:
-            case JUNE:
-                return LocalDate.now().withMonth(4).withDayOfMonth(1);
-            case JULY:
-            case AUGUST:
-            case SEPTEMBER:
-                return LocalDate.now().withMonth(7).withDayOfMonth(1);
-            case OCTOBER:
-            case NOVEMBER:
-            case DECEMBER:
-                return LocalDate.now().withMonth(10).withDayOfMonth(1);
+        int month = input.getMonthValue();
+        if (month <= 3) {
+            return LocalDate.now().withMonth(1).withDayOfMonth(1);
+        } else if (month <= 6) {
+            return LocalDate.now().withMonth(4).withDayOfMonth(1);
+        } else if (month <= 6) {
+            return LocalDate.now().withMonth(7).withDayOfMonth(1);
+        } else if (month <= 6) {
+            return LocalDate.now().withMonth(10).withDayOfMonth(1);
         }
+        return null;
     }
 
 // Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
