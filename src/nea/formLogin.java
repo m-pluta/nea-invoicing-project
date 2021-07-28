@@ -22,7 +22,7 @@ public class formLogin extends javax.swing.JFrame {
         boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
         lblCapsLock.setVisible(isCapsLockOn);
 
-        txtPassword.addKeyListener(new KeyListener() {
+        KeyListener CapsLock = new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
@@ -41,7 +41,10 @@ public class formLogin extends javax.swing.JFrame {
                 lblCapsLock.setVisible(isCapsLockOn);
             }
 
-        });
+        };
+        
+        txtUsername.addKeyListener(CapsLock);
+        txtPassword.addKeyListener(CapsLock);
     }
 
     /**
