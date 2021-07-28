@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -93,7 +94,7 @@ public class formReportOne extends javax.swing.JFrame {
         } catch (SQLException e) {
             System.out.println("SQL exception: " + e);
         }
-
+        sqlManager.closeConnection(conn);
         return dataset;
     }
 
@@ -332,7 +333,23 @@ public class formReportOne extends javax.swing.JFrame {
         } else if (cbTime.getSelectedIndex() == 5) {                                    // This financial year
             start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
-            start = LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
+            conn = sqlManager.openConnection();
+            String query = "SELECT date_created FROM tblInvoices ORDER BY date_created LIMIT 1";
+            boolean found = false;
+            try {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = null;
+                rs = stmt.executeQuery(query);
+                if (rs.next()) {
+                    start = rs.getDate(1).toLocalDate().atTime(0,0,0);
+                    found = true;
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL Exception: " + e);
+            }
+            if (!found) {
+                start = LocalDate.of(1970,1,1).atTime(0,0,0);
+            }
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {
                 valid = false;
