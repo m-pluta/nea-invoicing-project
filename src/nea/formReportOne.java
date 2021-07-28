@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -69,11 +69,12 @@ public class formReportOne extends javax.swing.JFrame {
 
     private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        
+
         String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
         conn = sqlManager.openConnection();
-        
-        Hashtable<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);
+
+        LinkedHashMap<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);
+        System.out.println(dataArr.toString());
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, start);
@@ -93,12 +94,30 @@ public class formReportOne extends javax.swing.JFrame {
 
         return dataset;
     }
-    
-    public Hashtable<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
-        
-    
-        
-       return null; 
+
+    public LinkedHashMap<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
+        LinkedHashMap<String, Double> output = new LinkedHashMap<String, Double>();
+
+        if (barSpacing == 0) {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
+            LocalDateTime counter = start;
+            output.put(counter.format(fmt), 0.00);
+
+            while (!counter.toLocalDate().isEqual(end.toLocalDate())) {
+                counter = counter.plusDays(1);
+                output.put(counter.format(fmt), 0.00);
+            }
+        } else if (barSpacing == 1) {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate()) || counter.toLocalDate().isEqual(end.toLocalDate())) {
+                output.put(counter.format(fmt), 0.00);
+                counter = counter.plusDays(7);
+            }
+        }
+
+        return output;
     }
 
     /**
@@ -293,9 +312,9 @@ public class formReportOne extends javax.swing.JFrame {
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             start = LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
-            if (dcStart.getDate() == null || dcEnd.getDate() == null) {
+            if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {
                 valid = false;
-                System.out.println("Start date or end date missing");
+                System.out.println("Start date or end date missing or end date is after start date");
             } else {
                 start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
                 end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
@@ -306,11 +325,11 @@ public class formReportOne extends javax.swing.JFrame {
             int daysBetweenDates = (int) dr.toDays();
 
             int barSpacing = 1;                                     // Sets the spacing of the bars in the bar chart
-            if (daysBetweenDates < 7) {                            // 0 - max 7 bars, one per day, shows the day and month dd/mm
+            if (daysBetweenDates < 7) {                             // 0 - max 7 bars, one per day, shows the day and month dd/mm
                 barSpacing = 0;                                     // 1 - max 12 bars, one per week, shows the w/c day of each month
-            } else if (daysBetweenDates < 84) {                    // 2 - max 12 bars, one per month, shown the month name
+            } else if (daysBetweenDates < 84) {                     // 2 - max 12 bars, one per month, shown the month name
                 barSpacing = 1;                                     // 3 - max 12 bars, one per quarter, shows the quarter and year
-            } else if (daysBetweenDates < 366) {                   // 4 - no maximum, one per year
+            } else if (daysBetweenDates < 366) {                    // 4 - no maximum, one per year
                 barSpacing = 2;
             } else if (daysBetweenDates < 365 * 3) {
                 barSpacing = 3;
