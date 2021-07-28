@@ -17,6 +17,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Hashtable;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -66,30 +68,37 @@ public class formReportOne extends javax.swing.JFrame {
     }
 
     private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
-
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
+        
         String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
         conn = sqlManager.openConnection();
-
+        
+        Hashtable<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, start);
             pstmt.setObject(2, end);
-            System.out.println(pstmt);
 
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
             ResultSet rs = null;
             rs = pstmt.executeQuery();
             while (rs.next()) {
-                System.out.println(rs.getInt(1) + " - Total: " + (sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2)));
-
-                dataset.addValue(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2), "Invoice", rs.getString(3));
+                if (barSpacing == 0) {
+                    dataset.addValue(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2), "Invoice", rs.getDate(3).toLocalDate().format(fmt));
+                }
             }
         } catch (SQLException e) {
             System.out.println("SQL exception: " + e);
         }
 
         return dataset;
+    }
+    
+    public Hashtable<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
+        
+    
+        
+       return null; 
     }
 
     /**
