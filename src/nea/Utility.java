@@ -52,7 +52,7 @@ public class Utility {
             return LocalDate.now().withMonth(1).withDayOfMonth(1);
         } else if (month <= 6) {
             return LocalDate.now().withMonth(4).withDayOfMonth(1);
-        } else if (month <= 6) {
+        } else if (month <= 9) {
             return LocalDate.now().withMonth(7).withDayOfMonth(1);
         } else {
             return LocalDate.now().withMonth(10).withDayOfMonth(1);
