@@ -178,7 +178,6 @@ public class Utility {
 
         //current width of the table:
         int totalWidth = table.getWidth();
-        System.out.println(totalWidth);
 
         int totalWidthRequested = 0;
         int nrRequestedWidths = widths.length;
