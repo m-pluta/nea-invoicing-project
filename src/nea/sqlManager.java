@@ -33,8 +33,8 @@ public class sqlManager {
             conn = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException cE) {
             cE.printStackTrace();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return conn;
     }
@@ -57,7 +57,8 @@ public class sqlManager {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Could not close! " + e.getMessage());
+            System.out.println("Could not close!");
+            e.printStackTrace();
         }
         return false;
     }
@@ -76,7 +77,7 @@ public class sqlManager {
             }
 
         } catch (SQLException e) {
-            System.out.println("SQLException: " + e.toString());
+            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -95,6 +96,7 @@ public class sqlManager {
             System.out.println(rowsAffected + " row affected.");
 
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -112,6 +114,7 @@ public class sqlManager {
                 return false;
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -133,6 +136,7 @@ public class sqlManager {
                 System.out.println("Error fetching category");
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -148,7 +152,7 @@ public class sqlManager {
             return rs.getInt(1);                                    // Returns the number of invoices
 
         } catch (SQLException e) {
-            System.out.println("SQLException: " + e.toString());
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -164,7 +168,7 @@ public class sqlManager {
             return rs.getInt(1);                                    // Returns the number of invoices
 
         } catch (SQLException e) {
-            System.out.println("SQLException: " + e.toString());
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -180,7 +184,7 @@ public class sqlManager {
             return rs.getInt(1);                                    // Returns the number of quotations
 
         } catch (SQLException e) {
-            System.out.println("SQLException: " + e.toString());
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -207,6 +211,7 @@ public class sqlManager {
                 System.out.println("Error fetching last login date");
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return null;
@@ -229,6 +234,7 @@ public class sqlManager {
                 System.out.println("Error fetching admin status");
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return false;
@@ -249,6 +255,7 @@ public class sqlManager {
                 System.out.println("Error fetching employee name with id: " + employee_id);
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return null;
@@ -269,6 +276,7 @@ public class sqlManager {
                 System.out.println("Error fetching customer name with id: " + customer_id);
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return null;
@@ -288,6 +296,7 @@ public class sqlManager {
             }
             return total;                                           // Returns the total value of the document
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -308,6 +317,7 @@ public class sqlManager {
                 System.out.println("Error fetching category id of category with name: " + category);
             }
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -322,24 +332,29 @@ public class sqlManager {
             pstmt.setInt(2, employee_id);
 
             int rowsAffected = pstmt.executeUpdate();
+            System.out.println("-------------------------------");
             System.out.println(rowsAffected + " row updated.");
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
     }
 
+    // Returns the date_created of the invoice or quotation with the earliest date in the table
     public static LocalDateTime getEarliestDateTime(Connection conn, String tableName, String key) {
-        String query = "SELECT " + key + " FROM " + tableName + " ORDER BY " + key +" LIMIT 1";
+        String query = "SELECT " + key + " FROM " + tableName + " ORDER BY " + key + " LIMIT 1";
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            if (rs.next()) {
-                return rs.getDate(1).toLocalDate().atTime(0, 0, 0);
+            if (rs.next()) {                                        // If a result is found
+                return rs.getDate(1).toLocalDate().atTime(0, 0, 0); // Gets the date and sets the time to 00:00:00
             }
         } catch (SQLException e) {
+            System.out.println("-------------------------------");
             System.out.println("SQL Exception: " + e);
         }
-        
-        return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
+
+        System.out.println("No match found or error occured");
+        return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);            // If an error occurs or no result is found then the date is set to the unix base date
     }
 }
