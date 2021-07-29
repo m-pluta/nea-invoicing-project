@@ -77,73 +77,149 @@ public class formReportOne extends javax.swing.JFrame {
     private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
         DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");          // For formatting dates into an appropriate format
         DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
-
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();              // the final output dataset
-        LinkedHashMap<String, Double> dataArr = generateEmptyDict(start, end, barSpacing);  // Makes an empty hashmap with all the categories as the key
-        System.out.println(dataArr.toString());                     // Debug
-
         conn = sqlManager.openConnection();                         // Opens connection to DB
 
-        try {
-            String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
-            PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates and sorts them in ascending order
-            pstmt.setObject(1, start);
-            pstmt.setObject(2, end);
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();              // the final output dataset
+        LinkedHashMap<String, Double> dataArr_Invoice = null;  // Makes an empty hashmap with all the categories as the key
+        LinkedHashMap<String, Double> dataArr_Quotation = null;  // Makes an empty hashmap with all the categories as the key
+        if (getInvoices) {
+            dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
 
-            ResultSet rs = null;
-            rs = pstmt.executeQuery();
-            if (barSpacing == 0) {
-                while (rs.next()) {
-                    String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
-                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                }
-            } else if (barSpacing == 1) {
-                LocalDateTime counter = start;
-                while (rs.next()) {
-                    //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
-                    boolean upToDate = false;
-                    while (!upToDate) {
-                        Duration dr = Duration.between(counter, rs.getDate(3).toLocalDate().atTime(0, 0, 0));
-                        if ((int) dr.toDays() < 7) {
-                            upToDate = true;
-                        } else {
-                            counter = counter.plusWeeks(1);
-                        }
+            //<editor-fold defaultstate="collapsed" desc="Loading all invoice results into Hashmap">
+            try {
+                String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
+                PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates and sorts them in ascending order
+                pstmt.setObject(1, start);
+                pstmt.setObject(2, end);
+
+                ResultSet rs = null;
+                rs = pstmt.executeQuery();
+                if (barSpacing == 0) {
+                    while (rs.next()) {
+                        String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
+                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
-                    //</editor-fold>
-                    String key = counter.format(daymonth);          // The key in the hashmap
-                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-                    dataArr.put(key, dataArr.get(key) + invoiceTotal);
+                } else if (barSpacing == 1) {
+                    LocalDateTime counter = start;
+                    while (rs.next()) {
+                        //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
+                        boolean upToDate = false;
+                        while (!upToDate) {
+                            Duration dr = Duration.between(counter, rs.getDate(3).toLocalDate().atTime(0, 0, 0));
+                            if ((int) dr.toDays() < 7) {
+                                upToDate = true;
+                            } else {
+                                counter = counter.plusWeeks(1);
+                            }
+                        }
+                        //</editor-fold>
+                        String key = counter.format(daymonth);          // The key in the hashmap
+                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);
+                    }
+                } else if (barSpacing == 2) {
+                    while (rs.next()) {
+                        String key = rs.getDate(3).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    }
+                } else if (barSpacing == 3) {
+                    while (rs.next()) {
+                        String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    }
+                } else if (barSpacing == 4) {
+                    while (rs.next()) {
+                        String key = "" + rs.getDate(3).toLocalDate().getYear();   // The key in the hashmap
+                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    }
                 }
-            } else if (barSpacing == 2) {
-                while (rs.next()) {
-                    String key = rs.getDate(3).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
-                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                }
-            } else if (barSpacing == 3) {
-                while (rs.next()) {
-                    String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
-                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                }
-            } else if (barSpacing == 4) {
-                while (rs.next()) {
-                    String key = "" + rs.getDate(3).toLocalDate().getYear();   // The key in the hashmap
-                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                }
+            } catch (SQLException e) {
+                System.out.println("SQL exception: " + e);
             }
-        } catch (SQLException e) {
-            System.out.println("SQL exception: " + e);
+            //</editor-fold>
+
+            System.out.println(dataArr_Invoice.toString());                     // Debug - the populated hashmap
+
+            for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
+                dataset.addValue(i.getValue(), "Invoice", i.getKey());          // Adds it to the dataset
+            }
+        }
+        if (getQuotations) {
+            dataArr_Quotation = generateEmptyDict(start, end, barSpacing);
+
+            //<editor-fold defaultstate="collapsed" desc="Loading all quotation results into Hashmap">
+            try {
+                String query = "SELECT quotation_id, date_created FROM tblQuotations WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
+                PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the quotations between two dates and sorts them in ascending order
+                pstmt.setObject(1, start);
+                pstmt.setObject(2, end);
+
+                ResultSet rs = null;
+                rs = pstmt.executeQuery();
+                if (barSpacing == 0) {
+                    while (rs.next()) {
+                        String key = rs.getDate(2).toLocalDate().format(daymonth);  // The key in the hashmap
+                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                    }
+                } else if (barSpacing == 1) {
+                    LocalDateTime counter = start;
+                    while (rs.next()) {
+                        //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
+                        boolean upToDate = false;
+                        while (!upToDate) {
+                            Duration dr = Duration.between(counter, rs.getDate(2).toLocalDate().atTime(0, 0, 0));
+                            if ((int) dr.toDays() < 7) {
+                                upToDate = true;
+                            } else {
+                                counter = counter.plusWeeks(1);
+                            }
+                        }
+                        //</editor-fold>
+                        String key = counter.format(daymonth);          // The key in the hashmap
+                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);
+                    }
+                } else if (barSpacing == 2) {
+                    while (rs.next()) {
+                        String key = rs.getDate(2).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(2).toLocalDate().format(year);  // The key in the hashmap
+                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                    }
+                } else if (barSpacing == 3) {
+                    while (rs.next()) {
+                        String key = Utility.getQuarter(rs.getDate(2).toLocalDate()) + "-" + rs.getDate(2).toLocalDate().format(year);  // The key in the hashmap
+                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                    }
+                } else if (barSpacing == 4) {
+                    while (rs.next()) {
+                        String key = "" + rs.getDate(2).toLocalDate().getYear();   // The key in the hashmap
+                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL exception: " + e);
+            }
+            //</editor-fold>
+
+            System.out.println(dataArr_Quotation.toString());                   // Debug - the populated hashmap
+
+            for (Map.Entry<String, Double> i : dataArr_Quotation.entrySet()) {  // Goes through each Entry in the hashmap
+                dataset.addValue(i.getValue(), "Quotation", i.getKey());        // Adds it to the dataset
+            }
         }
         sqlManager.closeConnection(conn);                           // Close connection to DB
 
-        System.out.println(dataArr.toString());                     // Debug - the populated hashmap
-
-        for (Map.Entry<String, Double> i : dataArr.entrySet()) {    // Goes through each Entry in the hashmap
-            dataset.addValue(i.getValue(), "Invoice", i.getKey());  // Adds it to the dataset
+        if (getInvoices && getQuotations) {
+            for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
+                dataset.addValue(i.getValue() + dataArr_Quotation.get(i.getKey()), "Both", i.getKey());     // Adds the total of both to the dataset
+            }
         }
 
         return dataset;
