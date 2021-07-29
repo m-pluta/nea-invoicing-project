@@ -217,10 +217,11 @@ public class formReportOne extends javax.swing.JFrame {
 
         if (getInvoices && getQuotations) {
             for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
-                dataset.addValue(i.getValue() + dataArr_Quotation.get(i.getKey()), "Both", i.getKey());     // Adds the total of both to the dataset
+                if (i.getValue() != 0.0 && dataArr_Quotation.get(i.getKey()) != 0.) {
+                    dataset.addValue(i.getValue() + dataArr_Quotation.get(i.getKey()), "Both", i.getKey());     // Adds the total of both to the dataset
+                }
             }
         }
-
         return dataset;
     }
 
@@ -440,11 +441,18 @@ public class formReportOne extends javax.swing.JFrame {
         boolean getQuotations = false;
         LocalDateTime start = null;
         LocalDateTime end = LocalDateTime.now();
+        String title = "Value invoiced/quoted against time";
+        String xLabel = "Date";
+        String yLabel = "Value invoiced/quoted";
         // Sets the boolean for whether to load invoices, quotations or both
         if (cbData.getSelectedIndex() == 0) {
             getInvoices = true;
+            title = "Value invoiced against time";
+            yLabel = "Value invoiced";
         } else if (cbData.getSelectedIndex() == 1) {
             getQuotations = true;
+            title = "Value quoted against time";
+            yLabel = "Value quoted";
         } else if (cbData.getSelectedIndex() == 2) {
             getInvoices = true;
             getQuotations = true;
@@ -465,9 +473,14 @@ public class formReportOne extends javax.swing.JFrame {
             start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             conn = sqlManager.openConnection();
-            LocalDateTime inv = null; LocalDateTime quot = null;
-            if (getInvoices) { inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");}
-            if (getQuotations) { quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");}
+            LocalDateTime inv = null;
+            LocalDateTime quot = null;
+            if (getInvoices) {
+                inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");
+            }
+            if (getQuotations) {
+                quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");
+            }
             if (getInvoices && !getQuotations) {
                 start = inv;
             } else if (getQuotations && !getInvoices) {
@@ -496,23 +509,26 @@ public class formReportOne extends javax.swing.JFrame {
             int barSpacing = 1;                                     // Sets the spacing of the bars in the bar chart
             if (daysBetweenDates < 7) {                             // 0 - max 7 bars, one per day, shows the day and month dd/mm
                 barSpacing = 0;                                     // 1 - max 12 bars, one per week, shows the w/c day of each month
-            } else if (daysBetweenDates < 84) {                     // 2 - max 13 bars, one per month, shown the month name
-                barSpacing = 1;                                     // 3 - max 12 bars, one per quarter, shows the quarter and year
-            } else if (daysBetweenDates < 366) {                    // 4 - no maximum, one per year
+                xLabel = "Date of day (dd/mm)";                     // 2 - max 13 bars, one per month, shown the month name
+            } else if (daysBetweenDates < 84) {                     // 3 - max 13 bars, one per quarter, shows the quarter and year
+                barSpacing = 1;                                     // 4 - no maximum, one per year
+                xLabel = "Date of day of commencing week (dd/mm)";
+            } else if (daysBetweenDates < 366) {                    
                 barSpacing = 2;
+                xLabel = "Month (month-year)";
             } else if (daysBetweenDates < 366 * 3) {
                 barSpacing = 3;
+                xLabel = "Quarter (quarter-year)";
             } else if (daysBetweenDates >= 366 * 3) {
                 barSpacing = 4;
+                xLabel = "Year";
             }
-
-            System.out.println("barSpacing: " + barSpacing);
 
             data = getData(getInvoices, getQuotations, start, end, barSpacing);
             JFreeChart barChart = ChartFactory.createBarChart(
-                    "Value invoiced/quoted vs. time",
-                    "Date",
-                    "Value invoiced/quoted",
+                    title,
+                    xLabel,
+                    yLabel,
                     data,
                     PlotOrientation.VERTICAL,
                     cbData.getSelectedIndex() == 2, // only shows legend if the user wanted both types of data 
