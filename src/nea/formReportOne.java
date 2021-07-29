@@ -26,6 +26,8 @@ import java.util.Map;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
@@ -95,6 +97,18 @@ public class formReportOne extends javax.swing.JFrame {
                     String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
                     Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
                     dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                } else if (barSpacing == 1) {
+//                    String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
+//                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+//                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                } else if (barSpacing == 2) {
+                    String key = rs.getDate(3).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                } else if (barSpacing == 3) {
+                    String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                 }
             }
         } catch (SQLException e) {
@@ -139,10 +153,10 @@ public class formReportOne extends javax.swing.JFrame {
             LocalDateTime counter = start;
 
             while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
+                output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
                 counter = counter.plusMonths(1);
             }
-            output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + "-" + end.format(year), 0.00);
+            output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + end.format(year), 0.00);
         } else if (barSpacing == 3) {
             LocalDateTime counter = start;
 
@@ -227,11 +241,8 @@ public class formReportOne extends javax.swing.JFrame {
         pParamLayout.setHorizontalGroup(
             pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pParamLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(6, 6, 6)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pParamLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnAnalyze))
                     .addGroup(pParamLayout.createSequentialGroup()
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblDataToAnalyse)
@@ -239,17 +250,18 @@ public class formReportOne extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cbData, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cbTime, 0, 150, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(pParamLayout.createSequentialGroup()
-                        .addComponent(lblStart)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dcStart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                        .addComponent(lblEnd)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dcEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                            .addComponent(cbTime, 0, 150, Short.MAX_VALUE)))
+                    .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnAnalyze)
+                        .addGroup(pParamLayout.createSequentialGroup()
+                            .addComponent(lblStart)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(dcStart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
+                            .addComponent(lblEnd)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(dcEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(6, 6, 6))
         );
         pParamLayout.setVerticalGroup(
             pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -391,7 +403,7 @@ public class formReportOne extends javax.swing.JFrame {
                 barSpacing = 4;
             }
 
-            System.out.println("barSpacing: " +barSpacing);
+            System.out.println("barSpacing: " + barSpacing);
 
             data = getData(getInvoices, getQuotations, start, end, barSpacing);
             JFreeChart barChart = ChartFactory.createBarChart(
@@ -406,6 +418,8 @@ public class formReportOne extends javax.swing.JFrame {
 
             CategoryPlot p = barChart.getCategoryPlot();
             p.setRangeGridlinePaint(Color.black);
+            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
 
             ChartPanel barPanel = new ChartPanel(barChart);
             pOutput.removeAll();
