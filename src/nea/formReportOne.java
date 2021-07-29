@@ -92,25 +92,80 @@ public class formReportOne extends javax.swing.JFrame {
 
             ResultSet rs = null;
             rs = pstmt.executeQuery();
-            while (rs.next()) {
-                if (barSpacing == 0) {
+            if (barSpacing == 0) {
+                while (rs.next()) {
                     String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
                     Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
                     dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                } else if (barSpacing == 1) {
+                }
+            } else if (barSpacing == 1) {
+//                while (rs.next()) {
 //                    String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
 //                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-//                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                } else if (barSpacing == 2) {
+//
+//                    if (dataArr.containsKey(key)) {                             // if the key is already in use in the hashmap
+//                        dataArr.put(key, dataArr.get(key) + invoiceTotal);      // Add the invoiceTotal to the hashmap by adding it to the existing value
+//                    } else {
+//                        dataArr.put(key, invoiceTotal);                         // Add the invoiceTotal only, to the hashmap since there is no existing value stored.
+//                    }
+//
+//                }
+            } else if (barSpacing == 2) {
+                while (rs.next()) {
                     String key = rs.getDate(3).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
                     Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
                     dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                } else if (barSpacing == 3) {
+                }
+            } else if (barSpacing == 3) {
+                while (rs.next()) {
                     String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
                     Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
                     dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                 }
+            } else if (barSpacing == 4) {
+                while (rs.next()) {
+                    String key = "" + rs.getDate(3).toLocalDate().getYear();   // The key in the hashmap
+                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                }
             }
+
+//            while (rs.next()) {
+//                if (barSpacing == 0) {
+//                    String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
+//                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+//                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+//                } else if (barSpacing == 1) {
+////                    String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
+////                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+////                    
+////                    if (dataArr.containsKey(key)) {                             // if the key is already in use in the hashmap
+////                        dataArr.put(key, dataArr.get(key) + invoiceTotal);      // Add the invoiceTotal to the hashmap by adding it to the existing value
+////                    } else {
+////                        dataArr.put(key, invoiceTotal);                         // Add the invoiceTotal only, to the hashmap since there is no existing value stored.
+////                    }
+//
+//                } else if (barSpacing == 2) {
+//                    String key = rs.getDate(3).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+//                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+//                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+//                } else if (barSpacing == 3) {
+//                    String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+//                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+//                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+//                } else if (barSpacing == 4) {
+////                    int currentYear = start.getYear();
+////                    int endYear = end.getYear();
+////                    for (int i = currentYear; i <= endYear; i++) {
+////                        dataArr.put("" + currentYear, 0.00);
+////                    
+////                    }
+////                    
+////                    String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
+////                    Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+////                    dataArr.put(key, dataArr.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+//                }
+//            }
         } catch (SQLException e) {
             System.out.println("SQL exception: " + e);
         }
@@ -165,8 +220,14 @@ public class formReportOne extends javax.swing.JFrame {
                 counter = counter.plusMonths(3);
             }
             output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
-        } else {
-            return null;
+        } else if (barSpacing == 4) {
+            LocalDateTime counter = start;
+            output.put("" + counter.getYear(), 0.00);
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                counter = counter.plusYears(1);
+                output.put("" + counter.getYear(), 0.00);
+            }
+            output.put("" + end.getYear(), 0.00);
         }
 
         return output;
@@ -393,13 +454,13 @@ public class formReportOne extends javax.swing.JFrame {
             int barSpacing = 1;                                     // Sets the spacing of the bars in the bar chart
             if (daysBetweenDates < 7) {                             // 0 - max 7 bars, one per day, shows the day and month dd/mm
                 barSpacing = 0;                                     // 1 - max 12 bars, one per week, shows the w/c day of each month
-            } else if (daysBetweenDates < 84) {                     // 2 - max 12 bars, one per month, shown the month name
+            } else if (daysBetweenDates < 84) {                     // 2 - max 13 bars, one per month, shown the month name
                 barSpacing = 1;                                     // 3 - max 12 bars, one per quarter, shows the quarter and year
             } else if (daysBetweenDates < 366) {                    // 4 - no maximum, one per year
                 barSpacing = 2;
-            } else if (daysBetweenDates < 365 * 3) {
+            } else if (daysBetweenDates < 366 * 3) {
                 barSpacing = 3;
-            } else if (daysBetweenDates >= 365 * 3) {
+            } else if (daysBetweenDates >= 366 * 3) {
                 barSpacing = 4;
             }
 
