@@ -13,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -466,22 +465,21 @@ public class formReportOne extends javax.swing.JFrame {
             start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             conn = sqlManager.openConnection();
-            String query = "SELECT date_created FROM tblInvoices ORDER BY date_created LIMIT 1";
-            boolean found = false;
-            try {
-                Statement stmt = conn.createStatement();
-                ResultSet rs = null;
-                rs = stmt.executeQuery(query);
-                if (rs.next()) {
-                    start = rs.getDate(1).toLocalDate().atTime(0, 0, 0);
-                    found = true;
+            LocalDateTime inv = null; LocalDateTime quot = null;
+            if (getInvoices) { inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");}
+            if (getQuotations) { quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");}
+            if (getInvoices && !getQuotations) {
+                start = inv;
+            } else if (getQuotations && !getInvoices) {
+                start = quot;
+            } else {
+                if (inv.isAfter(quot)) {
+                    start = quot;
+                } else {
+                    start = inv;
                 }
-            } catch (SQLException e) {
-                System.out.println("SQL Exception: " + e);
             }
-            if (!found) {
-                start = LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
-            }
+            sqlManager.closeConnection(conn);
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {
                 valid = false;

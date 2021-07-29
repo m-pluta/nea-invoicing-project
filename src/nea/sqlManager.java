@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -326,4 +328,18 @@ public class sqlManager {
         }
     }
 
+    public static LocalDateTime getEarliestDateTime(Connection conn, String tableName, String key) {
+        String query = "SELECT " + key + " FROM " + tableName + " ORDER BY " + key +" LIMIT 1";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                return rs.getDate(1).toLocalDate().atTime(0, 0, 0);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception: " + e);
+        }
+        
+        return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
+    }
 }
