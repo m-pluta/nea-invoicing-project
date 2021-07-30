@@ -336,6 +336,7 @@ public class formReportOne extends javax.swing.JFrame {
         pOutput = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Sales Analysis");
 
         lblSalesAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblSalesAnalysis.setText("Sales Analysis");
@@ -441,7 +442,7 @@ public class formReportOne extends javax.swing.JFrame {
                     .addComponent(pParam, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(btnBack)
-                        .addGap(151, 151, 151)
+                        .addGap(242, 242, 242)
                         .addComponent(lblSalesAnalysis)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))

@@ -227,7 +227,12 @@ public class formMainMenu extends javax.swing.JFrame {
         });
 
         btnReport2.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport2.setText("Report 2");
+        btnReport2.setText("Item Category Analysis");
+        btnReport2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReport2ActionPerformed(evt);
+            }
+        });
 
         btnReport3.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         btnReport3.setText("Report 3");
@@ -440,6 +445,14 @@ public class formMainMenu extends javax.swing.JFrame {
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport1ActionPerformed
+
+    private void btnReport2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport2ActionPerformed
+        formReportTwo form = new formReportTwo().getFrame();
+        form.previousForm = this;
+        form.EmployeeID = loggedIn_UserID;
+        this.setVisible(false);
+        form.setVisible(true);
+    }//GEN-LAST:event_btnReport2ActionPerformed
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();                         // Opens connection to the DB
