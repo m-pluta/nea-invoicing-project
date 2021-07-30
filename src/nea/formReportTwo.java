@@ -5,9 +5,22 @@
  */
 package nea;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
 
 /**
  *
@@ -208,6 +221,79 @@ public class formReportTwo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
+        CategoryDataset data = null;                                // Empty dataset - about to be populated
+
+        LocalDateTime start = null;                                 // Dates from which to get the results from
+        LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
+
+        int categoryCount = (int) spCategoryCount.getValue();       // Gets the amount of categories the user wants to see
+        if (categoryCount == 0) {                                   // All will be analyzed but only this amount will be shown
+            categoryCount = 10;
+        }
+
+        boolean valid = true;                                       // boolean for input validity, assume always valid
+        if (cbTime.getSelectedIndex() == 0) {                                           // Past month
+            start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 1) {                                    // Past year
+            start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 2) {                                    // This month
+            start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 3) {                                    // This quarter
+            start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 4) {                                    // This year
+            start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 5) {                                    // This financial year
+            start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
+        } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
+            //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
+            conn = sqlManager.openConnection();                     // Opens connection to the DB
+
+            LocalDateTime inv = null;                               // Stores the date of the earliest invoice
+            LocalDateTime quot = null;                              // and quotation
+            inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");      // Gets the earliest dates
+            quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");   //                                            // Otherwise
+            if (inv.isAfter(quot)) {                            // if inv is the later date
+                start = quot;                                   // sets quot as the earliest
+            } else {
+                start = inv;                                    // else inv is the earliest
+            }
+            sqlManager.closeConnection(conn);                       // Closes connection to the DB
+            //</editor-fold>
+        } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
+            //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
+            if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {    // Checks if input is valid
+                valid = false;
+                System.out.println("Start date or end date missing or end date is after start date");
+            } else {
+                start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
+                end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
+            }
+            //</editor-fold>
+        }
+
+        if (valid) {
+//            data = getData(start, end, categoryCount);                                  // Gets the CategoryDataset with all the data
+            JFreeChart barChart = ChartFactory.createBarChart(
+                    "Categories Analysed",
+                    "Category Name",
+                    "Category count",
+                    data,
+                    PlotOrientation.VERTICAL,
+                    false,
+                    true,
+                    false);
+
+            CategoryPlot p = barChart.getCategoryPlot();
+            p.setRangeGridlinePaint(Color.black);
+            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);   // Makes the x axis labels vertical to conserve space
+
+            ChartPanel barPanel = new ChartPanel(barChart);                 // chartPanel will hold the bar chart
+            pOutput.removeAll();                                            // Clears the JPanel
+            pOutput.add(barPanel, BorderLayout.CENTER);                     // Adds the chartPanel
+            pOutput.validate();                                             // Validates the JPanel to make sure changes are visible
+
+        }
     }//GEN-LAST:event_btnAnalyzeActionPerformed
 
     public formReportTwo getFrame() {
