@@ -5,6 +5,8 @@
  */
 package nea;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 
 /**
@@ -23,6 +25,29 @@ public class formReportTwo extends javax.swing.JFrame {
     public formReportTwo() {
         initComponents();
         this.setLocationRelativeTo(null);                           // Positions the form in the middle of the screen
+
+        lblStart.setVisible(false);
+        dcStart.setVisible(false);
+        lblEnd.setVisible(false);
+        dcEnd.setVisible(false);
+
+        // ActionListener for when the users changes the selected item in the time combo box
+        cbTime.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {   // If the user selected the last item ('Other')
+                    lblStart.setVisible(true);
+                    dcStart.setVisible(true);
+                    lblEnd.setVisible(true);                        // Makes the date selectors for start and end date appear
+                    dcEnd.setVisible(true);
+                } else {
+                    lblStart.setVisible(false);
+                    dcStart.setVisible(false);
+                    lblEnd.setVisible(false);                       // Makes the date selectors for start and end date disappear
+                    dcEnd.setVisible(false);
+                }
+            }
+        });
     }
 
     /**
@@ -36,6 +61,17 @@ public class formReportTwo extends javax.swing.JFrame {
 
         btnBack = new javax.swing.JButton();
         lblItemCategoryAnalysis = new javax.swing.JLabel();
+        pParam = new javax.swing.JPanel();
+        btnAnalyze = new javax.swing.JButton();
+        lblDataToAnalyse = new javax.swing.JLabel();
+        cbTime = new javax.swing.JComboBox<>();
+        cbTimePeriod = new javax.swing.JLabel();
+        lblStart = new javax.swing.JLabel();
+        dcStart = new com.toedter.calendar.JDateChooser();
+        dcEnd = new com.toedter.calendar.JDateChooser();
+        lblEnd = new javax.swing.JLabel();
+        spCategoryCount = new javax.swing.JSpinner();
+        pOutput = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Item Category Analysis");
@@ -51,16 +87,103 @@ public class formReportTwo extends javax.swing.JFrame {
         lblItemCategoryAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblItemCategoryAnalysis.setText("Item Category Analysis");
 
+        pParam.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        pParam.setMinimumSize(new java.awt.Dimension(0, 200));
+
+        btnAnalyze.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnAnalyze.setText("Analyze");
+        btnAnalyze.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnalyzeActionPerformed(evt);
+            }
+        });
+
+        lblDataToAnalyse.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblDataToAnalyse.setText("Categories to show:");
+
+        cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past year", "This month", "This quarter", "This year", "This financial year", "All Time", "Other" }));
+
+        cbTimePeriod.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        cbTimePeriod.setText("Time Period:");
+
+        lblStart.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblStart.setText("Start Date: ");
+
+        lblEnd.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblEnd.setText("End Date: ");
+
+        spCategoryCount.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+
+        javax.swing.GroupLayout pParamLayout = new javax.swing.GroupLayout(pParam);
+        pParam.setLayout(pParamLayout);
+        pParamLayout.setHorizontalGroup(
+            pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pParamLayout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pParamLayout.createSequentialGroup()
+                        .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblDataToAnalyse)
+                            .addComponent(cbTimePeriod))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cbTime, 0, 150, Short.MAX_VALUE)
+                            .addComponent(spCategoryCount)))
+                    .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnAnalyze)
+                        .addGroup(pParamLayout.createSequentialGroup()
+                            .addComponent(lblStart)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(dcStart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
+                            .addComponent(lblEnd)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(dcEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(6, 6, 6))
+        );
+        pParamLayout.setVerticalGroup(
+            pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pParamLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblDataToAnalyse)
+                    .addComponent(spCategoryCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbTimePeriod))
+                .addGap(10, 10, 10)
+                .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(dcStart, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(lblStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(dcEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(lblEnd)))
+                .addGap(18, 18, 18)
+                .addComponent(btnAnalyze)
+                .addContainerGap())
+        );
+
+        pOutput.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        pOutput.setMinimumSize(new java.awt.Dimension(0, 0));
+        pOutput.setLayout(new java.awt.BorderLayout());
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnBack)
-                .addGap(201, 201, 201)
-                .addComponent(lblItemCategoryAnalysis)
-                .addContainerGap(268, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnBack)
+                        .addGap(201, 201, 201)
+                        .addComponent(lblItemCategoryAnalysis)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(pParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pOutput, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -69,7 +192,11 @@ public class formReportTwo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnBack)
                     .addComponent(lblItemCategoryAnalysis))
-                .addContainerGap(594, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(pParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -79,6 +206,9 @@ public class formReportTwo extends javax.swing.JFrame {
         previousForm.setVisible(true);                              // Makes main previous form visible
         this.dispose();                                             // Closes the Sales Analysis (current form)
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
+    }//GEN-LAST:event_btnAnalyzeActionPerformed
 
     public formReportTwo getFrame() {
         return this;
@@ -120,7 +250,18 @@ public class formReportTwo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAnalyze;
     private javax.swing.JButton btnBack;
+    private javax.swing.JComboBox<String> cbTime;
+    private javax.swing.JLabel cbTimePeriod;
+    private com.toedter.calendar.JDateChooser dcEnd;
+    private com.toedter.calendar.JDateChooser dcStart;
+    private javax.swing.JLabel lblDataToAnalyse;
+    private javax.swing.JLabel lblEnd;
     private javax.swing.JLabel lblItemCategoryAnalysis;
+    private javax.swing.JLabel lblStart;
+    private javax.swing.JPanel pOutput;
+    private javax.swing.JPanel pParam;
+    private javax.swing.JSpinner spCategoryCount;
     // End of variables declaration//GEN-END:variables
 }
