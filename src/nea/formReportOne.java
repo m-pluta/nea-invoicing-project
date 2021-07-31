@@ -442,7 +442,7 @@ public class formReportOne extends javax.swing.JFrame {
                     .addComponent(pParam, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(btnBack)
-                        .addGap(242, 242, 242)
+                        .addGap(243, 243, 243)
                         .addComponent(lblSalesAnalysis)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))

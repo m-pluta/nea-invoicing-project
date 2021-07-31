@@ -10,9 +10,14 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -21,6 +26,7 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
@@ -61,6 +67,82 @@ public class formReportTwo extends javax.swing.JFrame {
                 }
             }
         });
+    }
+
+    // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
+    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
+        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");      // For formatting dates into an appropriate format
+        DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
+        conn = sqlManager.openConnection();                                     // Opens connection to DB
+
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
+        LinkedHashMap<String, Double> dataArr_Invoice = new LinkedHashMap<String, Double>();    // Makes an empty hashmap with all the categories as the key
+        LinkedHashMap<String, Double> dataArr_Quotation = new LinkedHashMap<String, Double>();  // Makes an empty hashmap with all the categories as the key
+        LinkedHashMap<String, Double> total = new LinkedHashMap<String, Double>();              // Makes an empty hashmap with all the categories as the key
+
+        //<editor-fold defaultstate="collapsed" desc="Populating the invoice hashmap with all the item category totals">
+        try {
+            String query = "SELECT invoice_id from tblInvoices WHERE date_created BETWEEN ? AND ?";
+            PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates
+            pstmt.setObject(1, start);
+            pstmt.setObject(2, end);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int invID = rs.getInt(1);
+                String query2 = "SELECT item_category_id, unit_price * quantity AS total FROM tblInvoiceDetails WHERE invoice_id = ?";
+                PreparedStatement pstmt2 = conn.prepareStatement(query2);
+                pstmt2.setInt(1, invID);
+
+                ResultSet rs2 = pstmt2.executeQuery();
+                while (rs2.next()) {
+                    String category_name = sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", rs2.getInt(1));
+                    double item_total = rs2.getDouble(2);
+                    if (dataArr_Invoice.containsKey(category_name)) {
+                        dataArr_Invoice.put(category_name, dataArr_Invoice.get(category_name) + item_total);
+                    } else {
+                        dataArr_Invoice.put(category_name, item_total);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException");
+            e.printStackTrace();
+        }
+        //</editor-fold>
+
+        //<editor-fold defaultstate="collapsed" desc="Populating the quotation hashmap with all the item category totals">
+        try {
+            String query = "SELECT quotation_id from tblQuotations WHERE date_created BETWEEN ? AND ?";
+            PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the quotations between two dates
+            pstmt.setObject(1, start);
+            pstmt.setObject(2, end);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int quotID = rs.getInt(1);
+                String query2 = "SELECT item_category_id, unit_price * quantity AS total FROM tblQuotationDetails WHERE quotation_id = ?";
+                PreparedStatement pstmt2 = conn.prepareStatement(query2);
+                pstmt2.setInt(1, quotID);
+
+                ResultSet rs2 = pstmt2.executeQuery();
+                while (rs2.next()) {
+                    String category_name = sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", rs2.getInt(1));
+                    double item_total = rs2.getDouble(2);
+                    if (dataArr_Quotation.containsKey(category_name)) {
+                        dataArr_Quotation.put(category_name, dataArr_Quotation.get(category_name) + item_total);
+                    } else {
+                        dataArr_Quotation.put(category_name, item_total);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException");
+            e.printStackTrace();
+        }
+        //</editor-fold>
+        
+        return dataset;                                             // Returns the populated dataset
     }
 
     /**
@@ -161,7 +243,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDataToAnalyse)
                     .addComponent(spCategoryCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbTimePeriod))
@@ -191,7 +273,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBack)
-                        .addGap(201, 201, 201)
+                        .addGap(200, 200, 200)
                         .addComponent(lblItemCategoryAnalysis)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -202,13 +284,13 @@ public class formReportTwo extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnBack)
-                    .addComponent(lblItemCategoryAnalysis))
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblItemCategoryAnalysis)
+                    .addComponent(btnBack))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -272,7 +354,7 @@ public class formReportTwo extends javax.swing.JFrame {
         }
 
         if (valid) {
-//            data = getData(start, end, categoryCount);                                  // Gets the CategoryDataset with all the data
+            data = getData(start, end, categoryCount);                                  // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
                     "Categories Analysed",
                     "Category Name",
