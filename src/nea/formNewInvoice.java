@@ -52,6 +52,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         }
         if (previousForm2 != null) {
             previousForm2.setVisible(true);
+            previousForm2.loadInvoices();
             this.dispose();
         }
         if (previousForm3 != null) {

@@ -52,6 +52,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         }
         if (previousForm2 != null) {
             previousForm2.setVisible(true);
+            previousForm2.loadQuotations();
             this.dispose();
         }
         if (previousForm3 != null) {
