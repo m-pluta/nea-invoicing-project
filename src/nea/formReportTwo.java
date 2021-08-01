@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -141,8 +142,23 @@ public class formReportTwo extends javax.swing.JFrame {
             e.printStackTrace();
         }
         //</editor-fold>
+
+        total = mergeHashMaps(dataArr_Invoice, dataArr_Quotation);
         
         return dataset;                                             // Returns the populated dataset
+    }
+
+    public static LinkedHashMap<String, Double> mergeHashMaps(LinkedHashMap<String, Double> map1, LinkedHashMap<String, Double> map2) {
+        LinkedHashMap<String, Double> mergedMap = map1;
+
+        for (Map.Entry<String, Double> i : map2.entrySet()) {  // Goes through each Entry in the hashmap
+            if (mergedMap.containsKey(i.getKey())) {
+                mergedMap.put(i.getKey(), mergedMap.get(i.getKey()) + i.getValue());
+            } else {
+                mergedMap.put(i.getKey(), i.getValue());
+            }
+        }
+        return mergedMap;
     }
 
     /**
