@@ -13,9 +13,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -65,6 +68,25 @@ public class formReportTwo extends javax.swing.JFrame {
                 }
             }
         });
+
+        //<editor-fold defaultstate="collapsed" desc="Code for setting the min and max value for the JSpinner">
+        int NoCategories = 1;
+        conn = sqlManager.openConnection();
+        try {
+            String query = "SELECT COUNT(item_category_id) FROM tblItemCategories";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();                                              // Gets the next result from query
+            NoCategories = rs.getInt(1);
+        } catch (SQLException e) {
+            System.out.println("SQLException");
+            e.printStackTrace();
+        }
+
+        int preferredAmount = 5;                                    // The preferred amount of categories to display
+        SpinnerModel sm = new SpinnerNumberModel(NoCategories < preferredAmount ? NoCategories : preferredAmount, 1, NoCategories, 1); // Default, LB, UB, Increment
+        spCategoryCount.setModel(sm);
+        //</editor-fold>
     }
 
     // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
@@ -109,10 +131,10 @@ public class formReportTwo extends javax.swing.JFrame {
             pstmt.setObject(3, start);
             pstmt.setObject(4, end);
             pstmt.setInt(5, CategoryCount);
-            
+
             ResultSet rs = pstmt.executeQuery();
-            
-            while(rs.next()) {
+
+            while (rs.next()) {
                 String category_name = rs.getString(1);
                 dataset.addValue(rs.getDouble(2), "Invoices", category_name);
                 dataset.addValue(rs.getDouble(3), "Quotations", category_name);
@@ -288,11 +310,6 @@ public class formReportTwo extends javax.swing.JFrame {
         LocalDateTime start = null;                                 // Dates from which to get the results from
         LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
 
-        int categoryCount = (int) spCategoryCount.getValue();       // Gets the amount of categories the user wants to see
-        if (categoryCount <= 0) {                                   // All will be analyzed but only this amount will be shown
-            categoryCount = 5;
-        }
-
         //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
         boolean valid = true;                                       // boolean for input validity, assume always valid
         if (cbTime.getSelectedIndex() == 0) {                                           // Past month
@@ -310,7 +327,7 @@ public class formReportTwo extends javax.swing.JFrame {
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
             conn = sqlManager.openConnection();                     // Opens connection to the DB
-            
+
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
             inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");      // Gets the earliest dates
@@ -334,6 +351,8 @@ public class formReportTwo extends javax.swing.JFrame {
             //</editor-fold>
         }
         //</editor-fold>
+
+        int categoryCount = (int) spCategoryCount.getValue();       // Gets the amount of categories the user wants to see
 
         if (valid) {
             data = getData(start, end, categoryCount);                      // Gets the CategoryDataset with all the data
