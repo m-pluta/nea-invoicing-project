@@ -68,7 +68,7 @@ public class formReportTwo extends javax.swing.JFrame {
     }
 
     // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
-    private CategoryDataset getData_updated(LocalDateTime start, LocalDateTime end, int CategoryCount) {
+    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
 
         String queryRawInvoiceCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
@@ -101,7 +101,6 @@ public class formReportTwo extends javax.swing.JFrame {
                 + " DESC"
                 + " LIMIT ?";
 
-        
         conn = sqlManager.openConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement(mainQuery);
@@ -294,6 +293,7 @@ public class formReportTwo extends javax.swing.JFrame {
             categoryCount = 10;
         }
 
+        //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
         boolean valid = true;                                       // boolean for input validity, assume always valid
         if (cbTime.getSelectedIndex() == 0) {                                           // Past month
             start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
@@ -310,7 +310,7 @@ public class formReportTwo extends javax.swing.JFrame {
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
             conn = sqlManager.openConnection();                     // Opens connection to the DB
-
+            
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
             inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");      // Gets the earliest dates
@@ -333,9 +333,10 @@ public class formReportTwo extends javax.swing.JFrame {
             }
             //</editor-fold>
         }
+        //</editor-fold>
 
         if (valid) {
-            data = getData_updated(start, end, categoryCount);                          // Gets the CategoryDataset with all the data
+            data = getData(start, end, categoryCount);                      // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
                     "Value per category in each type of document",
                     "Category name",
