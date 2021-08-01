@@ -456,12 +456,13 @@ public class formMainMenu extends javax.swing.JFrame {
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = " + id;
+        String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = ?";
         PreparedStatement pstmt = null;
         try {
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, newUsername);
             pstmt.setString(2, newPassword);
+            pstmt.setInt(3, id);
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println(rowsAffected + " row updated.");
