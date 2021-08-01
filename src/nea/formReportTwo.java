@@ -71,6 +71,65 @@ public class formReportTwo extends javax.swing.JFrame {
     }
 
     // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
+    private CategoryDataset getData_updated(LocalDateTime start, LocalDateTime end, int CategoryCount) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
+
+        String queryRawInvoiceCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
+                + " FROM tblitemcategories as a"
+                + " INNER JOIN tblinvoicedetails as b ON a.item_category_id = b.item_category_id"
+                + " INNER JOIN tblinvoices as c ON b.invoice_id = c.invoice_id"
+                + " WHERE c.date_created BETWEEN ? AND ?";
+
+        String queryRawQuotationCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
+                + " FROM tblitemcategories as a"
+                + " INNER JOIN tblquotationdetails as b ON a.item_category_id = b.item_category_id"
+                + " INNER JOIN tblquotations as c ON b.quotation_id = c.quotation_id"
+                + " WHERE c.date_created BETWEEN ? AND ?";
+
+        String queryInvoiceCategoryTotals = "SELECT sq.item_category_id, SUM(sq.itemCost) as cT"
+                + " FROM (" + queryRawInvoiceCategoryCosts + ") as sq"
+                + " GROUP BY sq.item_category_id";
+
+        String queryQuotationCategoryTotals = "SELECT sq.item_category_id, SUM(sq.itemCost) as cT"
+                + " FROM (" + queryRawQuotationCategoryCosts + ") as sq"
+                + " GROUP BY sq.item_category_id";
+
+        String mainQuery = "SELECT a.category_name, COALESCE(sq1.cT, 0) AS invoiceTotal, COALESCE(sq2.cT, 0) AS quotationTotal, (COALESCE(sq1.cT, 0) + COALESCE(sq2.cT, 0)) as combinedTotal"
+                + " FROM tblitemcategories as a"
+                + " LEFT JOIN (" + queryInvoiceCategoryTotals + ") as sq1"
+                + " ON a.item_category_id = sq1.item_category_id"
+                + " LEFT JOIN (" + queryQuotationCategoryTotals + ") as sq2"
+                + " ON a.item_category_id = sq2.item_category_id"
+                + " ORDER BY combinedTotal"
+                + " DESC"
+                + " LIMIT ?";
+
+        
+        conn = sqlManager.openConnection();
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(mainQuery);
+            pstmt.setObject(1, start);
+            pstmt.setObject(2, end);
+            pstmt.setObject(3, start);
+            pstmt.setObject(4, end);
+            pstmt.setInt(5, CategoryCount);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()) {
+                String category_name = rs.getString(1);
+                dataset.addValue(rs.getDouble(2), "Invoices", category_name);
+                dataset.addValue(rs.getDouble(3), "Quotations", category_name);
+                dataset.addValue(rs.getDouble(4), "Both", category_name);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException");
+            e.printStackTrace();
+        }
+        return dataset;
+    }
+
+    // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
     private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
         DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");      // For formatting dates into an appropriate format
         DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
@@ -144,7 +203,7 @@ public class formReportTwo extends javax.swing.JFrame {
         //</editor-fold>
 
         total = mergeHashMaps(dataArr_Invoice, dataArr_Quotation);
-        
+
         return dataset;                                             // Returns the populated dataset
     }
 
@@ -370,14 +429,14 @@ public class formReportTwo extends javax.swing.JFrame {
         }
 
         if (valid) {
-            data = getData(start, end, categoryCount);                                  // Gets the CategoryDataset with all the data
+            data = getData_updated(start, end, categoryCount);                          // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
                     "Categories Analysed",
                     "Category Name",
                     "Category count",
                     data,
                     PlotOrientation.VERTICAL,
-                    false,
+                    true,
                     true,
                     false);
 
