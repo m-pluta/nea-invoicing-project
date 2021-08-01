@@ -126,7 +126,10 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         conn = sqlManager.openConnection();
 
-        String query = "SELECT CONCAT(forename,' ', surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id FROM tblCustomers WHERE customer_id = ?";
+        String query = "SELECT CONCAT(forename,' ', surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, cc.category_name FROM tblCustomers as c"
+                + " INNER JOIN tblcustomercategories as cc"
+                + " ON c.type_id = cc.customer_category_id"
+                + " WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
 
@@ -156,7 +159,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                 txtPostcode.setText(rs.getString(8));
                 txtPhoneNumber.setText(rs.getString(9));
                 txtEmailAddress.setText(rs.getString(10));
-                cbCategory.setSelectedIndex(rs.getInt(11) - 1);
+                cbCategory.setSelectedItem(rs.getString(11));
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error occurred fetching customer data");
@@ -503,7 +506,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         form.selectCustomer(CustomerID);
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
-        
+
         previousForm.setVisible(false);
     }//GEN-LAST:event_btnSetInvoiceActionPerformed
 
@@ -514,7 +517,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         form.selectCustomer(CustomerID);
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
-        
+
         previousForm.setVisible(false);
     }//GEN-LAST:event_btnSetQuotationActionPerformed
 
