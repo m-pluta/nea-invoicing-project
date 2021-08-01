@@ -16,9 +16,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -127,97 +124,6 @@ public class formReportTwo extends javax.swing.JFrame {
             e.printStackTrace();
         }
         return dataset;
-    }
-
-    // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
-    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
-        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");      // For formatting dates into an appropriate format
-        DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
-        conn = sqlManager.openConnection();                                     // Opens connection to DB
-
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
-        LinkedHashMap<String, Double> dataArr_Invoice = new LinkedHashMap<String, Double>();    // Makes an empty hashmap with all the categories as the key
-        LinkedHashMap<String, Double> dataArr_Quotation = new LinkedHashMap<String, Double>();  // Makes an empty hashmap with all the categories as the key
-        LinkedHashMap<String, Double> total = new LinkedHashMap<String, Double>();              // Makes an empty hashmap with all the categories as the key
-
-        //<editor-fold defaultstate="collapsed" desc="Populating the invoice hashmap with all the item category totals">
-        try {
-            String query = "SELECT invoice_id from tblInvoices WHERE date_created BETWEEN ? AND ?";
-            PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates
-            pstmt.setObject(1, start);
-            pstmt.setObject(2, end);
-
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int invID = rs.getInt(1);
-                String query2 = "SELECT item_category_id, unit_price * quantity AS total FROM tblInvoiceDetails WHERE invoice_id = ?";
-                PreparedStatement pstmt2 = conn.prepareStatement(query2);
-                pstmt2.setInt(1, invID);
-
-                ResultSet rs2 = pstmt2.executeQuery();
-                while (rs2.next()) {
-                    String category_name = sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", rs2.getInt(1));
-                    double item_total = rs2.getDouble(2);
-                    if (dataArr_Invoice.containsKey(category_name)) {
-                        dataArr_Invoice.put(category_name, dataArr_Invoice.get(category_name) + item_total);
-                    } else {
-                        dataArr_Invoice.put(category_name, item_total);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("SQLException");
-            e.printStackTrace();
-        }
-        //</editor-fold>
-
-        //<editor-fold defaultstate="collapsed" desc="Populating the quotation hashmap with all the item category totals">
-        try {
-            String query = "SELECT quotation_id from tblQuotations WHERE date_created BETWEEN ? AND ?";
-            PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the quotations between two dates
-            pstmt.setObject(1, start);
-            pstmt.setObject(2, end);
-
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int quotID = rs.getInt(1);
-                String query2 = "SELECT item_category_id, unit_price * quantity AS total FROM tblQuotationDetails WHERE quotation_id = ?";
-                PreparedStatement pstmt2 = conn.prepareStatement(query2);
-                pstmt2.setInt(1, quotID);
-
-                ResultSet rs2 = pstmt2.executeQuery();
-                while (rs2.next()) {
-                    String category_name = sqlManager.getCategory(conn, "tblItemCategories", "item_category_id", rs2.getInt(1));
-                    double item_total = rs2.getDouble(2);
-                    if (dataArr_Quotation.containsKey(category_name)) {
-                        dataArr_Quotation.put(category_name, dataArr_Quotation.get(category_name) + item_total);
-                    } else {
-                        dataArr_Quotation.put(category_name, item_total);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("SQLException");
-            e.printStackTrace();
-        }
-        //</editor-fold>
-
-        total = mergeHashMaps(dataArr_Invoice, dataArr_Quotation);
-
-        return dataset;                                             // Returns the populated dataset
-    }
-
-    public static LinkedHashMap<String, Double> mergeHashMaps(LinkedHashMap<String, Double> map1, LinkedHashMap<String, Double> map2) {
-        LinkedHashMap<String, Double> mergedMap = map1;
-
-        for (Map.Entry<String, Double> i : map2.entrySet()) {  // Goes through each Entry in the hashmap
-            if (mergedMap.containsKey(i.getKey())) {
-                mergedMap.put(i.getKey(), mergedMap.get(i.getKey()) + i.getValue());
-            } else {
-                mergedMap.put(i.getKey(), i.getValue());
-            }
-        }
-        return mergedMap;
     }
 
     /**
@@ -431,9 +337,9 @@ public class formReportTwo extends javax.swing.JFrame {
         if (valid) {
             data = getData_updated(start, end, categoryCount);                          // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
-                    "Categories Analysed",
-                    "Category Name",
-                    "Category count",
+                    "Value per category in each type of document",
+                    "Category name",
+                    "Value in category",
                     data,
                     PlotOrientation.VERTICAL,
                     true,
