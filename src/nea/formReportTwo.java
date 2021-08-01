@@ -289,8 +289,8 @@ public class formReportTwo extends javax.swing.JFrame {
         LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
 
         int categoryCount = (int) spCategoryCount.getValue();       // Gets the amount of categories the user wants to see
-        if (categoryCount == 0) {                                   // All will be analyzed but only this amount will be shown
-            categoryCount = 10;
+        if (categoryCount <= 0) {                                   // All will be analyzed but only this amount will be shown
+            categoryCount = 5;
         }
 
         //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
