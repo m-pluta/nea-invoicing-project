@@ -319,7 +319,7 @@ public class formOneEmployee extends javax.swing.JFrame {
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         conn = sqlManager.openConnection();                         // Opens the connection to the DB
-        int NoInvoices = sqlManager.countInvoices(conn, "employee_id", EmployeeID);        // Counts how many invoices the employee has
+        int NoInvoices = sqlManager.countRecords(conn, "tblInvoices", "employee_id", EmployeeID);        // Counts how many invoices the employee has
         int NoQuotations = sqlManager.countQuotations(conn, "employee_id", EmployeeID);    // Counts how many quotations the employee has
         System.out.println("-------------------------------");
         System.out.println("Employee ID: " + EmployeeID);
