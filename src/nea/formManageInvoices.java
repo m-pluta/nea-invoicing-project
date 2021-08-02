@@ -224,34 +224,47 @@ public class formManageInvoices extends javax.swing.JFrame {
     public void loadInvoices() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT invoice_id, CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
-                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created, payments FROM tblInvoices"
-                + " INNER JOIN tblCustomers ON tblInvoices.customer_id=tblCustomers.customer_id"
-                + " INNER JOIN tblEmployees ON tblInvoices.employee_id=tblEmployees.employee_id";
+
+        String queryInvoiceTotals = "SELECT i.invoice_id, "
+                + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
+                + " FROM tblInvoices AS i"
+                + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
+                + " GROUP BY i.invoice_id";
+
+        String mainQuery = "SELECT i.invoice_id AS id,"
+                + " CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
+                + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
+                + " i.date_created,"
+                + " iT.invoiceTotal"
+                + " FROM tblInvoices AS i"
+                + " INNER JOIN tblCustomers AS c ON i.customer_id = c.customer_id"
+                + " INNER JOIN tblEmployees AS e ON i.employee_id = e.employee_id"
+                + " LEFT JOIN (" + queryInvoiceTotals + ") AS iT ON i.invoice_id = iT.invoice_id";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
-            query += " WHERE";
-            query += " invoice_id LIKE '%" + sp + "%'";                                                 // \
-            query += " OR CONCAT(tblCustomers.forename,' ',tblCustomers.surname) LIKE '%" + sp + "%'";  //  |
-            query += " OR CONCAT(tblEmployees.forename,' ',tblEmployees.surname) LIKE '%" + sp + "%'";  //  |-- Check whether a column value contains the searchParameter
-            query += " OR date_created LIKE '%" + sp + "%'";                                            //  |
-            query += " OR payments LIKE '%" + sp + "%'";                                                // /
+            mainQuery += " WHERE";
+            mainQuery += " i.invoice_id LIKE '%" + sp + "%'";                           // \
+            mainQuery += " OR CONCAT(c.forename, ' ', c.surname) LIKE '%" + sp + "%'";  //  |
+            mainQuery += " OR CONCAT(e.forename, ' ', e.surname) LIKE '%" + sp + "%'";  //  |-- Check whether a column value contains the searchParameter
+            mainQuery += " OR i.date_created LIKE '%" + sp + "%'";                      //  |
+            mainQuery += " OR iT.invoiceTotal LIKE '%" + sp + "%'";                     // /
         }
-        
-        query += " ORDER BY invoice_id";
+
+        mainQuery += " GROUP BY i.invoice_id"
+                + " ORDER BY i.invoice_id";
 
         try {
             Statement stmt = conn.createStatement();
 
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery(mainQuery);
             int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
                 String[] invoiceData = new String[5];
-                invoiceData[0] = String.valueOf(rs.getInt(1));      // Invoice ID
-                invoiceData[1] = rs.getString(2);                   // Customer name
-                invoiceData[2] = rs.getString(3);                   // Employee name
-                invoiceData[3] = rs.getString(4);                   // Creation date
-                invoiceData[4] = Utility.formatCurrency(sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(5)); // Invoice total
+                invoiceData[0] = String.valueOf(rs.getInt(1));              // Invoice ID
+                invoiceData[1] = rs.getString(2);                           // Customer name
+                invoiceData[2] = rs.getString(3);                           // Employee name
+                invoiceData[3] = rs.getString(4);                           // Creation date
+                invoiceData[4] = Utility.formatCurrency(rs.getDouble(5));   // Invoice total
                 model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
                 invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
             }
