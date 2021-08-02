@@ -70,57 +70,59 @@ public class formReportThree extends javax.swing.JFrame {
         });
 
         //<editor-fold defaultstate="collapsed" desc="Code for setting the min and max value for the JSpinner">
-        int NoCategories = 1;
+        int NoEmployees = 1;
         conn = sqlManager.openConnection();
         try {
-            String query = "SELECT COUNT(item_category_id) FROM tblItemCategories";
+            String query = "SELECT COUNT(employee_id) FROM tblEmployees";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query
-            NoCategories = rs.getInt(1);
+            NoEmployees = rs.getInt(1);
         } catch (SQLException e) {
             System.out.println("SQLException");
             e.printStackTrace();
         }
 
         int preferredAmount = 5;                                    // The preferred amount of categories to display
-        SpinnerModel sm = new SpinnerNumberModel(NoCategories < preferredAmount ? NoCategories : preferredAmount, 1, NoCategories, 1); // Default, LB, UB, Increment
+        SpinnerModel sm = new SpinnerNumberModel(NoEmployees < preferredAmount ? NoEmployees : preferredAmount, 1, NoEmployees, 1); // Default, LB, UB, Increment
         spEmployeeCount.setModel(sm);
         //</editor-fold>
     }
 
     // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
-    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
+    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int EmployeeCount) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
 
-        String queryRawInvoiceCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
-                + " FROM tblitemcategories as a"
-                + " INNER JOIN tblinvoicedetails as b ON a.item_category_id = b.item_category_id"
-                + " INNER JOIN tblinvoices as c ON b.invoice_id = c.invoice_id"
-                + " WHERE c.date_created BETWEEN ? AND ?";
+        String queryInvoiceTotals = "SELECT i.employee_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
+                + " FROM tblInvoices AS i"
+                + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
+                + " WHERE i.date_created BETWEEN ? AND ?"
+                + " GROUP BY i.invoice_id";
 
-        String queryRawQuotationCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
-                + " FROM tblitemcategories as a"
-                + " INNER JOIN tblquotationdetails as b ON a.item_category_id = b.item_category_id"
-                + " INNER JOIN tblquotations as c ON b.quotation_id = c.quotation_id"
-                + " WHERE c.date_created BETWEEN ? AND ?";
+        String queryQuotationTotals = "SELECT q.employee_id, SUM(qD.quantity * qD.unit_price) AS quotationSubtotal"
+                + " FROM tblQuotations AS q"
+                + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
+                + " WHERE q.date_created BETWEEN ? AND ?"
+                + " GROUP BY q.quotation_id";
 
-        String queryInvoiceCategoryTotals = "SELECT sq.item_category_id, SUM(sq.itemCost) as cT"
-                + " FROM (" + queryRawInvoiceCategoryCosts + ") as sq"
-                + " GROUP BY sq.item_category_id";
+        String queryEmployeeInvoiceTotals = "SELECT e.employee_id, COALESCE(SUM(iT.invoiceSubtotal), 0) AS eInvoiceTotal"
+                + " FROM tblEmployees AS e"
+                + " INNER JOIN (" + queryInvoiceTotals + ") AS iT ON e.employee_id = iT.employee_id"
+                + " GROUP BY e.employee_id";
 
-        String queryQuotationCategoryTotals = "SELECT sq.item_category_id, SUM(sq.itemCost) as cT"
-                + " FROM (" + queryRawQuotationCategoryCosts + ") as sq"
-                + " GROUP BY sq.item_category_id";
+        String queryEmployeeQuotationTotals = "SELECT e.employee_id, COALESCE(SUM(qT.quotationSubtotal), 0) AS eQuotationTotal"
+                + " FROM tblEmployees AS e"
+                + " INNER JOIN (" + queryQuotationTotals + ") AS qT ON e.employee_id = qT.employee_id"
+                + " GROUP BY e.employee_id";
 
-        String mainQuery = "SELECT a.category_name, COALESCE(sq1.cT, 0) AS invoiceTotal, COALESCE(sq2.cT, 0) AS quotationTotal, (COALESCE(sq1.cT, 0) + COALESCE(sq2.cT, 0)) as combinedTotal"
-                + " FROM tblitemcategories as a"
-                + " LEFT JOIN (" + queryInvoiceCategoryTotals + ") as sq1"
-                + " ON a.item_category_id = sq1.item_category_id"
-                + " LEFT JOIN (" + queryQuotationCategoryTotals + ") as sq2"
-                + " ON a.item_category_id = sq2.item_category_id"
-                + " ORDER BY combinedTotal"
-                + " DESC"
+        String mainQuery = "SELECT e.employee_id, CONCAT(e.forename, ' ', e.surname) AS Fullname,"
+                + " COALESCE(eITs.eInvoiceTotal, 0) AS invoiceTotal,"
+                + " COALESCE(eQTs.eQuotationTotal, 0) AS quotationTotal,"
+                + " COALESCE(eITs.eInvoiceTotal, 0) + COALESCE(eQTs.eQuotationTotal, 0) AS overallTotal"
+                + " FROM tblEmployees AS e"
+                + " LEFT JOIN (" + queryEmployeeInvoiceTotals + ") AS eITs ON e.employee_id = eITs.employee_id"
+                + " LEFT JOIN (" + queryEmployeeQuotationTotals + ") AS eQTs ON e.employee_id = eQTs.employee_id"
+                + " ORDER BY overallTotal DESC"
                 + " LIMIT ?";
 
         conn = sqlManager.openConnection();
@@ -130,15 +132,16 @@ public class formReportThree extends javax.swing.JFrame {
             pstmt.setObject(2, end);
             pstmt.setObject(3, start);
             pstmt.setObject(4, end);
-            pstmt.setInt(5, CategoryCount);
+            pstmt.setInt(5, EmployeeCount);
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String category_name = rs.getString(1);
-                dataset.addValue(rs.getDouble(2), "Invoices", category_name);
-                dataset.addValue(rs.getDouble(3), "Quotations", category_name);
-                dataset.addValue(rs.getDouble(4), "Both", category_name);
+                String category_name = rs.getString(2);
+                dataset.addValue(rs.getDouble(3), "Invoices", category_name);
+                dataset.addValue(rs.getDouble(4), "Quotations", category_name);
+                dataset.addValue(rs.getDouble(5), "Both", category_name);
+                System.out.println(rs.getDouble(3) + " - " + rs.getDouble(4) + " - " + rs.getDouble(5));
             }
         } catch (SQLException e) {
             System.out.println("SQLException");
@@ -182,7 +185,7 @@ public class formReportThree extends javax.swing.JFrame {
         });
 
         lblItemCategoryAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblItemCategoryAnalysis.setText("Item Category Analysis");
+        lblItemCategoryAnalysis.setText("Employee Analysis");
 
         pParam.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         pParam.setMinimumSize(new java.awt.Dimension(0, 200));
@@ -275,7 +278,7 @@ public class formReportThree extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBack)
-                        .addGap(200, 200, 200)
+                        .addGap(222, 222, 222)
                         .addComponent(lblItemCategoryAnalysis)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
