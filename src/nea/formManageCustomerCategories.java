@@ -294,7 +294,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 System.out.println("This is the default row and cannot be removed");
             } else {                                                // If it is any other row other than row 1
                 conn = sqlManager.openConnection();                 // Opens connection to DB
-                int usersWithCategory = sqlManager.countRecordsWithCategory(conn, "tblCustomers", "type_id", id);
+                int usersWithCategory = sqlManager.countRecords(conn, "tblCustomers", "type_id", id);
                 if (usersWithCategory == -1) {
                     System.out.println("Error fetching customers with this category");
                 } else if (usersWithCategory > 0) {

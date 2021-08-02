@@ -295,8 +295,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 System.out.println("This is the default row and cannot be removed");
             } else {                                                // If it is any other row other than row 1
                 conn = sqlManager.openConnection();                 // Opens connection to DB
-                int invoiceRowsWithCategory = sqlManager.countRecordsWithCategory(conn, "tblInvoiceDetails", "item_category_id", id);
-                int quotationRowsWithCategory = sqlManager.countRecordsWithCategory(conn, "tblQuotationDetails", "item_category_id", id);
+                int invoiceRowsWithCategory = sqlManager.countRecords(conn, "tblInvoiceDetails", "item_category_id", id);
+                int quotationRowsWithCategory = sqlManager.countRecords(conn, "tblQuotationDetails", "item_category_id", id);
                 if (invoiceRowsWithCategory == -1 || quotationRowsWithCategory == -1) {
                     System.out.println("Error fetching document rows with this category");
                 } else if (invoiceRowsWithCategory > 0 || quotationRowsWithCategory > 0) {
