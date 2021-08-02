@@ -161,56 +161,6 @@ public class sqlManager {
         return -1;
     }
 
-    public static int countRecordsWithCategory(Connection conn, String tableName, String key, int catID) {
-        try {
-            String query = "SELECT COUNT(" + key + ") FROM " + tableName + " WHERE " + key + " = ?";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, catID);
-            ResultSet rs = pstmt.executeQuery();
-            rs.next();                                              // Gets the next result from query
-            return rs.getInt(1);                                    // Returns the number of invoices
-
-        } catch (SQLException e) {
-            System.out.println("SQLException");
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    // Counts how many invoices a given customer_id or employee_id has
-    public static int countInvoices(Connection conn, String user_key, int id) {
-        try {
-            String query = "SELECT COUNT(" + user_key + ") FROM tblInvoices WHERE " + user_key + " = ?";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            rs.next();                                              // Gets the next result from query
-            return rs.getInt(1);                                    // Returns the number of invoices
-
-        } catch (SQLException e) {
-            System.out.println("SQLException");
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    // Counts how many quotations a given customer_id or employee_id has
-    public static int countQuotations(Connection conn, String user_key, int id) {
-        try {
-            String query = "SELECT COUNT(" + user_key + ") FROM tblQuotations WHERE " + user_key + " = ?";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            rs.next();                                              // Gets the next result from query
-            return rs.getInt(1);                                    // Returns the number of quotations
-
-        } catch (SQLException e) {
-            System.out.println("SQLException");
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
     // Returns the last time a given employee (id) was logged in
     public static String getLastLogin(Connection conn, int employee_id) {
         String query = "SELECT date_last_logged_in FROM tblLogins WHERE employee_id = ?";
