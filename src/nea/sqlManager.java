@@ -145,9 +145,10 @@ public class sqlManager {
 
     public static int countRecordsWithCategory(Connection conn, String tableName, String key, int catID) {
         try {
-            String query = "SELECT COUNT(" + key + ") FROM " + tableName + " WHERE " + key + " = " + catID;
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            String query = "SELECT COUNT(" + key + ") FROM " + tableName + " WHERE " + key + " = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, catID);
+            ResultSet rs = pstmt.executeQuery();
             rs.next();                                              // Gets the next result from query
             return rs.getInt(1);                                    // Returns the number of invoices
 
@@ -161,9 +162,10 @@ public class sqlManager {
     // Counts how many invoices a given customer_id or employee_id has
     public static int countInvoices(Connection conn, String user_key, int id) {
         try {
-            String query = "SELECT COUNT(" + user_key + ") FROM tblInvoices WHERE " + user_key + " = " + id;
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            String query = "SELECT COUNT(" + user_key + ") FROM tblInvoices WHERE " + user_key + " = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
             rs.next();                                              // Gets the next result from query
             return rs.getInt(1);                                    // Returns the number of invoices
 
@@ -177,9 +179,10 @@ public class sqlManager {
     // Counts how many quotations a given customer_id or employee_id has
     public static int countQuotations(Connection conn, String user_key, int id) {
         try {
-            String query = "SELECT COUNT(" + user_key + ") FROM tblQuotations WHERE " + user_key + " = " + id;
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            String query = "SELECT COUNT(" + user_key + ") FROM tblQuotations WHERE " + user_key + " = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
             rs.next();                                              // Gets the next result from query
             return rs.getInt(1);                                    // Returns the number of quotations
 
@@ -188,12 +191,6 @@ public class sqlManager {
             e.printStackTrace();
         }
         return -1;
-    }
-
-    // This method might be implemented later on since im unsure if a full removal should even be allowed
-    public static void removeCustomer(Connection conn, boolean fullRemoval, int customerID) {
-        removeRecord(conn, "tblCustomers", "customer_id", customerID);
-
     }
 
     // Returns the last time a given employee (id) was logged in
