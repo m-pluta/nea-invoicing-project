@@ -93,7 +93,9 @@ public class formReportThree extends javax.swing.JFrame {
     private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int EmployeeCount) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
 
-        String queryInvoiceTotals = "SELECT i.employee_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
+        // Raw SQL query: https://pastebin.com/RXQdWpH1
+        
+        String queryInvoiceTotals = "SELECT SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
                 + " FROM tblInvoices AS i"
                 + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
                 + " WHERE i.date_created BETWEEN ? AND ?"
@@ -137,10 +139,10 @@ public class formReportThree extends javax.swing.JFrame {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String category_name = rs.getString(2);
-                dataset.addValue(rs.getDouble(3), "Invoices", category_name);
-                dataset.addValue(rs.getDouble(4), "Quotations", category_name);
-                dataset.addValue(rs.getDouble(5), "Both", category_name);
+                String category_name = rs.getString(1);
+                dataset.addValue(rs.getDouble(2), "Invoices", category_name);
+                dataset.addValue(rs.getDouble(3), "Quotations", category_name);
+                dataset.addValue(rs.getDouble(4), "Both", category_name);
             }
         } catch (SQLException e) {
             System.out.println("SQLException");

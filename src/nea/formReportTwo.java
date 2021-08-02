@@ -93,6 +93,8 @@ public class formReportTwo extends javax.swing.JFrame {
     private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
 
+        // Raw SQL query: https://pastebin.com/5n2Pi2qn
+        
         String queryRawInvoiceCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
                 + " FROM tblitemcategories as a"
                 + " INNER JOIN tblinvoicedetails as b ON a.item_category_id = b.item_category_id"
@@ -119,8 +121,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 + " ON a.item_category_id = sq1.item_category_id"
                 + " LEFT JOIN (" + queryQuotationCategoryTotals + ") as sq2"
                 + " ON a.item_category_id = sq2.item_category_id"
-                + " ORDER BY combinedTotal"
-                + " DESC"
+                + " ORDER BY combinedTotal DESC"
                 + " LIMIT ?";
 
         conn = sqlManager.openConnection();
