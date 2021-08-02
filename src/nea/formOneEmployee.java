@@ -320,7 +320,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         conn = sqlManager.openConnection();                         // Opens the connection to the DB
         int NoInvoices = sqlManager.countRecords(conn, "tblInvoices", "employee_id", EmployeeID);        // Counts how many invoices the employee has
-        int NoQuotations = sqlManager.countQuotations(conn, "employee_id", EmployeeID);    // Counts how many quotations the employee has
+        int NoQuotations = sqlManager.countRecords(conn, "tblQuotations", "employee_id", EmployeeID);    // Counts how many quotations the employee has
         System.out.println("-------------------------------");
         System.out.println("Employee ID: " + EmployeeID);
         System.out.println("No. of invoices: " + NoInvoices);
@@ -330,7 +330,7 @@ public class formOneEmployee extends javax.swing.JFrame {
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?", "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 sqlManager.removeRecord(conn, "tblEmployees", "employee_id", EmployeeID);   // Removes the employee
-                sqlManager.removeRecord(conn, "tblLogins", "employee_id", EmployeeID);   // Removes the employee's login access
+                sqlManager.removeRecord(conn, "tblLogins", "employee_id", EmployeeID);      // Removes the employee's login access
                 this.dispose();                                     // Closes this form since the employee no longer exists
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee was removed
 
