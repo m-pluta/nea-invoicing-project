@@ -143,6 +143,24 @@ public class sqlManager {
         return null;
     }
 
+    // Returns the amount of records are in a given table with a certain key value
+    public static int countRecords(Connection conn, String tableName, String key, int id) {
+        try {
+            String query = "SELECT COUNT(" + key + ") FROM " + tableName + " WHERE " + key + " = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQLException");
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     public static int countRecordsWithCategory(Connection conn, String tableName, String key, int catID) {
         try {
             String query = "SELECT COUNT(" + key + ") FROM " + tableName + " WHERE " + key + " = ?";
