@@ -115,7 +115,7 @@ public class formReportThree extends javax.swing.JFrame {
                 + " INNER JOIN (" + queryQuotationTotals + ") AS qT ON e.employee_id = qT.employee_id"
                 + " GROUP BY e.employee_id";
 
-        String mainQuery = "SELECT e.employee_id, CONCAT(e.forename, ' ', e.surname) AS Fullname,"
+        String mainQuery = "SELECT CONCAT(e.forename, ' ', e.surname) AS Fullname,"
                 + " COALESCE(eITs.eInvoiceTotal, 0) AS invoiceTotal,"
                 + " COALESCE(eQTs.eQuotationTotal, 0) AS quotationTotal,"
                 + " COALESCE(eITs.eInvoiceTotal, 0) + COALESCE(eQTs.eQuotationTotal, 0) AS overallTotal"
@@ -141,7 +141,6 @@ public class formReportThree extends javax.swing.JFrame {
                 dataset.addValue(rs.getDouble(3), "Invoices", category_name);
                 dataset.addValue(rs.getDouble(4), "Quotations", category_name);
                 dataset.addValue(rs.getDouble(5), "Both", category_name);
-                System.out.println(rs.getDouble(3) + " - " + rs.getDouble(4) + " - " + rs.getDouble(5));
             }
         } catch (SQLException e) {
             System.out.println("SQLException");

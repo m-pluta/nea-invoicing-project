@@ -235,7 +235,7 @@ public class formMainMenu extends javax.swing.JFrame {
         });
 
         btnReport3.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnReport3.setText("Report 3");
+        btnReport3.setText("Employee Analysis");
         btnReport3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReport3ActionPerformed(evt);
