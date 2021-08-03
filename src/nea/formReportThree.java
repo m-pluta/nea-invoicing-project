@@ -95,7 +95,7 @@ public class formReportThree extends javax.swing.JFrame {
 
         // Raw SQL query: https://pastebin.com/RXQdWpH1
         
-        String queryInvoiceTotals = "SELECT SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
+        String queryInvoiceTotals = "SELECT i.employee_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
                 + " FROM tblInvoices AS i"
                 + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
                 + " WHERE i.date_created BETWEEN ? AND ?"
