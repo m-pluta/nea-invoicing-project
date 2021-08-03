@@ -249,17 +249,16 @@ public class sqlManager {
 
     // Returns the total value of all the items in a given document (invoice/quotation). This is the sum of all the quantity * unit_price
     public static double totalDocument(Connection conn, String tableName, String PK_name, int document_id) {
-        String query = "SELECT quantity, unit_price FROM " + tableName + " WHERE " + PK_name + " = ?";
+        String query = "SELECT COALESCE(SUM(unit_price * quantity), 0) as total FROM " + tableName + " WHERE "+ PK_name + " = ?";
+        
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, document_id);
 
             ResultSet rs = pstmt.executeQuery();
-            double total = 0.00;
-            while (rs.next()) {                                     // If an document with the given id was found
-                total += rs.getInt(1) * rs.getDouble(2);            // Adds the quantity * unit_price to the total
+            if (rs.next()) {                                        // If an document with the given id was found
+                return rs.getDouble(1);                             // Returns the total value of the document
             }
-            return total;                                           // Returns the total value of the document
         } catch (SQLException e) {
             System.out.println("SQLException");
             e.printStackTrace();
