@@ -221,7 +221,7 @@ public class formManageInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-public void loadInvoices() {    // Raw SQL query: https://pastebin.com/xQ9xpUYT
+    public void loadInvoices() {    // Raw SQL query: https://pastebin.com/xQ9xpUYT
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
 
