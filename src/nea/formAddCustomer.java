@@ -45,7 +45,7 @@ public class formAddCustomer extends javax.swing.JFrame {
         loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
 
         conn = sqlManager.openConnection();
-        CustomerID = sqlManager.getNextPKValue(conn, "tblCustomers", "customer_id");   // Tells the customer view form which customer to load
+        CustomerID = sqlManager.getNextPKValue(conn, "tblCustomers", "customer_id");   // Tells the customer view form which customer id will be used next
         sqlManager.closeConnection(conn);
         txtCustomerID.setText(String.valueOf(CustomerID));
         txtCustomerID.setEditable(false);
