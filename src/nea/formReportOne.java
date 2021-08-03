@@ -88,8 +88,8 @@ public class formReportOne extends javax.swing.JFrame {
             //<editor-fold defaultstate="collapsed" desc="Loading all invoice results into Hashmap">
             try {
                 // Raw SQL query: https://pastebin.com/RJ5B4hpc
-                
-                String query = "SELECT i.date_created, COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal, i.payments FROM tblInvoices AS i"
+
+                String query = "SELECT i.date_created, COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal FROM tblInvoices AS i"
                         + " INNER JOIN tblinvoicedetails as iD"
                         + " ON i.invoice_id = iD.invoice_id"
                         + " WHERE i.date_created BETWEEN ? AND ?"
@@ -106,7 +106,7 @@ public class formReportOne extends javax.swing.JFrame {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
                     while (rs.next()) {
                         String key = rs.getDate(1).toLocalDate().format(daymonth);          // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);            // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);  // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
@@ -127,7 +127,7 @@ public class formReportOne extends javax.swing.JFrame {
                         }
                         //</editor-fold>
                         String key = counter.format(daymonth);                              // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);            // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);
                     }
                     //</editor-fold>
@@ -135,7 +135,7 @@ public class formReportOne extends javax.swing.JFrame {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 2 data categorising">
                     while (rs.next()) {
                         String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);                    // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
@@ -143,7 +143,7 @@ public class formReportOne extends javax.swing.JFrame {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 3 data categorising">
                     while (rs.next()) {
                         String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);                    // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
@@ -151,7 +151,7 @@ public class formReportOne extends javax.swing.JFrame {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 4 data categorising">
                     while (rs.next()) {
                         String key = "" + rs.getDate(1).toLocalDate().getYear();                    // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);                    // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
@@ -173,7 +173,7 @@ public class formReportOne extends javax.swing.JFrame {
             //<editor-fold defaultstate="collapsed" desc="Loading all quotation results into Hashmap">
             try {
                 // Raw SQL query: https://pastebin.com/uA3ifThF
-                
+
                 String query = "SELECT q.date_created, COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
                         + " FROM tblQuotations AS q"
                         + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
