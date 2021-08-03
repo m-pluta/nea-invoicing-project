@@ -87,7 +87,15 @@ public class formReportOne extends javax.swing.JFrame {
             dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
             //<editor-fold defaultstate="collapsed" desc="Loading all invoice results into Hashmap">
             try {
-                String query = "SELECT invoice_id, payments, date_created FROM tblInvoices WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
+                // Raw SQL query: https://pastebin.com/RJ5B4hpc
+                
+                String query = "SELECT i.date_created, COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal, i.payments FROM tblInvoices AS i"
+                        + " INNER JOIN tblinvoicedetails as iD"
+                        + " ON i.invoice_id = iD.invoice_id"
+                        + " WHERE i.date_created BETWEEN ? AND ?"
+                        + " GROUP BY i.invoice_id"
+                        + " ORDER BY i.date_created";
+
                 PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates and sorts them in ascending order
                 pstmt.setObject(1, start);
                 pstmt.setObject(2, end);
@@ -97,9 +105,9 @@ public class formReportOne extends javax.swing.JFrame {
                 if (barSpacing == 0) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
                     while (rs.next()) {
-                        String key = rs.getDate(3).toLocalDate().format(daymonth);  // The key in the hashmap
-                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        String key = rs.getDate(1).toLocalDate().format(daymonth);          // The key in the hashmap
+                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);            // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);  // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 } else if (barSpacing == 1) {
@@ -109,7 +117,7 @@ public class formReportOne extends javax.swing.JFrame {
                         //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
                         boolean upToDate = false;                   // boolean for keeping track whether the counter is storing the date of the current commencing week
                         while (!upToDate) {
-                            Duration dr = Duration.between(counter, rs.getDate(3).toLocalDate().atTime(0, 0, 0)); // Calculates days between the counter and date of the data being added
+                            Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0)); // Calculates days between the counter and date of the data being added
                             if ((int) dr.toDays() < 7) {            // If the data is within the same commencing week
                                 upToDate = true;
                             } else {
@@ -118,32 +126,32 @@ public class formReportOne extends javax.swing.JFrame {
                             }
                         }
                         //</editor-fold>
-                        String key = counter.format(daymonth);          // The key in the hashmap
-                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        String key = counter.format(daymonth);                              // The key in the hashmap
+                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);            // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);
                     }
                     //</editor-fold>
                 } else if (barSpacing == 2) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 2 data categorising">
                     while (rs.next()) {
-                        String key = rs.getDate(3).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
-                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
+                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);                    // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 } else if (barSpacing == 3) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 3 data categorising">
                     while (rs.next()) {
-                        String key = Utility.getQuarter(rs.getDate(3).toLocalDate()) + "-" + rs.getDate(3).toLocalDate().format(year);  // The key in the hashmap
-                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
+                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);                    // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 } else if (barSpacing == 4) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 4 data categorising">
                     while (rs.next()) {
-                        String key = "" + rs.getDate(3).toLocalDate().getYear();   // The key in the hashmap
-                        Double invoiceTotal = sqlManager.totalDocument(conn, "tblInvoiceDetails", "invoice_id", rs.getInt(1)) - rs.getDouble(2);    // The total value of the invoice
+                        String key = "" + rs.getDate(1).toLocalDate().getYear();                    // The key in the hashmap
+                        Double invoiceTotal = rs.getDouble(2) - rs.getDouble(3);                    // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
@@ -164,7 +172,15 @@ public class formReportOne extends javax.swing.JFrame {
             dataArr_Quotation = generateEmptyDict(start, end, barSpacing);
             //<editor-fold defaultstate="collapsed" desc="Loading all quotation results into Hashmap">
             try {
-                String query = "SELECT quotation_id, date_created FROM tblQuotations WHERE date_created BETWEEN ? AND ? ORDER BY date_created";
+                // Raw SQL query: https://pastebin.com/uA3ifThF
+                
+                String query = "SELECT q.date_created, COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
+                        + " FROM tblQuotations AS q"
+                        + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
+                        + " WHERE q.date_created BETWEEN ? AND ?"
+                        + " GROUP BY q.quotation_id"
+                        + " ORDER BY q.quotation_id";
+
                 PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the quotations between two dates and sorts them in ascending order
                 pstmt.setObject(1, start);
                 pstmt.setObject(2, end);
@@ -174,8 +190,8 @@ public class formReportOne extends javax.swing.JFrame {
                 if (barSpacing == 0) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
                     while (rs.next()) {
-                        String key = rs.getDate(2).toLocalDate().format(daymonth);  // The key in the hashmap
-                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        String key = rs.getDate(1).toLocalDate().format(daymonth);  // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
                         dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
@@ -186,7 +202,7 @@ public class formReportOne extends javax.swing.JFrame {
                         //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
                         boolean upToDate = false;                   // boolean for keeping track whether the counter is storing the date of the current commencing week
                         while (!upToDate) {
-                            Duration dr = Duration.between(counter, rs.getDate(2).toLocalDate().atTime(0, 0, 0)); // Calculates days between the counter and date of the data being added
+                            Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0)); // Calculates days between the counter and date of the data being added
                             if ((int) dr.toDays() < 7) {            // If the data is within the same commencing week
                                 upToDate = true;
                             } else {
@@ -196,31 +212,31 @@ public class formReportOne extends javax.swing.JFrame {
                         }
                         //</editor-fold>
                         String key = counter.format(daymonth);          // The key in the hashmap
-                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
                         dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);
                     }
                     //</editor-fold>
                 } else if (barSpacing == 2) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 2 data categorising">
                     while (rs.next()) {
-                        String key = rs.getDate(2).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(2).toLocalDate().format(year);  // The key in the hashmap
-                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
                         dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 } else if (barSpacing == 3) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 3 data categorising">
                     while (rs.next()) {
-                        String key = Utility.getQuarter(rs.getDate(2).toLocalDate()) + "-" + rs.getDate(2).toLocalDate().format(year);  // The key in the hashmap
-                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
                         dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 } else if (barSpacing == 4) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 4 data categorising">
                     while (rs.next()) {
-                        String key = "" + rs.getDate(2).toLocalDate().getYear();   // The key in the hashmap
-                        Double quotationTotal = sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1));    // The total value of the quotation
+                        String key = "" + rs.getDate(1).toLocalDate().getYear();   // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
                         dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
