@@ -222,28 +222,42 @@ public class formManageQuotations extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void loadQuotations() {
+    public void loadQuotations() {    // Raw SQL query: https://pastebin.com/YyF8jJ6b
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();                         // Opens connection to the DB
-        String query = "SELECT quotation_id, CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
-                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created FROM tblQuotations "
-                + " INNER JOIN tblCustomers ON tblQuotations.customer_id=tblCustomers.customer_id"
-                + " INNER JOIN tblEmployees ON tblQuotations.employee_id=tblEmployees.employee_id";
+
+        String queryQuotationTotals = "SELECT q.quotation_id,"
+                + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) AS quotationTotal"
+                + " FROM tblQuotations AS q"
+                + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
+                + " GROUP BY q.quotation_id";
+
+        String mainQuery = "SELECT q.quotation_id AS id,"
+                + " CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
+                + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
+                + " q.date_created,"
+                + " qT.quotationTotal"
+                + " FROM tblQuotations AS q"
+                + " INNER JOIN tblCustomers AS c ON q.customer_id = c.customer_id"
+                + " INNER JOIN tblEmployees AS e ON q.employee_id = e.employee_id"
+                + " LEFT JOIN (" + queryQuotationTotals + ") AS qT ON q.quotation_id = qT.quotation_id";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
-            query += " WHERE";                                                                          // \ 
-            query += " quotation_id LIKE '%" + sp + "%'";                                               //  |
-            query += " OR CONCAT(tblCustomers.forename,' ',tblCustomers.surname) LIKE '%" + sp + "%'";  //  |-- Check whether a column value contains the searchParameter
-            query += " OR CONCAT(tblEmployees.forename,' ',tblEmployees.surname) LIKE '%" + sp + "%'";  //  |
-            query += " OR date_created LIKE '%" + sp + "%'";                                            // /
+            mainQuery += " WHERE";
+            mainQuery += " q.quotation_id LIKE '%" + sp + "%'";                           // \
+            mainQuery += " OR CONCAT(c.forename, ' ', c.surname) LIKE '%" + sp + "%'";    //  |
+            mainQuery += " OR CONCAT(e.forename, ' ', e.surname) LIKE '%" + sp + "%'";    //  |-- Check whether a column value contains the searchParameter
+            mainQuery += " OR q.date_created LIKE '%" + sp + "%'";                        //  |
+            mainQuery += " OR qT.quotationTotal LIKE '%" + sp + "%'";                     // /
         }
 
-        query += " ORDER BY quotation_id";
-        
+        mainQuery += " GROUP BY q.quotation_id"
+                + " ORDER BY q.quotation_id";
+
         try {
             Statement stmt = conn.createStatement();
 
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery(mainQuery);
             int quotationCounter = 0;                               // variable for counting how many quotations are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
                 String[] quotationData = new String[5];
@@ -251,7 +265,7 @@ public class formManageQuotations extends javax.swing.JFrame {
                 quotationData[1] = rs.getString(2);                 // Customer name
                 quotationData[2] = rs.getString(3);                 // Employee name
                 quotationData[3] = rs.getString(4);                 // Creation date
-                quotationData[4] = String.valueOf(sqlManager.totalDocument(conn, "tblQuotationDetails", "quotation_id", rs.getInt(1))); // quotation total
+                quotationData[4] = Utility.formatCurrency(rs.getDouble(5)); // Quotation total
                 model.addRow(new Object[]{quotationData[0], quotationData[1], quotationData[2], quotationData[3], quotationData[4]}); // Adds the quotation to the table
                 quotationCounter++;                             // Increments quotation counter as a new quotation was added to the table
             }
