@@ -280,6 +280,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     doc = new XWPFDocument(OPCPackage.open(templateFilePath));
                     doc = resizeDocumentTable(doc, invoiceRows.size());
                     saveDocument(doc, outputFilePath, "Temp", false);
+                    doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));
+                    doc = insertIntoTable(doc, invoiceRows);
+                    saveDocument(doc, outputFilePath, "Output", true);
                 } catch (InvalidFormatException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
@@ -294,12 +297,35 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
+    public static XWPFDocument insertIntoTable(XWPFDocument document, ArrayList<tableRow> data) {
+
+        List<XWPFTable> tables = document.getTables();
+
+        XWPFTable table = tables.get(0);
+
+        for (int i = 0; i < data.size(); i++) {
+            int j = 0;
+            for (XWPFTableCell cell : table.getRows().get(i + 1).getTableCells()) {
+                if (cell.getParagraphs().size() == 0) {
+                    cell.addParagraph();
+                }
+                for (XWPFParagraph p : cell.getParagraphs()) {
+                    XWPFRun tempRun = p.createRun();
+                    tempRun.setText(data.get(i).data[j++]);
+                }
+            }
+            j = 0;
+        }
+
+        return document;
+    }
+
     public static XWPFDocument resizeDocumentTable(XWPFDocument document, int amtRows) {
 
         List<XWPFTable> tables = document.getTables();
         XWPFTable table = tables.get(0);
 
-        XWPFTableRow blankRow = table.getRows().get(2);             // The third row in the invoice
+        XWPFTableRow blankRow = table.getRows().get(2);             // The third row in the invoice template is the blank row
         if (amtRows == 0) {
             table.removeRow(2);
             table.removeRow(1);
@@ -314,14 +340,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 for (int i = 2; i < newRowsNeeded + 2; i++) {
                     CTRow ctrow = CTRow.Factory.parse(blankRow.getCtRow().newInputStream());
                     XWPFTableRow newRow = new XWPFTableRow(ctrow, table);
-
-                    for (XWPFTableCell cell : newRow.getTableCells()) {
-                        for (XWPFParagraph paragraph : cell.getParagraphs()) {
-                            for (XWPFRun run : paragraph.getRuns()) {
-                                run.setText("", 0);
-                            }
-                        }
-                    }
                     table.addRow(newRow, startRowInsert++);
                 }
             } catch (XmlException xe) {
