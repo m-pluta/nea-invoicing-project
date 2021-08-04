@@ -307,20 +307,17 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         XWPFTable table = tables.get(0);
 
         for (int i = 0; i < data.size(); i++) {
-            int j = 0;
-            for (XWPFTableCell cell : table.getRows().get(i + 1).getTableCells()) {
+            for (int j = 0; j < 4; j++) {
+                XWPFTableCell cell = table.getRows().get(i + 1).getTableCells().get(j);
                 if (cell.getParagraphs().size() == 0) {
                     cell.addParagraph();
                 }
                 XWPFParagraph p = cell.getParagraphs().get(0);
-                if (p.getRuns().size() == 0) {
-                    XWPFRun tempRun = p.createRun();
-                    tempRun.setText(data.get(i).data[j++]);
-                } else {
-                    p.getRuns().get(0).setText(data.get(i).data[j++]);
-                }
+
+                XWPFRun run = p.insertNewRun(0);
+                run.setText(data.get(i).data[j]);
+
             }
-            j = 0;
         }
 
         return document;
