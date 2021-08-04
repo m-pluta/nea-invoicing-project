@@ -284,7 +284,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     saveDocument(doc, outputFilePath, "Temp", false);           //
 
                     doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));    //
-                    doc = insertCustomerData(doc, customerData);                                // Inserting the customer's data into the document
+                    doc = insertCustomerData(doc, customerData, invoiceMetaData);               // Inserting the customer's data into the document
                     doc = insertInvoiceData(doc, invoiceRows, invoiceMetaData);                 // Inserting the invoice details into the document
                     saveDocument(doc, outputFilePath, "Output", true);                          //
 
@@ -313,7 +313,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     }
 
-    public static XWPFDocument insertCustomerData(XWPFDocument document, LinkedHashMap<String, String> customerData) {
+    public static XWPFDocument insertCustomerData(XWPFDocument document, LinkedHashMap<String, String> customerData, LinkedHashMap<String, String> invoiceMD) {
 
         List<XWPFTable> tables = document.getTables();
         XWPFTable table = tables.get(0);
@@ -341,6 +341,12 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         }
                         if (r.getText(0).equals("$other")) {
                             r.setText(customerData.get("$county") + ", " + customerData.get("$postcode"), 0);
+                        }
+                        if (r.getText(0).equals("$InvoiceNo")) {
+                            r.setText(invoiceMD.get("$InvoiceNo"), 0);
+                        }
+                        if (r.getText(0).equals("$date")) {
+                            r.setText(invoiceMD.get("$date"), 0);
                         }
                     }
                 }
