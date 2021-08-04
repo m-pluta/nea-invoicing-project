@@ -358,10 +358,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     public static XWPFDocument insertInvoiceData(XWPFDocument document, ArrayList<tableRow> invoiceRows, LinkedHashMap<String, String> invoiceMD) {
 
+        int NoRows = invoiceRows.size();
         List<XWPFTable> tables = document.getTables();
         XWPFTable table = tables.get(1);
 
-        for (int i = 0; i < invoiceRows.size(); i++) {
+        for (int i = 0; i < NoRows; i++) {
             for (int j = 0; j < 4; j++) {
                 XWPFTableCell cell = table.getRows().get(i + 1).getTableCells().get(j);
                 if (cell.getParagraphs().size() == 0) {
@@ -375,8 +376,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             }
         }
 
-        for (XWPFTableRow row : table.getRows()) {
-            for (XWPFTableCell cell : row.getTableCells()) {
+        for (int i = NoRows + 1; i < NoRows + 4; i++) {
+            for (XWPFTableCell cell : table.getRow(i).getTableCells()) {
                 for (XWPFParagraph p : cell.getParagraphs()) {
                     for (XWPFRun r : p.getRuns()) {
                         if (r.getText(0).equals("$subtotal")) {
