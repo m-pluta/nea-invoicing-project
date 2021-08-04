@@ -275,7 +275,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 //</editor-fold>
 
                 // System.out.println(saveDocument(new XWPFDocument(), outputFilePath, "Output", true));
-                XWPFDocument doc;
+                XWPFDocument doc = null;
                 try {
                     doc = new XWPFDocument(OPCPackage.open(templateFilePath));
                     doc = resizeDocumentTable(doc, invoiceRows.size());
