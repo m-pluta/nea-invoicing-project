@@ -277,15 +277,17 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 System.out.println(customerData);
                 //</editor-fold>
 
-                // System.out.println(saveDocument(new XWPFDocument(), outputFilePath, "Output", true));
                 XWPFDocument doc = null;
                 try {
                     doc = new XWPFDocument(OPCPackage.open(templateFilePath));
                     doc = resizeDocumentTable(doc, invoiceRows.size());
                     saveDocument(doc, outputFilePath, "Temp", false);
+                    
                     doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));
                     doc = insertInvoiceData(doc, invoiceRows, invoiceMetaData);
                     saveDocument(doc, outputFilePath, "Output", true);
+                    
+                    removeFile(outputFilePath + "\\Temp.docx");
                 } catch (InvalidFormatException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
@@ -299,6 +301,16 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             System.out.println("One of the filepath requirements was not satisfied.");
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
+
+    public static void removeFile(String filepath) {
+        File temp = new File(filepath);
+        if (temp.delete()) {
+            System.out.println(temp.getName() + " deleted successfully");
+        } else {
+            System.out.println("Failed to delete " + temp.getName());
+        }
+
+    }
 
     public static XWPFDocument insertInvoiceData(XWPFDocument document, ArrayList<tableRow> invoiceRows, LinkedHashMap<String, String> invoiceMD) {
 
