@@ -338,12 +338,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
         } else if (amtRows > 2) {
             int newRowsNeeded = amtRows - 2;
-            int startRowInsert = 2;
             try {
                 for (int i = 2; i < newRowsNeeded + 2; i++) {
                     CTRow ctrow = CTRow.Factory.parse(blankRow.getCtRow().newInputStream());
                     XWPFTableRow newRow = new XWPFTableRow(ctrow, table);
-                    table.addRow(newRow, startRowInsert++);
+                    table.addRow(newRow, 2);
                 }
             } catch (XmlException xe) {
                 xe.printStackTrace();
