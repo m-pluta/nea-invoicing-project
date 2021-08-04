@@ -279,15 +279,16 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
                 XWPFDocument doc = null;
                 try {
-                    doc = new XWPFDocument(OPCPackage.open(templateFilePath));
-                    doc = resizeDocumentTable(doc, invoiceRows.size());
-                    saveDocument(doc, outputFilePath, "Temp", false);
-                    
-                    doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));
-                    doc = insertInvoiceData(doc, invoiceRows, invoiceMetaData);
-                    saveDocument(doc, outputFilePath, "Output", true);
-                    
-                    removeFile(outputFilePath + "\\Temp.docx");
+                    doc = new XWPFDocument(OPCPackage.open(templateFilePath));  //
+                    doc = resizeDocumentTable(doc, invoiceRows.size());         // Resizing the amount of rows in the 
+                    saveDocument(doc, outputFilePath, "Temp", false);           //
+
+                    doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));    //
+                    doc = insertCustomerData(doc, customerData);                                // Inserting the customer's data into the document
+                    doc = insertInvoiceData(doc, invoiceRows, invoiceMetaData);                 // Inserting the invoice details into the document
+                    saveDocument(doc, outputFilePath, "Output", true);                          //
+
+                    removeFile(outputFilePath + "\\Temp.docx");                 // Removing the temporary file 
                 } catch (InvalidFormatException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
@@ -312,11 +313,47 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     }
 
+    public static XWPFDocument insertCustomerData(XWPFDocument document, LinkedHashMap<String, String> customerData) {
+
+        List<XWPFTable> tables = document.getTables();
+        XWPFTable table = tables.get(0);
+        if (customerData.get("$address3").isEmpty()) {
+            table.removeRow(3);
+        }
+        if (customerData.get("$address2").isEmpty()) {
+            table.removeRow(2);
+        }
+        for (XWPFTableRow row : table.getRows()) {
+            for (XWPFTableCell cell : row.getTableCells()) {
+                for (XWPFParagraph p : cell.getParagraphs()) {
+                    for (XWPFRun r : p.getRuns()) {
+                        if (r.getText(0).equals("$customerFullName")) {
+                            r.setText(customerData.get("$customerFullName"), 0);
+                        }
+                        if (r.getText(0).equals("$address1")) {
+                            r.setText(customerData.get("$address1"), 0);
+                        }
+                        if (r.getText(0).equals("$address2")) {
+                            r.setText(customerData.get("$address2"), 0);
+                        }
+                        if (r.getText(0).equals("$address3")) {
+                            r.setText(customerData.get("$address3"), 0);
+                        }
+                        if (r.getText(0).equals("$other")) {
+                            r.setText(customerData.get("$county") + ", " + customerData.get("$postcode"), 0);
+                        }
+                    }
+                }
+            }
+        }
+
+        return document;
+    }
+
     public static XWPFDocument insertInvoiceData(XWPFDocument document, ArrayList<tableRow> invoiceRows, LinkedHashMap<String, String> invoiceMD) {
 
         List<XWPFTable> tables = document.getTables();
-
-        XWPFTable table = tables.get(0);
+        XWPFTable table = tables.get(1);
 
         for (int i = 0; i < invoiceRows.size(); i++) {
             for (int j = 0; j < 4; j++) {
@@ -336,7 +373,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             for (XWPFTableCell cell : row.getTableCells()) {
                 for (XWPFParagraph p : cell.getParagraphs()) {
                     for (XWPFRun r : p.getRuns()) {
-                        System.out.println(r.getText(0));
                         if (r.getText(0).equals("$subtotal")) {
                             r.setText(invoiceMD.get("$subtotal"), 0);
                         }
@@ -357,7 +393,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     public static XWPFDocument resizeDocumentTable(XWPFDocument document, int amtRows) {
 
         List<XWPFTable> tables = document.getTables();
-        XWPFTable table = tables.get(0);
+        XWPFTable table = tables.get(1);
 
         XWPFTableRow blankRow = table.getRows().get(2);             // The third row in the invoice template is the blank row
         if (amtRows == 0) {
