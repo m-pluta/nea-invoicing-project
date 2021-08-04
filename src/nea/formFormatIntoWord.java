@@ -15,9 +15,19 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.xmlbeans.XmlException;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
 
 /**
  *
@@ -265,7 +275,17 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 //</editor-fold>
 
                 // System.out.println(saveDocument(new XWPFDocument(), outputFilePath, "Output", true));
-                
+                XWPFDocument doc;
+                try {
+                    doc = new XWPFDocument(OPCPackage.open(templateFilePath));
+                    doc = resizeDocumentTable(doc, invoiceRows.size());
+                    saveDocument(doc, outputFilePath, "Temp", false);
+                } catch (InvalidFormatException ex) {
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
             } else {
                 System.out.println("File does not exist.");
             }
@@ -273,6 +293,48 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             System.out.println("One of the filepath requirements was not satisfied.");
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
+
+    public static XWPFDocument resizeDocumentTable(XWPFDocument document, int amtRows) {
+
+        List<XWPFTable> tables = document.getTables();
+        XWPFTable table = tables.get(0);
+
+        XWPFTableRow blankRow = table.getRows().get(2);             // The third row in the invoice
+        if (amtRows == 0) {
+            table.removeRow(2);
+            table.removeRow(1);
+
+        } else if (amtRows == 1) {
+            table.removeRow(2);
+
+        } else if (amtRows > 2) {
+            int newRowsNeeded = amtRows - 2;
+            int startRowInsert = 2;
+            try {
+                for (int i = 2; i < newRowsNeeded + 2; i++) {
+                    CTRow ctrow = CTRow.Factory.parse(blankRow.getCtRow().newInputStream());
+                    XWPFTableRow newRow = new XWPFTableRow(ctrow, table);
+
+                    for (XWPFTableCell cell : newRow.getTableCells()) {
+                        for (XWPFParagraph paragraph : cell.getParagraphs()) {
+                            for (XWPFRun run : paragraph.getRuns()) {
+                                run.setText("", 0);
+                            }
+                        }
+                    }
+                    table.addRow(newRow, startRowInsert++);
+                }
+            } catch (XmlException xe) {
+                xe.printStackTrace();
+            } catch (IOException Ie) {
+                Ie.printStackTrace();
+            }
+        } else {
+            System.out.println("Not a valid amount of rows specified");
+        }
+
+        return document;
+    }
 
     public static String saveDocument(XWPFDocument document, String destination, String fileName, boolean withCounter) {
 
@@ -295,7 +357,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(savingDestination);
