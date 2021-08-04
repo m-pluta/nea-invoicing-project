@@ -8,6 +8,7 @@ package nea;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Date;
 import javax.swing.GroupLayout;
@@ -33,9 +34,13 @@ public class Utility {
         }
     }
 
+    public static LocalDate getFinancialYear(LocalDateTime input) {
+        return getFinancialYear(input.toLocalDate());
+    }
+
     public static String getQuarter(LocalDate input) {
         int month = input.getMonthValue();
-        if (month > 9 ) {
+        if (month > 9) {
             return "Q4";
         } else if (month > 6) {
             return "Q3";
