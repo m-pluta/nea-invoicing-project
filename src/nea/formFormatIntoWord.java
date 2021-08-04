@@ -224,7 +224,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         invoiceMetaData.put("$payments", Utility.formatCurrency(rs.getDouble(1)));
                         invoiceMetaData.put("$total", Utility.formatCurrency(invoiceSubtotal - rs.getDouble(1)));
                         invoiceMetaData.put("$date", rs.getDate(2).toLocalDate().format(full_short));
-                        invoiceMetaData.put("$InvoiceNo", InvoiceID + "/" + rs.getDate(2).toLocalDate().format(year_short)); // #TODO make it change this depending on financial year
+                        invoiceMetaData.put("$InvoiceNo", sqlManager.getInvoiceNoThisFinancialYear(conn, rs.getTimestamp(2).toLocalDateTime()) + "/" + Utility.getFinancialYear(rs.getDate(2).toLocalDate()).format(year_short));
                     }
                 } catch (SQLException e) {
                     System.out.println("SQLException");
