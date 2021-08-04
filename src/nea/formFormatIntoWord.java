@@ -284,7 +284,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     doc = resizeDocumentTable(doc, invoiceRows.size());
                     saveDocument(doc, outputFilePath, "Temp", false);
                     doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));
-                    doc = insertIntoTable(doc, invoiceRows);
+                    doc = insertInvoiceData(doc, invoiceRows, invoiceMetaData);
                     saveDocument(doc, outputFilePath, "Output", true);
                 } catch (InvalidFormatException ex) {
                     ex.printStackTrace();
@@ -300,13 +300,13 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
-    public static XWPFDocument insertIntoTable(XWPFDocument document, ArrayList<tableRow> data) {
+    public static XWPFDocument insertInvoiceData(XWPFDocument document, ArrayList<tableRow> invoiceRows, LinkedHashMap<String, String> invoiceMD) {
 
         List<XWPFTable> tables = document.getTables();
 
         XWPFTable table = tables.get(0);
 
-        for (int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < invoiceRows.size(); i++) {
             for (int j = 0; j < 4; j++) {
                 XWPFTableCell cell = table.getRows().get(i + 1).getTableCells().get(j);
                 if (cell.getParagraphs().size() == 0) {
@@ -315,8 +315,27 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 XWPFParagraph p = cell.getParagraphs().get(0);
 
                 XWPFRun run = p.insertNewRun(0);
-                run.setText(data.get(i).data[j]);
+                run.setText(invoiceRows.get(i).data[j]);
 
+            }
+        }
+
+        for (XWPFTableRow row : table.getRows()) {
+            for (XWPFTableCell cell : row.getTableCells()) {
+                for (XWPFParagraph p : cell.getParagraphs()) {
+                    for (XWPFRun r : p.getRuns()) {
+                        System.out.println(r.getText(0));
+                        if (r.getText(0).equals("$subtotal")) {
+                            r.setText(invoiceMD.get("$subtotal"), 0);
+                        }
+                        if (r.getText(0).equals("$payments")) {
+                            r.setText(invoiceMD.get("$payments"), 0);
+                        }
+                        if (r.getText(0).equals("$total")) {
+                            r.setText(invoiceMD.get("$total"), 0);
+                        }
+                    }
+                }
             }
         }
 
