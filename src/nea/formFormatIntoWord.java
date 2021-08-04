@@ -48,6 +48,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     public formFormatIntoWord() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     public formFormatIntoWord getFrame() {
@@ -152,6 +153,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void btnChooseTemplateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseTemplateActionPerformed
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int option = fileChooser.showOpenDialog(new JFrame());
         if (option == JFileChooser.APPROVE_OPTION) {
@@ -166,6 +168,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void btnChooseOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseOutputActionPerformed
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int option = fileChooser.showOpenDialog(new JFrame());
         if (option == JFileChooser.APPROVE_OPTION) {
@@ -309,9 +312,12 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 if (cell.getParagraphs().size() == 0) {
                     cell.addParagraph();
                 }
-                for (XWPFParagraph p : cell.getParagraphs()) {
+                XWPFParagraph p = cell.getParagraphs().get(0);
+                if (p.getRuns().size() == 0) {
                     XWPFRun tempRun = p.createRun();
                     tempRun.setText(data.get(i).data[j++]);
+                } else {
+                    p.getRuns().get(0).setText(data.get(i).data[j++]);
                 }
             }
             j = 0;
