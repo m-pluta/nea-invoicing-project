@@ -6,6 +6,13 @@
 package nea;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
@@ -18,8 +25,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     /**
      * Creates new form formFormatIntoWord
      */
+    static Connection conn = null;
     formOneInvoice previousForm = null;
-    int InvoiceID = 0;
+    static int InvoiceID = 0;
 
     static String templateFilePath = null;
     static String outputFilePath = null;
@@ -158,8 +166,108 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChooseOutputActionPerformed
 
     private void btnGenerateDocumentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateDocumentActionPerformed
+        DateTimeFormatter year_short = DateTimeFormatter.ofPattern("yy");
+        DateTimeFormatter full_short = DateTimeFormatter.ofPattern("dd/MM/yy");
         if (templateFilePath != null && outputFilePath != null) {
-            // #TODO
+            File f = new File(templateFilePath);
+            if (f.exists()) {
+                outputFilePath = outputFilePath + "\\Output.docx";
+                String temporaryFilePath = outputFilePath + "\\Temp.docx";
+
+                ArrayList<tableRow> invoiceRows = new ArrayList<tableRow>();
+                double invoiceSubtotal = 0.0;
+                //<editor-fold defaultstate="collapsed" desc="Gets the table rows of the invoice and calculates the subtotal of the invoice">
+                conn = sqlManager.openConnection();
+                try {
+                    String query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblInvoiceDetails WHERE invoice_id = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    pstmt.setInt(1, InvoiceID);
+                    ResultSet rs = pstmt.executeQuery();
+
+                    while (rs.next()) {
+                        tableRow row = new tableRow(rs.getString(1), rs.getString(2), Utility.formatCurrency(rs.getDouble(3)), Utility.formatCurrency(rs.getDouble(4)));
+                        invoiceSubtotal += rs.getDouble(4);
+                        invoiceRows.add(row);
+                    }
+                } catch (SQLException e) {
+                    System.out.println("SQLException");
+                    e.printStackTrace();
+                }
+                sqlManager.closeConnection(conn);
+                //</editor-fold>
+
+                LinkedHashMap<String, String> invoiceMetaData = new LinkedHashMap<>();
+                //<editor-fold defaultstate="collapsed" desc="Gets metadata about the specific invoice and puts it in the hashmap">
+                conn = sqlManager.openConnection();
+                try {
+                    String query = "SELECT payments, date_created FROM tblInvoices WHERE invoice_id = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    pstmt.setInt(1, InvoiceID);
+                    ResultSet rs = pstmt.executeQuery();
+
+                    invoiceMetaData.put("$subtotal", Utility.formatCurrency(invoiceSubtotal));
+                    if (rs.next()) {
+                        invoiceMetaData.put("$payments", Utility.formatCurrency(rs.getDouble(1)));
+                        invoiceMetaData.put("$total", Utility.formatCurrency(invoiceSubtotal - rs.getDouble(1)));
+                        invoiceMetaData.put("$date", rs.getDate(2).toLocalDate().format(full_short));
+                        invoiceMetaData.put("$InvoiceNo", InvoiceID + "/" + rs.getDate(2).toLocalDate().format(year_short)); // #TODO make it change this depending on financial year
+                    }
+                } catch (SQLException e) {
+                    System.out.println("SQLException");
+                    e.printStackTrace();
+                }
+                sqlManager.closeConnection(conn);
+                //</editor-fold>
+
+                LinkedHashMap<String, String> customerData = new LinkedHashMap<>();
+                //<editor-fold defaultstate="collapsed" desc="Gets data about the customer and puts it in the hashmap">
+                conn = sqlManager.openConnection();
+                try {
+                    String query = "SELECT CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
+                            + " COALESCE(c.address1, '') AS address1,"
+                            + " COALESCE(c.address2, '') AS address2,"
+                            + " COALESCE(c.address3, '') AS address3,"
+                            + " COALESCE(c.county, '') AS county,"
+                            + " COALESCE(c.postcode, '') AS postcode"
+                            + " FROM tblInvoices AS i"
+                            + " INNER JOIN tblCustomers AS c ON i.customer_id = c.customer_id"
+                            + " WHERE invoice_id = ?";
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    pstmt.setInt(1, InvoiceID);
+                    ResultSet rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        customerData.put("$customerFullName", rs.getString(1));
+                        customerData.put("$address1", rs.getString(2));
+                        customerData.put("$address2", rs.getString(3));
+                        customerData.put("$address3", rs.getString(4));
+                        customerData.put("$county", rs.getString(5));
+                        customerData.put("$postcode", rs.getString(6));
+                    }
+                } catch (SQLException e) {
+                    System.out.println("SQLException");
+                    e.printStackTrace();
+                }
+                sqlManager.closeConnection(conn);
+                //</editor-fold>
+
+                //<editor-fold defaultstate="collapsed" desc="Debug">
+                System.out.println("invoiceRows: ");
+                for (tableRow row : invoiceRows) {
+                    System.out.println(row.toString());
+                }
+                System.out.println("invoiceMetaData"
+                        + ": ");
+                System.out.println(invoiceMetaData);
+                System.out.println("customerData: ");
+                System.out.println(customerData);
+                //</editor-fold>
+
+            } else {
+                System.out.println("File does not exist.");
+            }
+        } else {
+            System.out.println("One of the filepath requirements was not satisfied.");
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
