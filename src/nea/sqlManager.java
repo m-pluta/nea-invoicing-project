@@ -321,4 +321,30 @@ public class sqlManager {
         System.out.println("No match found or error occured");
         return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);            // If an error occurs or no result is found then the date is set to the unix base date
     }
+    
+    // Returns the invoice number in the current financial year given a date
+    public static int getInvoiceNoThisFinancialYear(Connection conn, LocalDateTime datetime) {
+        
+        LocalDate financialyear = Utility.getFinancialYear(datetime);
+        
+        String query = "SELECT COUNT(invoice_id) FROM tblInvoices WHERE date_created BETWEEN ? AND ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setObject(1, financialyear.atTime(0,0,0));
+            pstmt.setObject(2, datetime);
+        
+            System.out.println(pstmt);
+            
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }          
+        } catch (SQLException e) {
+            System.out.println("SQL Exception");
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+    
 }
