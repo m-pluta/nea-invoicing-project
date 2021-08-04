@@ -5,6 +5,10 @@
  */
 package nea;
 
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Michal
@@ -16,6 +20,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
      */
     formOneInvoice previousForm = null;
     int InvoiceID = 0;
+
+    static String templateFilePath = null;
+    static String outputFilePath = null;
 
     public formFormatIntoWord() {
         initComponents();
@@ -41,7 +48,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         btnChooseOutput = new javax.swing.JButton();
         txtTemplate = new javax.swing.JTextField();
         txtOutput = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnGenerateDocument = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,12 +59,31 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         lblOutput.setText("Output Location:");
 
         btnChooseTemplate.setText("#");
+        btnChooseTemplate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChooseTemplateActionPerformed(evt);
+            }
+        });
 
         btnChooseOutput.setText("#");
+        btnChooseOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChooseOutputActionPerformed(evt);
+            }
+        });
 
-        jButton1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton1.setText("Generate Document");
-        jButton1.setToolTipText("");
+        txtTemplate.setEditable(false);
+
+        txtOutput.setEditable(false);
+
+        btnGenerateDocument.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnGenerateDocument.setText("Generate Document");
+        btnGenerateDocument.setToolTipText("");
+        btnGenerateDocument.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGenerateDocumentActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -65,28 +91,27 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(10, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblTemplate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblTemplate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnChooseTemplate)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnChooseTemplate)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtTemplate, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnChooseOutput)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtOutput)))))
+                        .addComponent(txtTemplate))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnChooseOutput)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnGenerateDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(10, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(10, Short.MAX_VALUE)
+                .addContainerGap(9, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTemplate)
                     .addComponent(btnChooseTemplate)
@@ -97,12 +122,46 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     .addComponent(btnChooseOutput)
                     .addComponent(txtOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(10, Short.MAX_VALUE))
+                .addComponent(btnGenerateDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnChooseTemplateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseTemplateActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int option = fileChooser.showOpenDialog(new JFrame());
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            txtTemplate.setText(file.getName());
+            templateFilePath = file.getAbsolutePath();
+            System.out.println(templateFilePath);
+        } else {
+            System.out.println("Open command canceled");
+        }
+    }//GEN-LAST:event_btnChooseTemplateActionPerformed
+
+    private void btnChooseOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseOutputActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int option = fileChooser.showOpenDialog(new JFrame());
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            txtOutput.setText(file.getName());
+            outputFilePath = file.getAbsolutePath();
+            System.out.println(outputFilePath);
+        } else {
+            System.out.println("Open command canceled");
+        }
+    }//GEN-LAST:event_btnChooseOutputActionPerformed
+
+    private void btnGenerateDocumentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateDocumentActionPerformed
+        if (templateFilePath != null && outputFilePath != null) {
+            // #TODO
+        }
+    }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
     /**
      * @param args the command line arguments
@@ -142,7 +201,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChooseOutput;
     private javax.swing.JButton btnChooseTemplate;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnGenerateDocument;
     private javax.swing.JLabel lblOutput;
     private javax.swing.JLabel lblTemplate;
     private javax.swing.JTextField txtOutput;
