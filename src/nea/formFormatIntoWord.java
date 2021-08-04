@@ -6,6 +6,8 @@
 package nea;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 /**
  *
@@ -171,8 +174,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         if (templateFilePath != null && outputFilePath != null) {
             File f = new File(templateFilePath);
             if (f.exists()) {
-                outputFilePath = outputFilePath + "\\Output.docx";
-                String temporaryFilePath = outputFilePath + "\\Temp.docx";
 
                 ArrayList<tableRow> invoiceRows = new ArrayList<tableRow>();
                 double invoiceSubtotal = 0.0;
@@ -263,6 +264,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 System.out.println(customerData);
                 //</editor-fold>
 
+                // System.out.println(saveDocument(new XWPFDocument(), outputFilePath, "Output", true));
+                
             } else {
                 System.out.println("File does not exist.");
             }
@@ -270,6 +273,41 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             System.out.println("One of the filepath requirements was not satisfied.");
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
+
+    public static String saveDocument(XWPFDocument document, String destination, String fileName, boolean withCounter) {
+
+        String savingDestination = destination + "\\" + fileName + ".docx";
+        if (withCounter) {
+            File f = new File(savingDestination);
+            if (f.exists()) {
+                System.out.println("File already exists under " + f.toPath().toString());
+
+                boolean found = false;
+                int counter = 1;
+                while (!found) {
+                    savingDestination = destination + "\\" + fileName + counter + ".docx";
+                    File t = new File(savingDestination);
+                    if (t.exists()) {
+                        counter++;
+                    } else {
+                        found = true;
+                    }
+                }
+            }
+        }
+        
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(savingDestination);
+            document.write(out);
+            out.close();
+
+        } catch (IOException e) {
+            System.out.println("Error saving file");
+            e.printStackTrace();
+        }
+        return savingDestination;
+    }
 
     /**
      * @param args the command line arguments
