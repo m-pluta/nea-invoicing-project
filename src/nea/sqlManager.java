@@ -332,8 +332,6 @@ public class sqlManager {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, financialyear.atTime(0,0,0));
             pstmt.setObject(2, datetime);
-        
-            System.out.println(pstmt);
             
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {

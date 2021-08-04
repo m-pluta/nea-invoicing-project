@@ -162,7 +162,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             templateFilePath = file.getAbsolutePath();
             System.out.println(templateFilePath);
         } else {
-            System.out.println("Open command canceled");
+            System.out.println("Open command cancelled");
         }
     }//GEN-LAST:event_btnChooseTemplateActionPerformed
 
@@ -177,7 +177,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             outputFilePath = file.getAbsolutePath();
             System.out.println(outputFilePath);
         } else {
-            System.out.println("Open command canceled");
+            System.out.println("Open command cancelled");
         }
     }//GEN-LAST:event_btnChooseOutputActionPerformed
 
@@ -266,13 +266,15 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 //</editor-fold>
 
                 //<editor-fold defaultstate="collapsed" desc="Debug">
+                System.out.println("");
                 System.out.println("invoiceRows: ");
                 for (tableRow row : invoiceRows) {
                     System.out.println(row.toString());
                 }
-                System.out.println("invoiceMetaData"
-                        + ": ");
+                System.out.println("");
+                System.out.println("invoiceMetaData" + ": ");
                 System.out.println(invoiceMetaData);
+                System.out.println("");
                 System.out.println("customerData: ");
                 System.out.println(customerData);
                 //</editor-fold>
