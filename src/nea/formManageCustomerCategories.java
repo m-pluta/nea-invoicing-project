@@ -59,7 +59,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
             }
 
         });
-        
+
         jTable_CustomerCategories = Utility.setColumnWidths(jTable_CustomerCategories, new int[]{40, 120, 120});
     }
 
@@ -68,7 +68,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     }
 
     public void loadCategories() {
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         model.setRowCount(0);                                       // Empties the table
         String query = "SELECT customer_category_id, category_name, date_created FROM tblCustomerCategories";
 
@@ -97,7 +97,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to DB
+        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -248,11 +248,13 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
         if (inputCategory != null) {                                // If the dialog input was valid    
-            conn = sqlManager.openConnection();                     // Opens connection to the DB
+            conn = sqlManager.openConnection();
 
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
 
-            if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblCustomerCategories", "category_name")) {
+                System.out.println("The category name is too long");
+            } else if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
             } else {                                                // If it is a unique category
@@ -273,7 +275,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
             }
-            sqlManager.closeConnection(conn);                       // Closes connection to DB
+            sqlManager.closeConnection(conn);
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 
@@ -293,7 +295,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 System.out.println("-------------------------------");
                 System.out.println("This is the default row and cannot be removed");
             } else {                                                // If it is any other row other than row 1
-                conn = sqlManager.openConnection();                 // Opens connection to DB
+                conn = sqlManager.openConnection();
                 int usersWithCategory = sqlManager.countRecords(conn, "tblCustomers", "type_id", id);
                 if (usersWithCategory == -1) {
                     System.out.println("Error fetching customers with this category");
@@ -311,44 +313,42 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                         loadCategories();                           //Refreshes table since a record was removed
                     }
                 }
-                sqlManager.closeConnection(conn);                   // Closes connection to DB
+                sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         int row = jTable_CustomerCategories.getSelectedRow();       // Gets the currently selected row in the table
+        String string_id = model.getValueAt(row, 0).toString();     // Gets the values from the selected row in the table as strings
+        String category = model.getValueAt(row, 1).toString();
+
+        int id = Utility.StringToInt(string_id);                    // Converts the id in string type to integer type
 
         if (row == -1) {                                            // If no row is selected
-            System.out.println("-------------------------------");
             System.out.println("No row selected");
-        } else {                                                    // If a row was selected
-            String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
-            String category = model.getValueAt(row, 1).toString();
-
-            int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
-
-            if (id == 1) {                                          // Checks if the user is trying to edit the first row - this is the default row and therefore cannot be edited
-                System.out.println("-------------------------------");
-                System.out.println("This is the default row and cannot be edited");
-            } else {
+        } else if (id == 1) {                                       // Checks if the user is trying to edit the first row - this is the default row and therefore cannot be edited
+            System.out.println("This is the default row and cannot be edited");
+        } else {
+            conn = sqlManager.openConnection();
+            boolean picked = false;
+            
+            while (!picked) {
                 // Asks user what the new name of the category should be
                 String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
 
-                if (inputCategory != null) {                        // If the dialog window was closed    
+                if (inputCategory == null) {                        // If the dialog window was closed
+                    break;
+                } else {
                     inputCategory = inputCategory.trim();           // Removes all leading and trailing whitespace characters
 
-                    conn = sqlManager.openConnection();             // Opens connection to the DB
-                    if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-
-                        System.out.println("-------------------------------");
+                    if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblCustomerCategories", "category_name")) {   // Checks if the entered category name is longer than max length in DB
+                        System.out.println("Category name too long");
+                    } else if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                         System.out.println("Category under this name already exists");
-                        // # TODO reopen dialog
-                        // # TODO Allow the user to merge the two categories together under the wanted name
-
+                        // #TODO Allow the user to merge the two categories together under the wanted name
+                        
                     } else {
-
-                        // Update category name in the DB
                         String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE customer_category_id = ?";
                         PreparedStatement pstmt = null;
                         try {
@@ -362,10 +362,11 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
+                        picked = true;
                     }
-                    sqlManager.closeConnection(conn);               // Closes connection to the DB
                 }
             }
+            sqlManager.closeConnection(conn);
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
