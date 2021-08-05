@@ -325,17 +325,17 @@ public class sqlManager {
     // Returns the invoice number in the current financial year given a date
     public static int getInvoiceNoThisFinancialYear(Connection conn, LocalDateTime datetime) {
         
-        LocalDate financialyear = Utility.getFinancialYear(datetime);
+        LocalDate financialyear = Utility.getFinancialYear(datetime);           // Gets the start date of the financial year
         
-        String query = "SELECT COUNT(invoice_id) FROM tblInvoices WHERE date_created BETWEEN ? AND ?";
-        try {
+        String query = "SELECT COUNT(invoice_id) FROM tblInvoices WHERE date_created BETWEEN ? AND ?";  // Gets the amount of invoices between the financial 
+        try {                                                                                           // year start date and the date of the invoice
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, financialyear.atTime(0,0,0));
-            pstmt.setObject(2, datetime);
+            pstmt.setObject(2, datetime.minusSeconds(1));           // Takes away a second from the enddate param to not include the invoice in question
             
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            if (rs.next()) {                                        // If a result is found
+                return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current invoice
             }          
         } catch (SQLException e) {
             System.out.println("SQL Exception");
@@ -343,6 +343,5 @@ public class sqlManager {
         }
 
         return -1;
-    }
-    
+    }   
 }
