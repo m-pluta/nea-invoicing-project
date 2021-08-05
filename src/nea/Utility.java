@@ -25,7 +25,8 @@ import javax.swing.JTextField;
  * @author Michal
  */
 public class Utility {
-
+ 
+    // Given a date, this method returns the year property of the financial year the given date is in
     public static LocalDate getFinancialYear(LocalDate input) {
         if (input.isAfter(LocalDate.of(input.getYear(), Month.APRIL, 5))) {
             return LocalDate.of(input.getYear(), Month.APRIL, 6);
@@ -34,10 +35,12 @@ public class Utility {
         }
     }
 
+    // Param is LocalDateTime - overloaded method
     public static LocalDate getFinancialYear(LocalDateTime input) {
         return getFinancialYear(input.toLocalDate());
     }
 
+    // Returns the quarter of the year a given date is in
     public static String getQuarter(LocalDate input) {
         int month = input.getMonthValue();
         if (month > 9) {
@@ -51,6 +54,7 @@ public class Utility {
         }
     }
 
+    // Given a date, this method returns the start date date of the quarter the date is in
     public static LocalDate getQuarterStart(LocalDate input) {
         int month = input.getMonthValue();
         if (month <= 3) {
@@ -175,6 +179,7 @@ public class Utility {
         return costString;
     }
 
+    // This method adjusts the column widths of a given table in tandem with an array of integers which store the new column widths
     public static JTable setColumnWidths(JTable table, int[] widths) {
         int NoCols = table.getModel().getColumnCount();
         if (NoCols == 0 || widths == null) {
