@@ -69,18 +69,21 @@ public class formAddEmployee extends javax.swing.JFrame {
             public void windowDeactivated(WindowEvent e) {
             }
         });
-        
+
         DocumentListener dListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 lblFullName.setText(txtForename.getText() + " " + txtSurname.getText());
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 lblFullName.setText(txtForename.getText() + " " + txtSurname.getText());
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e) {}  
+            public void changedUpdate(DocumentEvent e) {
+            }
         };
         txtForename.getDocument().addDocumentListener(dListener);
         txtSurname.getDocument().addDocumentListener(dListener);
@@ -283,16 +286,16 @@ public class formAddEmployee extends javax.swing.JFrame {
 
     private void btnAddEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEmployeeActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
-            System.out.println("-------------------------------");
-            System.out.println("One of the required input fields is empty");
-        } else {                                                    // If none of the fields are empty
+
+        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+            System.out.println("One or more of the input fields is empty");
+        } else if (!validInputs()) {                                            // Validates input lengths
+            System.out.println("One or more of the inputs' length is too long");
+        } else {
             // Asks user whether they really want to add this employee
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?", "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 addLogin();
-                
                 conn = sqlManager.openConnection();                 // Opens connection to the DB
 
                 String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -322,40 +325,68 @@ public class formAddEmployee extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAddEmployeeActionPerformed
 
+    // Validating input length against the max lengths in the DB
+    private boolean validInputs() {
+        conn = sqlManager.openConnection();
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
+            System.out.println("Forename too long");
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
+            System.out.println("Surname too long");
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
+            System.out.println("Address line 1 too long");
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
+            System.out.println("Address line 2 too long");
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
+            System.out.println("Address line 3 too long");
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
+            System.out.println("County too long");
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
+            System.out.println("Postcode too long");
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
+            System.out.println("Phone number too long");
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
+            System.out.println("Email Address too long");
+        } else {
+            return true;
+        }
+        return false;
+    }
+
     public void addLogin() {
         boolean validDetails = false;
         while (!validDetails) {
             String[] responses = Utility.JOptionPaneMultiInput("What login details should this employee have?", new String[]{"Username", "Confirm username", "Password", "Confirm password"});
-            if (responses[0].equals(responses[1]) && responses[2].equals(responses[3])) {
-                conn = sqlManager.openConnection();
-                if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
-                    System.out.println("An employee with this username already exists");
-                } else {
-
-                    String query = "INSERT into tblLogins (employee_id, username, password, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?)";
-                    PreparedStatement pstmt = null;
-                    try {
-                        pstmt = conn.prepareStatement(query);
-                        pstmt.setInt(1, EmployeeID);
-                        pstmt.setString(2, responses[0]);
-                        pstmt.setString(3, responses[2]);
-                        pstmt.setString(4, (cbAdmin.isSelected() ? "Y" : "N"));
-                        pstmt.setString(5, Utility.getCurrentDate());
-
-                        int rowsAffected = pstmt.executeUpdate();
-                        System.out.println(rowsAffected + " row updated.");
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-
-                    validDetails = true;
-                }
-                sqlManager.closeConnection(conn);                   // Closes connection to the DB
-            } else {
+            conn = sqlManager.openConnection();
+            if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
                 System.out.println("Login details do not match, check you have entered them correctly");
-            }
-        }
+            } else if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
+                System.out.println("An employee with this username already exists");
+            } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) {
+                System.out.println("Username too long");
+            } else if (responses[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) {
+                System.out.println("Password too long");
+            } else {
+                String query = "INSERT into tblLogins (employee_id, username, password, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?)";
+                PreparedStatement pstmt = null;
+                try {
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setInt(1, EmployeeID);
+                    pstmt.setString(2, responses[0]);
+                    pstmt.setString(3, responses[2]);
+                    pstmt.setString(4, (cbAdmin.isSelected() ? "Y" : "N"));
+                    pstmt.setString(5, Utility.getCurrentDate());
 
+                    int rowsAffected = pstmt.executeUpdate();
+                    System.out.println(rowsAffected + " row updated.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                
+                validDetails = true;
+                
+            }
+            sqlManager.closeConnection(conn);                   // Closes connection to the DB
+        }
     }
 
     /**
