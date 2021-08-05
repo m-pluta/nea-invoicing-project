@@ -121,7 +121,7 @@ public class formManageEmployees extends javax.swing.JFrame {
             query += " OR email_address LIKE '%" + sp + "%'";                   // /
         }
 
-        query += " ORDER BY customer_id";
+        query += " ORDER BY employee_id";
 
         try {
             Statement stmt = conn.createStatement();
