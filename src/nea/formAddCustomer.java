@@ -122,7 +122,7 @@ public class formAddCustomer extends javax.swing.JFrame {
     public void addNewCategory() {
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
         if (inputCategory != null) {                                // If the dialog input was valid    
-            conn = sqlManager.openConnection();                     // Opens connection to the DB
+            conn = sqlManager.openConnection();
 
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
 
@@ -151,7 +151,7 @@ public class formAddCustomer extends javax.swing.JFrame {
                     }
                 }
             }
-            sqlManager.closeConnection(conn);                       // Closes connection to DB
+            sqlManager.closeConnection(conn);
         }
     }
 
@@ -161,7 +161,7 @@ public class formAddCustomer extends javax.swing.JFrame {
 
     public void loadCustomerCategoriesIntoCB() {
         cbCategory.removeAllItems();
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String query = "SELECT category_name FROM tblCustomerCategories";
         try {
             Statement stmt = conn.createStatement();
@@ -175,7 +175,7 @@ public class formAddCustomer extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
         cbCategory.addItem("Add a new category...");                // Set one of the option to a custom category
     }
 
@@ -393,11 +393,10 @@ public class formAddCustomer extends javax.swing.JFrame {
             // Asks user whether they really want to add this customer
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?", "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
-                conn = sqlManager.openConnection();                 // Opens connection to the DB
+                conn = sqlManager.openConnection();
                 String query = "INSERT into tblCustomers (customer_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                PreparedStatement pstmt = null;
                 try {
-                    pstmt = conn.prepareStatement(query);
+                    PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, CustomerID);
                     pstmt.setString(2, txtForename.getText());
                     pstmt.setString(3, txtSurname.getText());
@@ -412,10 +411,12 @@ public class formAddCustomer extends javax.swing.JFrame {
 
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println(rowsAffected + " row updated.");
+
                 } catch (SQLException e) {
+                    System.out.println("SQLException");
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);                   // Closes connection to the DB
+                sqlManager.closeConnection(conn);
                 if (previousForm1 != null) {
                     previousForm1.loadCustomers();                  // Refreshes the customer table in the previous form
                     previousForm1.CurrentlyAddingCustomer = false;
