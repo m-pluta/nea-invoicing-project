@@ -326,7 +326,9 @@ public class formOneEmployee extends javax.swing.JFrame {
         System.out.println("Employee ID: " + EmployeeID);
         System.out.println("No. of invoices: " + NoInvoices);
         System.out.println("No. of quotations: " + NoQuotations);
-        if (NoInvoices == 0 && NoQuotations == 0) {                 // If the employee has no invoices or quotations stored under their name
+        if (NoInvoices > 0 || NoQuotations > 0) {                   // If the employee has any invoices or quotations associated with them then the user is informed
+            JOptionPane.showMessageDialog(null, "This employee has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove employee", JOptionPane.WARNING_MESSAGE);
+        } else {
             // Asks user whether they really want to remove this employee
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?", "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
@@ -336,8 +338,6 @@ public class formOneEmployee extends javax.swing.JFrame {
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee was removed
 
             }
-        } else {                                                    // If the employee had any invoices or quotations associated with them then the user is informed
-            JOptionPane.showMessageDialog(null, "This employee has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove employee", JOptionPane.WARNING_MESSAGE);
         }
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
@@ -356,10 +356,11 @@ public class formOneEmployee extends javax.swing.JFrame {
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0) {                   // If any one of the fields is empty
-            System.out.println("-------------------------------");
-            System.out.println("One of the required input fields is empty");
-        } else {                                                    // If none of the fields are empty
+        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+            System.out.println("One or more of the input fields is empty");
+        } else if (!validInputs()) {                                            // Validates input lengths
+            System.out.println("One or more of the inputs' length is too long");
+        } else {
             // Asks user whether they really want to edit this employee's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?", "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
@@ -394,6 +395,35 @@ public class formOneEmployee extends javax.swing.JFrame {
         }
         txtEmployeeID.requestFocus();
     }//GEN-LAST:event_btnConfirmEditActionPerformed
+
+    // Validating input length against the max lengths in the DB
+    private boolean validInputs() {
+        conn = sqlManager.openConnection();
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
+            System.out.println("Forename too long");
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
+            System.out.println("Surname too long");
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
+            System.out.println("Address line 1 too long");
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
+            System.out.println("Address line 2 too long");
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
+            System.out.println("Address line 3 too long");
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
+            System.out.println("County too long");
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
+            System.out.println("Postcode too long");
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
+            System.out.println("Phone number too long");
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
+            System.out.println("Email Address too long");
+        } else {
+            sqlManager.closeConnection(conn);
+            return true;
+        }
+        sqlManager.closeConnection(conn);
+        return false;
+    }
 
     /**
      * @param args the command line arguments

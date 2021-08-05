@@ -429,7 +429,9 @@ public class formOneCustomer extends javax.swing.JFrame {
         System.out.println("Customer ID: " + CustomerID);
         System.out.println("No. of invoices: " + NoInvoices);
         System.out.println("No. of quotations: " + NoQuotations);
-        if (NoInvoices == 0 && NoQuotations == 0) {                 // If the customer has no invoices or quotations stored under their name
+        if (NoInvoices > 0 || NoQuotations > 0) {                   // If the customer has any invoices or quotations associated with them then the user is informed
+            JOptionPane.showMessageDialog(null, "This customer has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove customer", JOptionPane.WARNING_MESSAGE);
+        } else {
             // Asks user whether they really want to remove this customer
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?", "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
@@ -438,8 +440,6 @@ public class formOneCustomer extends javax.swing.JFrame {
                 previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer was removed
 
             }
-        } else {                                                    // If the customer had any invoices or quotations associated with them then the user is informed
-            JOptionPane.showMessageDialog(null, "This customer has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove customer", JOptionPane.WARNING_MESSAGE);
         }
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
@@ -458,19 +458,21 @@ public class formOneCustomer extends javax.swing.JFrame {
 
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0 || isAddNewCategorySelected()) {                   // If any one of the fields is empty
-            System.out.println("-------------------------------");
-            System.out.println("One of the required input fields is empty");
-        } else {                                                    // If none of the fields are empty
+        
+        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+            System.out.println("One or more of the input fields is empty");
+        } else if (isAddNewCategorySelected()) {                                // Checks if the user has the 'Add category' option selected
+            System.out.println("The 'Add category' option is not a valid category");
+        } else if (!validInputs()) {                                            // Validates input lengths
+            System.out.println("One or more of the inputs' length is too long");
+        } else {
             // Asks user whether they really want to edit this customer's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 conn = sqlManager.openConnection();
                 String query = "UPDATE tblCustomers SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, type_id = ? WHERE customer_id = ?";
-                PreparedStatement pstmt = null;
                 try {
-                    pstmt = conn.prepareStatement(query);
+                    PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, txtForename.getText());
                     pstmt.setString(2, txtSurname.getText());
                     pstmt.setString(3, txtAddress1.getText());
@@ -499,6 +501,36 @@ public class formOneCustomer extends javax.swing.JFrame {
         txtCustomerID.requestFocus();
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
+    // Validating input length against the max lengths in the DB
+    private boolean validInputs() {
+        conn = sqlManager.openConnection();
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "forename")) {
+            System.out.println("Forename too long");
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "surname")) {
+            System.out.println("Surname too long");
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address1")) {
+            System.out.println("Address line 1 too long");
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address2")) {
+            System.out.println("Address line 2 too long");
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address3")) {
+            System.out.println("Address line 3 too long");
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "county")) {
+            System.out.println("County too long");
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "postcode")) {
+            System.out.println("Postcode too long");
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "phone_number")) {
+            System.out.println("Phone number too long");
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "email_address")) {
+            System.out.println("Email Address too long");
+        } else {
+            sqlManager.closeConnection(conn);
+            return true;
+        }
+        sqlManager.closeConnection(conn);
+        return false;
+    }
+    
+    
     private void btnSetInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
         form.previousForm3 = this;                                  // Makes this form the previousForm so the back buttons work
