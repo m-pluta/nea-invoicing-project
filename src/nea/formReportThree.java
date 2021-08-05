@@ -175,7 +175,7 @@ public class formReportThree extends javax.swing.JFrame {
         pOutput = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Item Category Analysis");
+        setTitle("Employee Analysis");
 
         btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnBack.setText("Back");

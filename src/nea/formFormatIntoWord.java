@@ -72,6 +72,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         btnGenerateDocument = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Generate Word Document");
 
         lblTemplate.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblTemplate.setText("Template Location:");

@@ -131,6 +131,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         btnConfirmEdit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("View Employee");
 
         lblFullName.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         lblFullName.setText("Full name here");
