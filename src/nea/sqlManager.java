@@ -249,8 +249,8 @@ public class sqlManager {
 
     // Returns the total value of all the items in a given document (invoice/quotation). This is the sum of all the quantity * unit_price
     public static double totalDocument(Connection conn, String tableName, String PK_name, int document_id) {
-        String query = "SELECT COALESCE(SUM(unit_price * quantity), 0) as total FROM " + tableName + " WHERE "+ PK_name + " = ?";
-        
+        String query = "SELECT COALESCE(SUM(unit_price * quantity), 0) as total FROM " + tableName + " WHERE " + PK_name + " = ?";
+
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, document_id);
@@ -321,27 +321,47 @@ public class sqlManager {
         System.out.println("No match found or error occured");
         return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);            // If an error occurs or no result is found then the date is set to the unix base date
     }
-    
+
     // Returns the invoice number in the current financial year given a date
     public static int getInvoiceNoThisFinancialYear(Connection conn, LocalDateTime datetime) {
-        
+
         LocalDate financialyear = Utility.getFinancialYear(datetime);           // Gets the start date of the financial year
-        
+
         String query = "SELECT COUNT(invoice_id) FROM tblInvoices WHERE date_created BETWEEN ? AND ?";  // Gets the amount of invoices between the financial 
         try {                                                                                           // year start date and the date of the invoice
             PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setObject(1, financialyear.atTime(0,0,0));
+            pstmt.setObject(1, financialyear.atTime(0, 0, 0));
             pstmt.setObject(2, datetime.minusSeconds(1));           // Takes away a second from the enddate param to not include the invoice in question
-            
+
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a result is found
                 return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current invoice
-            }          
+            }
         } catch (SQLException e) {
             System.out.println("SQL Exception");
             e.printStackTrace();
         }
 
         return -1;
-    }   
+    }
+
+    public static int getMaxColumnLength(Connection conn, String tableName, String column) {
+        String query = "SELECT character_maximum_length FROM information_schema.columns"
+                + " WHERE table_name = ? AND column_name = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, tableName);
+            pstmt.setString(2, column);
+            
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If a result is found
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception");
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
 }
