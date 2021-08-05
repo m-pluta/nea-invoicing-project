@@ -90,7 +90,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
 
     }
 
@@ -319,7 +319,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        conn = sqlManager.openConnection();                         // Opens the connection to the DB
+        conn = sqlManager.openConnection();
         int NoInvoices = sqlManager.countRecords(conn, "tblInvoices", "employee_id", EmployeeID);        // Counts how many invoices the employee has
         int NoQuotations = sqlManager.countRecords(conn, "tblQuotations", "employee_id", EmployeeID);    // Counts how many quotations the employee has
         System.out.println("-------------------------------");
@@ -339,7 +339,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         } else {                                                    // If the employee had any invoices or quotations associated with them then the user is informed
             JOptionPane.showMessageDialog(null, "This employee has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove employee", JOptionPane.WARNING_MESSAGE);
         }
-        sqlManager.closeConnection(conn);                           // Closes the connection to the DB
+        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     // Counts how many of the input fields is empty and returns the integer value
@@ -363,7 +363,7 @@ public class formOneEmployee extends javax.swing.JFrame {
             // Asks user whether they really want to edit this employee's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?", "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
-                conn = sqlManager.openConnection();                 // Opens connection to the DB
+                conn = sqlManager.openConnection();
                 String query = "UPDATE tblEmployees SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ? WHERE employee_id = ?";
                 PreparedStatement pstmt = null;
                 try {
@@ -384,7 +384,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);                   // Closes connection to the DB
+                sqlManager.closeConnection(conn);
                 setEditable(inputFields, false);                    // Makes all the fields no longer editable
                 txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
                 txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that

@@ -330,7 +330,7 @@ public class formReportThree extends javax.swing.JFrame {
             start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
-            conn = sqlManager.openConnection();                     // Opens connection to the DB
+            conn = sqlManager.openConnection();
 
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
@@ -341,7 +341,7 @@ public class formReportThree extends javax.swing.JFrame {
             } else {
                 start = inv;                                    // else inv is the earliest
             }
-            sqlManager.closeConnection(conn);                       // Closes connection to the DB
+            sqlManager.closeConnection(conn);
             //</editor-fold>
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">

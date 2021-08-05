@@ -113,7 +113,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     // Loads all the employees in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
     public void loadEmployees() {
         model.setRowCount(0);                                       // Empties the table
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String query = "SELECT employee_id, CONCAT(forename,' ', surname) AS FullName, phone_number, email_address FROM tblEmployees";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
@@ -145,7 +145,7 @@ public class formManageEmployees extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
 
     }
 

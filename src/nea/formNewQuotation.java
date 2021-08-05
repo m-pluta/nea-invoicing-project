@@ -231,7 +231,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     public void addNewItemCategory() {
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the new category
         if (inputCategory != null) {                                // If the dialog input was valid 
-            conn = sqlManager.openConnection();                     // Opens connection to DB
+            conn = sqlManager.openConnection();
 
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
 
@@ -256,7 +256,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
             }
-            sqlManager.closeConnection(conn);                       // Closes connection to DB
+            sqlManager.closeConnection(conn);
         }
 
     }
@@ -268,7 +268,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     // Method for loading all the customers currently in the system into the combo box
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomers";
         try {
             Statement stmt = conn.createStatement();
@@ -282,14 +282,14 @@ public class formNewQuotation extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
         cbCustomers.addItem("Add a new customer...");               // Adds an option for adding a new customer
     }
 
     // Method for loading all the item categories currently in the system into the combo box
     public void loadItemCategoriesIntoCB() {
         cbItemCategories.removeAllItems();
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String query = "SELECT category_name FROM tblItemCategories";
         try {
             Statement stmt = conn.createStatement();
@@ -304,7 +304,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
         cbItemCategories.addItem("Add a new category...");          // Adds an option for adding a new category
     }
 

@@ -77,7 +77,7 @@ public class formReportOne extends javax.swing.JFrame {
     private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
         DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");      // For formatting dates into an appropriate format
         DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
-        conn = sqlManager.openConnection();                                     // Opens connection to DB
+        conn = sqlManager.openConnection();
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();          // the final output dataset
         LinkedHashMap<String, Double> dataArr_Invoice = null;                   // Makes an empty hashmap with all the categories as the key
@@ -253,7 +253,7 @@ public class formReportOne extends javax.swing.JFrame {
                 dataset.addValue(i.getValue(), "Quotation", i.getKey());        // Adds it to the dataset
             }
         }
-        sqlManager.closeConnection(conn);                                       // Close connection to DB
+        sqlManager.closeConnection(conn);
 
         if (getInvoices && getQuotations) {
             for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
@@ -531,7 +531,7 @@ public class formReportOne extends javax.swing.JFrame {
             start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
             //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
-            conn = sqlManager.openConnection();                     // Opens connection to the DB
+            conn = sqlManager.openConnection();
 
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
@@ -552,7 +552,7 @@ public class formReportOne extends javax.swing.JFrame {
                     start = inv;                                    // else inv is the earliest
                 }
             }
-            sqlManager.closeConnection(conn);                       // Closes connection to the DB
+            sqlManager.closeConnection(conn);
             //</editor-fold>
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">

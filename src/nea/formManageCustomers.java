@@ -115,7 +115,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     // Loads all the customers in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
     public void loadCustomers() {
         model.setRowCount(0);                                       // Empties the table
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String query = "SELECT customer_id, CONCAT(forename,' ', surname) AS FullName, postcode, phone_number, email_address FROM tblCustomers";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
@@ -148,7 +148,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
 
     }
 

@@ -223,7 +223,7 @@ public class formManageInvoices extends javax.swing.JFrame {
 
     public void loadInvoices() {    // Raw SQL query: https://pastebin.com/xQ9xpUYT
         model.setRowCount(0);                                       // Empties the table
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
 
         String queryInvoiceTotals = "SELECT i.invoice_id, "
                 + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
@@ -272,7 +272,7 @@ public class formManageInvoices extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
     }
 
     // Returns the invoice_id of the selected invoice in the invoice table

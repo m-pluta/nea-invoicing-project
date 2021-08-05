@@ -224,7 +224,7 @@ public class formManageQuotations extends javax.swing.JFrame {
 
     public void loadQuotations() {    // Raw SQL query: https://pastebin.com/YyF8jJ6b
         model.setRowCount(0);                                       // Empties the table
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
 
         String queryQuotationTotals = "SELECT q.quotation_id,"
                 + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) AS quotationTotal"
@@ -273,7 +273,7 @@ public class formManageQuotations extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
     }
 
     // Returns the quotation_id of the selected quotation in the quotation table
