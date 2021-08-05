@@ -1,4 +1,4 @@
- /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -24,8 +24,6 @@ import javax.swing.event.DocumentListener;
  *
  * @author Michal
  */
-
-
 public class formAddCustomer extends javax.swing.JFrame {
 
     /**
@@ -384,11 +382,14 @@ public class formAddCustomer extends javax.swing.JFrame {
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0 || isAddNewCategorySelected() || !validInputs()) {    // If any one of the fields is empty and if the selected customer category is valid
-            System.out.println("-------------------------------");
-            System.out.println("Invalid Inputs");
-        } else {                                                    // If none of the fields are empty
+
+        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+            System.out.println("One or more of the input fields is empty");
+        } else if (isAddNewCategorySelected()) {                                // Checks if the user has the 'Add category' option selected
+            System.out.println("The 'Add category' option is not a valid category");
+        } else if (!validInputs()) {                                            // Validates input lengths
+            System.out.println("One or more of the inputs' length is too long");
+        } else {
             // Asks user whether they really want to add this customer
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?", "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
@@ -433,6 +434,7 @@ public class formAddCustomer extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
+    // Validating input length against the max lengths in the DB
     private boolean validInputs() {
         conn = sqlManager.openConnection();
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "forename")) {
