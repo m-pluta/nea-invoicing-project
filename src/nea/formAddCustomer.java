@@ -407,7 +407,7 @@ public class formAddCustomer extends javax.swing.JFrame {
                     pstmt.setString(8, txtPostcode.getText());
                     pstmt.setString(9, txtPhoneNumber.getText());
                     pstmt.setString(10, txtEmailAddress.getText());
-                    pstmt.setInt(11, sqlManager.getIDofCategory(conn, (String) cbCategory.getSelectedItem()));  // Gets the index of the selected customer category
+                    pstmt.setInt(11, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
 
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println(rowsAffected + " row updated.");
