@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -24,6 +24,8 @@ import javax.swing.event.DocumentListener;
  *
  * @author Michal
  */
+
+
 public class formAddCustomer extends javax.swing.JFrame {
 
     /**
@@ -38,9 +40,10 @@ public class formAddCustomer extends javax.swing.JFrame {
     public formAddCustomer() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
-        previousForm1 = null; previousForm2 = null; previousForm3 = null;
-        
+
+        previousForm1 = null;
+        previousForm2 = null;
+        previousForm3 = null;
 
         loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
 
@@ -61,8 +64,9 @@ public class formAddCustomer extends javax.swing.JFrame {
 
         this.addWindowListener(new WindowListener() {
             @Override
-            public void windowOpened(WindowEvent e) {}
-            
+            public void windowOpened(WindowEvent e) {
+            }
+
             @Override
             public void windowClosing(WindowEvent e) {
                 if (previousForm1 != null) {
@@ -75,30 +79,42 @@ public class formAddCustomer extends javax.swing.JFrame {
                     previousForm3.CurrentlyAddingCustomer = false;
                 }
             }
-            
+
             @Override
-            public void windowClosed(WindowEvent e) {}
+            public void windowClosed(WindowEvent e) {
+            }
+
             @Override
-            public void windowIconified(WindowEvent e) {}
+            public void windowIconified(WindowEvent e) {
+            }
+
             @Override
-            public void windowDeiconified(WindowEvent e) {}
+            public void windowDeiconified(WindowEvent e) {
+            }
+
             @Override
-            public void windowActivated(WindowEvent e) {}
+            public void windowActivated(WindowEvent e) {
+            }
+
             @Override
-            public void windowDeactivated(WindowEvent e) {}
+            public void windowDeactivated(WindowEvent e) {
+            }
         });
-        
+
         DocumentListener dListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 lblFullName.setText(txtForename.getText() + " " + txtSurname.getText());
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 lblFullName.setText(txtForename.getText() + " " + txtSurname.getText());
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e) {}  
+            public void changedUpdate(DocumentEvent e) {
+            }
         };
         txtForename.getDocument().addDocumentListener(dListener);
         txtSurname.getDocument().addDocumentListener(dListener);
@@ -112,25 +128,29 @@ public class formAddCustomer extends javax.swing.JFrame {
 
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
 
-            if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                System.out.println("-------------------------------");
-                System.out.println("Category under this name already exists");
-            } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
-                try {
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
-                    pstmt.setInt(1, newID);
-                    pstmt.setString(2, inputCategory);
-                    pstmt.setString(3, Utility.getCurrentDate());
-
-                    int rowsAffected = pstmt.executeUpdate();
+            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblCustomerCategories", "category_name")) {
+                System.out.println("Category name is too long");
+            } else {
+                if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                     System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row inserted.");
-                    loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-                    cbCategory.setSelectedIndex(newID - 1);         // Set the selected index to whatever category the user just added
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    System.out.println("Category under this name already exists");
+                } else {                                                // If it is a unique category
+                    String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                    try {
+                        PreparedStatement pstmt = conn.prepareStatement(query);
+                        int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
+                        pstmt.setInt(1, newID);
+                        pstmt.setString(2, inputCategory);
+                        pstmt.setString(3, Utility.getCurrentDate());
+
+                        int rowsAffected = pstmt.executeUpdate();
+                        System.out.println("-------------------------------");
+                        System.out.println(rowsAffected + " row inserted.");
+                        loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedIndex(newID - 1);         // Set the selected index to whatever category the user just added
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             sqlManager.closeConnection(conn);                       // Closes connection to DB
@@ -357,18 +377,17 @@ public class formAddCustomer extends javax.swing.JFrame {
         return emptyFields;
     }
 
-
     // Returns true if the 'Add new category' option in the combo box is selected
     private boolean isAddNewCategorySelected() {
         return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
     }
-    
+
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0 || isAddNewCategorySelected()) {    // If any one of the fields is empty and if the selected customer category is valid
+        if (countEmptyFields(inputFields) != 0 || isAddNewCategorySelected() || !validInputs()) {    // If any one of the fields is empty and if the selected customer category is valid
             System.out.println("-------------------------------");
-            System.out.println("One of the required input fields is empty");
+            System.out.println("Invalid Inputs");
         } else {                                                    // If none of the fields are empty
             // Asks user whether they really want to add this customer
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?", "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
@@ -388,7 +407,7 @@ public class formAddCustomer extends javax.swing.JFrame {
                     pstmt.setString(8, txtPostcode.getText());
                     pstmt.setString(9, txtPhoneNumber.getText());
                     pstmt.setString(10, txtEmailAddress.getText());
-                    pstmt.setInt(11, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
+                    pstmt.setInt(11, sqlManager.getIDofCategory(conn, (String) cbCategory.getSelectedItem()));  // Gets the index of the selected customer category
 
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println(rowsAffected + " row updated.");
@@ -408,11 +427,37 @@ public class formAddCustomer extends javax.swing.JFrame {
                     previousForm3.loadCustomersIntoCB();            // Refreshes the customer combo box in the previous form
                     previousForm3.CurrentlyAddingCustomer = false;
                 }
-                
+
                 this.dispose();                                     // Closes the add new customer form (current form)
             }
         }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
+
+    private boolean validInputs() {
+        conn = sqlManager.openConnection();
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "forename")) {
+            System.out.println("Forename too long");
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "surname")) {
+            System.out.println("Surname too long");
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address1")) {
+            System.out.println("Address line 1 too long");
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address2")) {
+            System.out.println("Address line 2 too long");
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address3")) {
+            System.out.println("Address line 3 too long");
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "county")) {
+            System.out.println("County too long");
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "postcode")) {
+            System.out.println("Postcode too long");
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "phone_number")) {
+            System.out.println("Phone number too long");
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "email_address")) {
+            System.out.println("Email Address too long");
+        } else {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @param args the command line arguments
