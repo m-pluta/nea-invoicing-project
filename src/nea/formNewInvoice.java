@@ -261,10 +261,10 @@ public class formNewInvoice extends javax.swing.JFrame {
 
             if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
                 System.out.println("The category name is too long");
-                
+
             } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("Category under this name already exists");
-                
+
             } else {                                                // If it is a unique category
                 String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
@@ -650,16 +650,16 @@ public class formNewInvoice extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
             System.out.println("You must enter something for the description of the item");
-            
+
         } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
             System.out.println("Entered quantity is not a valid integer");
-            
+
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
             System.out.println("Entered Unit Price is not a valid decimal");
-            
+
         } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
             System.out.println("The entered item description is too long");
-            
+
         } else {
             // Adds the item to the table
             model.addRow(new Object[]{txtItem.getText(), cbItemCategories.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
@@ -685,16 +685,16 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
         if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
             System.out.println("The 'Add new customer' option is not a valid customer");
-            
+
         } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
             System.out.println("Not a valid start date");
-            
+
         } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank invoice
             System.out.println("Invoice must have at least one item");
-            
+
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {    // Checks if the payments value  is a valid double
             System.out.println("The entered payments value is not valid");
-            
+
         } else {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
@@ -715,9 +715,8 @@ public class formNewInvoice extends javax.swing.JFrame {
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
                 System.out.println(rowsAffected + " row inserted.");
-                if (rowsAffected > 0) {                             // If the invoice was successfully added to the DBMS
-                    uploadInvoiceDetails(new_invoiceID);
-                }
+                
+                uploadInvoiceDetails(new_invoiceID);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -789,16 +788,16 @@ public class formNewInvoice extends javax.swing.JFrame {
             conn = sqlManager.openConnection();
             if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
                 System.out.println("You must enter something for the description of the item");
-                
+
             } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
                 System.out.println("Entered quantity is not a valid integer");
-                
+
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
                 System.out.println("Entered Unit Price is not a valid decimal");
-                
+
             } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
                 System.out.println("The entered item description is too long");
-                
+
             } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbItemCategories.getSelectedItem(), selectedItem, 1);
