@@ -249,7 +249,7 @@ public class formLogin extends javax.swing.JFrame {
         Boolean found = false;                                      // Whether a user exists under the given login details
         int fetchedID = -1;                                         // Init
 
-        conn = sqlManager.openConnection();                         // Opens a connection to the DB
+        conn = sqlManager.openConnection();
         String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -283,7 +283,7 @@ public class formLogin extends javax.swing.JFrame {
             MainMenu.setVisible(true);                              // Makes the main menu visible
             this.dispose();                                         // Closes login form and disposes instance from system memory pool
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to DB
+        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed

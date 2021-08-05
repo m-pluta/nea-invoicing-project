@@ -35,9 +35,9 @@ public class formMainMenu extends javax.swing.JFrame {
 
     // Fetches the full name of whoever is currently logged in and updates label
     public void whoLoggedIn() {
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String employeeFullName = sqlManager.getEmployeeFullName(conn, loggedIn_UserID);
-        sqlManager.closeConnection(conn);                           // Closes connection to DB
+        sqlManager.closeConnection(conn);
 
         if (employeeFullName != null) {
             System.out.println("-------------------------------");
@@ -53,7 +53,7 @@ public class formMainMenu extends javax.swing.JFrame {
 
     // Checks whether the logged in user is an admin, if they are then they have access to the management section of the program.
     public void checkWhetherAdmin() {
-        Connection conn = sqlManager.openConnection();
+        conn = sqlManager.openConnection();
         if (sqlManager.isAdmin(conn, loggedIn_UserID)) {
             btnManageCustomers.setEnabled(true);
             btnManageEmployees.setEnabled(true);
@@ -359,7 +359,7 @@ public class formMainMenu extends javax.swing.JFrame {
                 Boolean found = false;                              // Whether a user exists under the given login details
                 int fetchedID = -1;                                 // Init
 
-                conn = sqlManager.openConnection();                 // Opens a connection to the DB
+                conn = sqlManager.openConnection();
                 try {
                     String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
@@ -407,7 +407,7 @@ public class formMainMenu extends javax.swing.JFrame {
                     }
 
                 }
-                sqlManager.closeConnection(conn);                   // Closes connection to DB
+                sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
@@ -473,7 +473,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnReport3ActionPerformed
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
-        conn = sqlManager.openConnection();                         // Opens connection to the DB
+        conn = sqlManager.openConnection();
         String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = ?";
         PreparedStatement pstmt = null;
         try {
@@ -487,7 +487,7 @@ public class formMainMenu extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sqlManager.closeConnection(conn);                           // Closes connection to the DB
+        sqlManager.closeConnection(conn);
 
     }
 
