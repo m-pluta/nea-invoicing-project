@@ -383,7 +383,7 @@ public class formMainMenu extends javax.swing.JFrame {
                 } else {
                     System.out.println("-------------------------------");
                     System.out.println("User ID: " + fetchedID);
-                    
+
                     if (!inputDetails[2].equals(inputDetails[3]) || !inputDetails[4].equals(inputDetails[5])) {
                         System.out.println("The entered login details do not match");
                     } else if (inputDetails[2].length() < 4) {
