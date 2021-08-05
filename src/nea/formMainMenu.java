@@ -360,8 +360,8 @@ public class formMainMenu extends javax.swing.JFrame {
                 int fetchedID = -1;                                 // Init
 
                 conn = sqlManager.openConnection();                 // Opens a connection to the DB
-                String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
                 try {
+                    String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, inputDetails[0]);
                     pstmt.setString(2, inputDetails[1]);
@@ -377,32 +377,37 @@ public class formMainMenu extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);                   // Closes connection to DB
 
-                if (found) {                                        // If a user was not found
+                if (!found) {
+                    System.out.println("Incorrect login details");
+                } else {
                     System.out.println("-------------------------------");
                     System.out.println("User ID: " + fetchedID);
-                    if (inputDetails[2].equals(inputDetails[3]) && inputDetails[4].equals(inputDetails[5])) {
-                        if (inputDetails[2].length() >= 4 && inputDetails[4].length() >= 4) {   // Checks if the new username and password are of minimum length (4)
-                            conn = sqlManager.openConnection();
-                            if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
-                                System.out.println("User with this username already exists");
-                            } else {
-                                sqlManager.closeConnection(conn);
-                                System.out.println("-------------------------------");
-                                System.out.println("User ID: " + fetchedID);
-                                updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
-                                changingDetails = false;
-                            }
-                        } else {
-                            System.out.println("The username and password need to be at least 4 characters long for improved security");
-                        }
+                    
+                    if (!inputDetails[2].equals(inputDetails[3]) || !inputDetails[4].equals(inputDetails[5])) {
+                        System.out.println("The entered login details do not match");
+                    } else if (inputDetails[2].length() < 4) {
+                        System.out.println("Entered username is too short");    // Checks if the new username is of minimum length (4)
+                    } else if (inputDetails[4].length() < 4) {
+                        System.out.println("Entered password is too short");    // Checks if the new password is of minimum length (4)
+                    } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) { // Checks if the new username does not exceed the maximum length in the DB
+                        System.out.println("Entered username is too long");
+                    } else if (inputDetails[4].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) { // Checks if the new password does not exceed the maximum length in the DB
+                        System.out.println("Entered password is too long");
                     } else {
-                        System.out.println("Make sure you have entered your new username and password correctly");
+                        if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
+                            System.out.println("User with this username already exists");
+                        } else {
+                            sqlManager.closeConnection(conn);
+                            System.out.println("-------------------------------");
+                            System.out.println("User ID: " + fetchedID);
+                            updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
+                            changingDetails = false;
+                        }
                     }
-                } else {                                            // If a user was found with those login details
-                    System.out.println("Incorrect username and/or password.");
+
                 }
+                sqlManager.closeConnection(conn);                   // Closes connection to DB
             }
         }
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
