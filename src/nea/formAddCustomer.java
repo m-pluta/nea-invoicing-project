@@ -456,8 +456,10 @@ public class formAddCustomer extends javax.swing.JFrame {
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "email_address")) {
             System.out.println("Email Address too long");
         } else {
+            sqlManager.closeConnection(conn);
             return true;
         }
+        sqlManager.closeConnection(conn);
         return false;
     }
 

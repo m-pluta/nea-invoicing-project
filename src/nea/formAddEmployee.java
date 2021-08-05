@@ -347,8 +347,10 @@ public class formAddEmployee extends javax.swing.JFrame {
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
             System.out.println("Email Address too long");
         } else {
+            sqlManager.closeConnection(conn);
             return true;
         }
+        sqlManager.closeConnection(conn);
         return false;
     }
 
@@ -381,9 +383,9 @@ public class formAddEmployee extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                
+
                 validDetails = true;
-                
+
             }
             sqlManager.closeConnection(conn);                   // Closes connection to the DB
         }
