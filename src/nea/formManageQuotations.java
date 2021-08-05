@@ -252,23 +252,19 @@ public class formManageQuotations extends javax.swing.JFrame {
 
         try {
             Statement stmt = conn.createStatement();
-
             ResultSet rs = stmt.executeQuery(mainQuery);
+            
             int quotationCounter = 0;                               // variable for counting how many quotations are being shown in the table
-            while (rs.next()) {                                     // If there is another result from the DBMS
-                String[] quotationData = new String[5];
-                quotationData[0] = String.valueOf(rs.getInt(1));    // Quotation ID
-                quotationData[1] = rs.getString(2);                 // Customer name
-                quotationData[2] = rs.getString(3);                 // Employee name
-                quotationData[3] = rs.getString(4);                 // Creation date
-                quotationData[4] = Utility.formatCurrency(rs.getDouble(5)); // Quotation total
-                
-                model.addRow(new Object[]{quotationData[0], quotationData[1], quotationData[2], quotationData[3], quotationData[4]}); // Adds the quotation to the table
-                
-                quotationCounter++;                             // Increments quotation counter as a new quotation was added to the table
+            while (rs.next()) {
+                String quotationTotal = Utility.formatCurrency(rs.getDouble(5));
+
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), quotationTotal}); // Adds the quotation to the table
+
+                quotationCounter++;                                 // Increments quotation counter as a new quotation was added to the table
             }
             lblQuotationCount.setText("Number of quotations: " + String.valueOf(quotationCounter)); // Updates quotation counter label
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
@@ -277,7 +273,7 @@ public class formManageQuotations extends javax.swing.JFrame {
     // Returns the quotation_id of the selected quotation in the quotation table
     public int getSelectedQuotation() {
         int selectedRow = jTable_Quotations.getSelectedRow();       // Gets the selected row in the table
-        
+
         if (selectedRow == -1) {                                    // If no row is selected in the table
             System.out.println("No row selected");
         } else {                                                    // If there is a row selected in the table

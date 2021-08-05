@@ -254,15 +254,10 @@ public class formManageInvoices extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(mainQuery);
             
             int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
-            while (rs.next()) {                                     // If there is another result from the DBMS
-                String[] invoiceData = new String[5];
-                invoiceData[0] = String.valueOf(rs.getInt(1));              // Invoice ID
-                invoiceData[1] = rs.getString(2);                           // Customer name
-                invoiceData[2] = rs.getString(3);                           // Employee name
-                invoiceData[3] = rs.getString(4);                           // Creation date
-                invoiceData[4] = Utility.formatCurrency(rs.getDouble(5));   // Invoice total
+            while (rs.next()) {
+                String invoiceTotal = Utility.formatCurrency(rs.getDouble(5));
                 
-                model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), invoiceTotal}); // Adds the invoice to the table
                 
                 invoiceCounter++;                                   // Increments invoice counter as a new invoice was added to the table
             }
