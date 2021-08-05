@@ -75,11 +75,7 @@ public class formManageQuotations extends javax.swing.JFrame {
                     form.previousForm = formManageQuotations.this;  // Informs the quotation view what the previous form is 
                     form.loadQuotation();                           // Runs the loadQuotation() method which will load all of the specified quotation's details
                     Quotation_in_view = form;                       // Sets the quotation in view to this
-
-                } else {
-                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
                 }
-
             }
         });
 
@@ -266,7 +262,9 @@ public class formManageQuotations extends javax.swing.JFrame {
                 quotationData[2] = rs.getString(3);                 // Employee name
                 quotationData[3] = rs.getString(4);                 // Creation date
                 quotationData[4] = Utility.formatCurrency(rs.getDouble(5)); // Quotation total
+                
                 model.addRow(new Object[]{quotationData[0], quotationData[1], quotationData[2], quotationData[3], quotationData[4]}); // Adds the quotation to the table
+                
                 quotationCounter++;                             // Increments quotation counter as a new quotation was added to the table
             }
             lblQuotationCount.setText("Number of quotations: " + String.valueOf(quotationCounter)); // Updates quotation counter label
@@ -279,8 +277,8 @@ public class formManageQuotations extends javax.swing.JFrame {
     // Returns the quotation_id of the selected quotation in the quotation table
     public int getSelectedQuotation() {
         int selectedRow = jTable_Quotations.getSelectedRow();       // Gets the selected row in the table
+        
         if (selectedRow == -1) {                                    // If no row is selected in the table
-            System.out.println("-------------------------------");
             System.out.println("No row selected");
         } else {                                                    // If there is a row selected in the table
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form

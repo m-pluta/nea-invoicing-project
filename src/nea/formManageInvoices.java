@@ -75,11 +75,7 @@ public class formManageInvoices extends javax.swing.JFrame {
                     form.previousForm = formManageInvoices.this;   // Informs the invoice view what the previous form is 
                     form.loadInvoice();                            // Runs the loadInvoice() method which will load all of the specified invoice's details
                     Invoice_in_view = form;                        // Sets the invoice in view to this
-
-                } else {
-                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
                 }
-
             }
         });
 
@@ -255,8 +251,8 @@ public class formManageInvoices extends javax.swing.JFrame {
 
         try {
             Statement stmt = conn.createStatement();
-
             ResultSet rs = stmt.executeQuery(mainQuery);
+            
             int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
                 String[] invoiceData = new String[5];
@@ -265,11 +261,14 @@ public class formManageInvoices extends javax.swing.JFrame {
                 invoiceData[2] = rs.getString(3);                           // Employee name
                 invoiceData[3] = rs.getString(4);                           // Creation date
                 invoiceData[4] = Utility.formatCurrency(rs.getDouble(5));   // Invoice total
+                
                 model.addRow(new Object[]{invoiceData[0], invoiceData[1], invoiceData[2], invoiceData[3], invoiceData[4]}); // Adds the invoice to the table
-                invoiceCounter++;                               // Increments invoice counter as a new invoice was added to the table
+                
+                invoiceCounter++;                                   // Increments invoice counter as a new invoice was added to the table
             }
             lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
         } catch (SQLException e) {
+            System.out.println("SQLException");
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
@@ -278,10 +277,10 @@ public class formManageInvoices extends javax.swing.JFrame {
     // Returns the invoice_id of the selected invoice in the invoice table
     public int getSelectedInvoice() {
         int selectedRow = jTable_Invoices.getSelectedRow();         // Gets the selected row in the table
+        
         if (selectedRow == -1) {                                    // If no row is selected in the table
-            System.out.println("-------------------------------");
             System.out.println("No row selected");
-        } else {                                                    // If there is a row selected in the table
+        } else {
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
             int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
             return id;
