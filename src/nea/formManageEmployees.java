@@ -33,7 +33,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     formOneEmployee Employee_in_view = null;                        // could be null or could store whichever employee the user is currently viewing
     public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
     public boolean CurrentlyAddingEmployee = false;
-    
+
     public formManageEmployees() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -76,11 +76,7 @@ public class formManageEmployees extends javax.swing.JFrame {
                     form.previousForm = formManageEmployees.this;   // Informs the employee view what the previous form is 
                     form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details
                     Employee_in_view = form;                        // Sets the employee in view to this
-
-                } else {
-                    System.out.println("Something is truly wrong"); // Not sure how you would reach this point
                 }
-
             }
         });
 
@@ -102,7 +98,7 @@ public class formManageEmployees extends javax.swing.JFrame {
             }
 
         });
-        
+
         jTable_Employees = Utility.setColumnWidths(jTable_Employees, new int[]{40, 120, 100, 175, 120});
     }
 
@@ -114,6 +110,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     public void loadEmployees() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
+
         String query = "SELECT employee_id, CONCAT(forename,' ', surname) AS FullName, phone_number, email_address FROM tblEmployees";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
@@ -124,10 +121,12 @@ public class formManageEmployees extends javax.swing.JFrame {
             query += " OR email_address LIKE '%" + sp + "%'";                   // /
         }
 
+        query += " ORDER BY customer_id";
+
         try {
             Statement stmt = conn.createStatement();
-
             ResultSet rs = stmt.executeQuery(query);
+            
             int employeeCounter = 0;                                // variable for counting how many employees are being shown in the table
             while (rs.next()) {                                     // If there is another result from the DBMS
                 System.out.println("-------------------------------");
@@ -138,15 +137,14 @@ public class formManageEmployees extends javax.swing.JFrame {
                 String last_login_date = sqlManager.getLastLogin(conn, Utility.StringToInt(rs.getString(1)));
 
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), last_login_date}); // Adds the employee to the table
+                
                 employeeCounter++;                                  // Increments employee counter as a new employee was added to the table
-
             }
             lblEmployeeCount.setText("Number of employees: " + String.valueOf(employeeCounter)); // Updates employee counter label
         } catch (SQLException e) {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
-
     }
 
     /**
@@ -282,7 +280,6 @@ public class formManageEmployees extends javax.swing.JFrame {
     public int getSelectedEmployee() {
         int selectedRow = jTable_Employees.getSelectedRow();        // Gets the selected row in the table
         if (selectedRow == -1) {                                    // If no row is selected in the table
-            System.out.println("-------------------------------");
             System.out.println("No row selected");
         } else {                                                    // If there is a row selected in the table
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
