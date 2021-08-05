@@ -261,10 +261,10 @@ public class formNewInvoice extends javax.swing.JFrame {
 
             if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
                 System.out.println("The category name is too long");
-            }
-            if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                System.out.println("-------------------------------");
+                
+            } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("Category under this name already exists");
+                
             } else {                                                // If it is a unique category
                 String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
