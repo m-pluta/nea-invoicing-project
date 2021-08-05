@@ -268,11 +268,11 @@ public class formOneInvoice extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // This button is for converting the invoice into a word document given a template
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
-        formFormatIntoWord form = new formFormatIntoWord().getFrame();
-        form.previousForm = this;
-        form.InvoiceID = InvoiceID;
-        form.setVisible(true);
+        formFormatIntoWord form = new formFormatIntoWord().getFrame();          // Opens the Word Document generation form
+        form.InvoiceID = InvoiceID;                                             // Tells the invoice formatting form the invoiceID in question
+        form.setVisible(true);                                                  
     }//GEN-LAST:event_btnFormatActionPerformed
 
     // Counts how many of the input fields is empty and returns the integer value
