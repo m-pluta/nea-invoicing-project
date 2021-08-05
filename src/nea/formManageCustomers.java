@@ -131,14 +131,7 @@ public class formManageCustomers extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             
             int customerCounter = 0;                                // variable for counting how many customers are being shown in the table
-            while (rs.next()) {                                     // If there is another result from the DBMS
-                System.out.println("-------------------------------");
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));                // For debugging, shows each customer's data
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
-
+            while (rs.next()) {
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)}); // Adds the customer to the table
                 
                 customerCounter++;                                  // Increments customer counter as a new customer was added to the table
