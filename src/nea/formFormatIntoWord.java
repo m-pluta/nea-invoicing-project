@@ -38,17 +38,16 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     /**
      * Creates new form formFormatIntoWord
      */
-    static Connection conn = null;
-    formOneInvoice previousForm = null;
-    static int InvoiceID = 0;
+    static Connection conn = null;                                  // Stores the connection object                         
+    static int InvoiceID = 0;                                       // The invoiceID of the invoice that is about to be formatted into a word document
 
-    static String templateFilePath = null;
-    static String outputFilePath = null;
+    static String templateFilePath = null;                          // The filepath to the input template 
+    static String outputFilePath = null;                            // The filepath to where the output file should go
 
     public formFormatIntoWord() {
         initComponents();
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);     // Makes sure the program wont close if the document formatting window is closed
     }
 
     public formFormatIntoWord getFrame() {
@@ -153,12 +152,12 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void btnChooseTemplateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseTemplateActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));  // The starting directory
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);              // So the user can only select a file
         int option = fileChooser.showOpenDialog(new JFrame());
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            txtTemplate.setText(file.getName());
+            txtTemplate.setText(file.getName());                                // Sets the text box to whatever file the user selected
             templateFilePath = file.getAbsolutePath();
             System.out.println(templateFilePath);
         } else {
@@ -168,12 +167,12 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void btnChooseOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseOutputActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));  // The starting directory
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);        // So the user can only select a directory (folder)
         int option = fileChooser.showOpenDialog(new JFrame());
         if (option == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            txtOutput.setText(file.getName());
+            txtOutput.setText(file.getName());                                  // Sets the text box to whatever directory the user selected
             outputFilePath = file.getAbsolutePath();
             System.out.println(outputFilePath);
         } else {
@@ -182,37 +181,36 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChooseOutputActionPerformed
 
     private void btnGenerateDocumentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateDocumentActionPerformed
-        DateTimeFormatter year_short = DateTimeFormatter.ofPattern("yy");
-        DateTimeFormatter full_short = DateTimeFormatter.ofPattern("dd/MM/yy");
-        if (templateFilePath != null && outputFilePath != null) {
-            File f = new File(templateFilePath);
-            if (f.exists()) {
+        DateTimeFormatter year_short = DateTimeFormatter.ofPattern("yy");           // Date formatters
+        DateTimeFormatter full_short = DateTimeFormatter.ofPattern("dd/MM/yy");     //
+        if (templateFilePath != null && outputFilePath != null) {                   // If the person has selected a template and output directory
+            File f = new File(templateFilePath);                                    // Opens the template
+            if (f.exists()) {                                       // The template must exist
 
-                ArrayList<tableRow> invoiceRows = new ArrayList<tableRow>();
-                double invoiceSubtotal = 0.0;
-                //<editor-fold defaultstate="collapsed" desc="Gets the table rows of the invoice and calculates the subtotal of the invoice">
+                ArrayList<tableRow> invoiceRows = new ArrayList<tableRow>();        // Stores each row of the invoice
+                double invoiceSubtotal = 0.0;                                       // The subtotal of the invoice
                 conn = sqlManager.openConnection();
-                try {
+
+                //<editor-fold defaultstate="collapsed" desc="Gets the table rows of the invoice and calculates the subtotal of the invoice">
+                try {   // Gets all the row information from the DB
                     String query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblInvoiceDetails WHERE invoice_id = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, InvoiceID);
                     ResultSet rs = pstmt.executeQuery();
 
-                    while (rs.next()) {
-                        tableRow row = new tableRow(rs.getString(1), rs.getString(2), Utility.formatCurrency(rs.getDouble(3)), Utility.formatCurrency(rs.getDouble(4)));
-                        invoiceSubtotal += rs.getDouble(4);
-                        invoiceRows.add(row);
+                    while (rs.next()) {                             // While there are more rows
+                        tableRow row = new tableRow(rs.getString(1), rs.getString(2), Utility.formatCurrency(rs.getDouble(3)), Utility.formatCurrency(rs.getDouble(4)));    // Creates a table row object
+                        invoiceSubtotal += rs.getDouble(4);         // Adds to the subtotal
+                        invoiceRows.add(row);                       // Adds the tableRow object into an arraylist
                     }
                 } catch (SQLException e) {
                     System.out.println("SQLException");
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);
                 //</editor-fold>
+                LinkedHashMap<String, String> invoiceMetaData = new LinkedHashMap<>();  // Hashmap for storing metadata about the invoice
 
-                LinkedHashMap<String, String> invoiceMetaData = new LinkedHashMap<>();
                 //<editor-fold defaultstate="collapsed" desc="Gets metadata about the specific invoice and puts it in the hashmap">
-                conn = sqlManager.openConnection();
                 try {
                     String query = "SELECT payments, date_created FROM tblInvoices WHERE invoice_id = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
@@ -224,18 +222,19 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         invoiceMetaData.put("$payments", Utility.formatCurrency(rs.getDouble(1)));
                         invoiceMetaData.put("$total", Utility.formatCurrency(invoiceSubtotal - rs.getDouble(1)));
                         invoiceMetaData.put("$date", rs.getDate(2).toLocalDate().format(full_short));
-                        invoiceMetaData.put("$InvoiceNo", sqlManager.getInvoiceNoThisFinancialYear(conn, rs.getTimestamp(2).toLocalDateTime()) + "/" + Utility.getFinancialYear(rs.getDate(2).toLocalDate()).format(year_short));
+
+                        int InvoiceNoThisFinYear = sqlManager.getInvoiceNoThisFinancialYear(conn, rs.getTimestamp(2).toLocalDateTime()); // The invoice number in the current financial year
+                        String currentYear = Utility.getFinancialYear(rs.getDate(2).toLocalDate()).format(year_short);                   // The current year in short format
+                        invoiceMetaData.put("$InvoiceNo", InvoiceNoThisFinYear + "/" + currentYear);
                     }
                 } catch (SQLException e) {
                     System.out.println("SQLException");
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);
                 //</editor-fold>
-
                 LinkedHashMap<String, String> customerData = new LinkedHashMap<>();
+
                 //<editor-fold defaultstate="collapsed" desc="Gets data about the customer and puts it in the hashmap">
-                conn = sqlManager.openConnection();
                 try {
                     String query = "SELECT CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
                             + " COALESCE(c.address1, '') AS address1,"
@@ -251,19 +250,20 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     ResultSet rs = pstmt.executeQuery();
 
                     if (rs.next()) {
-                        customerData.put("$customerFullName", rs.getString(1));
-                        customerData.put("$address1", rs.getString(2));
-                        customerData.put("$address2", rs.getString(3));
-                        customerData.put("$address3", rs.getString(4));
-                        customerData.put("$county", rs.getString(5));
-                        customerData.put("$postcode", rs.getString(6));
+                        customerData.put("$customerFullName", rs.getString(1)); //
+                        customerData.put("$address1", rs.getString(2));         //
+                        customerData.put("$address2", rs.getString(3));         // Adds the customer data into the hashmap
+                        customerData.put("$address3", rs.getString(4));         //
+                        customerData.put("$county", rs.getString(5));           //
+                        customerData.put("$postcode", rs.getString(6));         //
                     }
                 } catch (SQLException e) {
                     System.out.println("SQLException");
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);
                 //</editor-fold>
+
+                sqlManager.closeConnection(conn);
 
                 //<editor-fold defaultstate="collapsed" desc="Debug">
                 System.out.println("");
@@ -279,7 +279,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 System.out.println(customerData);
                 //</editor-fold>
 
-                XWPFDocument doc = null;
+                XWPFDocument doc = null;                            // Declares a variable to store an XWPFDocument
                 try {
                     doc = new XWPFDocument(OPCPackage.open(templateFilePath));  //
                     doc = resizeDocumentTable(doc, invoiceRows.size());         // Resizing the amount of rows in the 
@@ -305,9 +305,10 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
+    // Method for removing a file under a given filepath
     public static void removeFile(String filepath) {
         File temp = new File(filepath);
-        if (temp.delete()) {
+        if (temp.delete()) {                                        // Returns true if the file was deleted successfully
             System.out.println(temp.getName() + " deleted successfully");
         } else {
             System.out.println("Failed to delete " + temp.getName());
@@ -315,20 +316,24 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     }
 
+    // Method for inserting the customer's data and the InvoiceNo and date into the document
     public static XWPFDocument insertCustomerData(XWPFDocument document, LinkedHashMap<String, String> customerData, LinkedHashMap<String, String> invoiceMD) {
 
         List<XWPFTable> tables = document.getTables();
-        XWPFTable table = tables.get(0);
-        if (customerData.get("$address3").isEmpty()) {
+        XWPFTable table = tables.get(0);                            // The first table is where the customer's data is inserted
+
+        if (customerData.get("$address3").isEmpty()) {              // If the customer has no 3rd address line then this row in the table is removed
             table.removeRow(3);
         }
-        if (customerData.get("$address2").isEmpty()) {
+        if (customerData.get("$address2").isEmpty()) {              // If the customer has no 2nd address line then this row in the table is removed
             table.removeRow(2);
         }
-        for (XWPFTableRow row : table.getRows()) {
-            for (XWPFTableCell cell : row.getTableCells()) {
-                for (XWPFParagraph p : cell.getParagraphs()) {
-                    for (XWPFRun r : p.getRuns()) {
+        for (XWPFTableRow row : table.getRows()) {                  // Goes through each row in the table
+            for (XWPFTableCell cell : row.getTableCells()) {        // Goes trough each cell in the individual row
+                for (XWPFParagraph p : cell.getParagraphs()) {      // Goes through each parahraph in the cell - a paragraph is a set of runs seperated by line seperators
+                    for (XWPFRun r : p.getRuns()) {                 // Goes through each run in the parahraph - a run is a string with characters that have the same formatting settings applied to them
+
+                        // Checks if each of these fields are found in the document
                         if (r.getText(0).equals("$customerFullName")) {
                             r.setText(customerData.get("$customerFullName"), 0);
                         }
@@ -358,30 +363,33 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         return document;
     }
 
+    // Method for inserting the invoice rows and some of the invoice meta data (subtotal, payments, total) into the word document
     public static XWPFDocument insertInvoiceData(XWPFDocument document, ArrayList<tableRow> invoiceRows, LinkedHashMap<String, String> invoiceMD) {
 
-        int NoRows = invoiceRows.size();
+        int NoRows = invoiceRows.size();                            // The number of rows in the invoice table
         List<XWPFTable> tables = document.getTables();
-        XWPFTable table = tables.get(1);
+        XWPFTable table = tables.get(1);                            // Gets the second table which is the table that stores details about the invoice
 
-        for (int i = 0; i < NoRows; i++) {
-            for (int j = 0; j < 4; j++) {
-                XWPFTableCell cell = table.getRows().get(i + 1).getTableCells().get(j);
+        for (int i = 0; i < NoRows; i++) {      // Each row in the invoiceRows ArrayList
+            for (int j = 0; j < 4; j++) {       // 0-3 is the index of the cells in each table row
+                XWPFTableCell cell = table.getRows().get(i + 1).getTableCells().get(j); // Gets the cell, (i+1) is used to avoid inserting into the table headers
                 if (cell.getParagraphs().size() == 0) {
-                    cell.addParagraph();
+                    cell.addParagraph();                            // Paragraph is added to the cell if there was not already one in the cell
                 }
-                XWPFParagraph p = cell.getParagraphs().get(0);
+                XWPFParagraph p = cell.getParagraphs().get(0);      // Gets the first paragraph in the cell
 
-                XWPFRun run = p.insertNewRun(0);
-                run.setText(invoiceRows.get(i).data[j]);
+                XWPFRun run = p.insertNewRun(0);                    // Adds a new run to the paragraph
+                run.setText(invoiceRows.get(i).data[j]);            // Adds the datum from the invoiceRows ArrayList
 
             }
         }
 
+        // Inserting the subtotal, payments, total fields
         for (int i = NoRows + 1; i < NoRows + 4; i++) {
-            for (XWPFTableCell cell : table.getRow(i).getTableCells()) {
-                for (XWPFParagraph p : cell.getParagraphs()) {
-                    for (XWPFRun r : p.getRuns()) {
+            for (XWPFTableCell cell : table.getRow(i).getTableCells()) {    //
+                for (XWPFParagraph p : cell.getParagraphs()) {              // Goes through every run in this part of the table
+                    for (XWPFRun r : p.getRuns()) {                         //
+                        // If it finds a run with the target name then it replaces it with the invoice data
                         if (r.getText(0).equals("$subtotal")) {
                             r.setText(invoiceMD.get("$subtotal"), 0);
                         }
@@ -399,26 +407,28 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         return document;
     }
 
+    // Method for resizing the table inside the template depending on the amount of rows in the invoice
     public static XWPFDocument resizeDocumentTable(XWPFDocument document, int amtRows) {
 
+        // Context: The template should contain only two empty rows in the table
         List<XWPFTable> tables = document.getTables();
-        XWPFTable table = tables.get(1);
+        XWPFTable table = tables.get(1);                            // Gets the second table which stores details about the invoice
 
         XWPFTableRow blankRow = table.getRows().get(2);             // The third row in the invoice template is the blank row
-        if (amtRows == 0) {
-            table.removeRow(2);
-            table.removeRow(1);
+        if (amtRows == 0) {                                         // If the invoice has now rows - shouldnt technically be possible
+            table.removeRow(2);                         // Removes both empty rows
+            table.removeRow(1);                         //
 
-        } else if (amtRows == 1) {
-            table.removeRow(2);
+        } else if (amtRows == 1) {                                  // If the invoice has only one row
+            table.removeRow(2);                                     // Removes the second empty row
 
         } else if (amtRows > 2) {
-            int newRowsNeeded = amtRows - 2;
+            int newRowsNeeded = amtRows - 2;                        // How many more empty rows need to be inserted into the table
             try {
-                for (int i = 2; i < newRowsNeeded + 2; i++) {
-                    CTRow ctrow = CTRow.Factory.parse(blankRow.getCtRow().newInputStream());
+                for (int i = 2; i < newRowsNeeded + 2; i++) {       // Goes through the index of all the new rows that are going to be added
+                    CTRow ctrow = CTRow.Factory.parse(blankRow.getCtRow().newInputStream());    // Takes the blankRow and converts it to a CTRow
                     XWPFTableRow newRow = new XWPFTableRow(ctrow, table);
-                    table.addRow(newRow, 2);
+                    table.addRow(newRow, 2);                        // Adds the empty row to the table
                 }
             } catch (XmlException xe) {
                 xe.printStackTrace();
@@ -432,39 +442,40 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         return document;
     }
 
-    public static String saveDocument(XWPFDocument document, String destination, String fileName, boolean withCounter) {
+    // Method for saving the XWPFDocument to a given location with the option of a counter for overwrite protection
+    public static void saveDocument(XWPFDocument document, String destination, String fileName, boolean withCounter) {
 
-        String savingDestination = destination + "\\" + fileName + ".docx";
-        if (withCounter) {
-            File f = new File(savingDestination);
+        String savingDestination = destination + "\\" + fileName + ".docx";     // The directory where the file will be saved
+        if (withCounter) {  
+            File f = new File(savingDestination);                   // Checks if the destination the user wanted is already occupied by another file
             if (f.exists()) {
-                System.out.println("File already exists under " + f.toPath().toString());
+                System.out.println("File already exists under " + f.toPath().toString());   // Debug
 
                 boolean found = false;
                 int counter = 1;
-                while (!found) {
-                    savingDestination = destination + "\\" + fileName + counter + ".docx";
+                while (!found) {                                                            // Checks all the files in the directory in order...
+                    savingDestination = destination + "\\" + fileName + counter + ".docx";  // e.g. Output1, Output2, Output3... until an used name is found
                     File t = new File(savingDestination);
-                    if (t.exists()) {
-                        counter++;
+                    if (t.exists()) {                               // If it already exists
+                        counter++;                          // Increment the counter
                     } else {
-                        found = true;
+                        found = true;                       // The filepath is not occupied so this is set as the filepath
                     }
                 }
             }
         }
 
-        FileOutputStream out = null;
+        FileOutputStream out = null;                        // Empty FileOutputStream
         try {
-            out = new FileOutputStream(savingDestination);
-            document.write(out);
-            out.close();
-
+            out = new FileOutputStream(savingDestination);  // FileOutputStream with a set destination directory
+            document.write(out);                            // Saves the document using the stream
+            out.close();                                    // Closes the OutputStream
+            System.out.println("Document successfully saved to: " + savingDestination); // Debug
+            
         } catch (IOException e) {
-            System.out.println("Error saving file");
+            System.out.println("Error saving file");        // Unsuccessful saving
             e.printStackTrace();
         }
-        return savingDestination;
     }
 
     /**
