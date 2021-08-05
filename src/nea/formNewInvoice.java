@@ -325,7 +325,6 @@ public class formNewInvoice extends javax.swing.JFrame {
             System.out.println("-------------------------------");
             while (rs.next()) {
                 System.out.println(rs.getString(1));                // For debugging
-                System.out.println(rs.getString(1));
                 cbItemCategories.addItem(rs.getString(1));          // Adds the category to the combo box
             }
         } catch (SQLException e) {
