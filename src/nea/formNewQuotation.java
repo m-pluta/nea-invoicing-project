@@ -67,12 +67,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         String customer = sqlManager.getCustomerFullName(conn, customerID);
         sqlManager.closeConnection(conn);
 
-        int NoCustomers = cbCustomers.getItemCount() - 1;
-        for (int i = 0; i < NoCustomers; i++) {
-            if (cbCustomers.getItemAt(i).equals(customer)) {
-                cbCustomers.setSelectedIndex(i);
-            }
-        }
+        cbCustomers.setSelectedItem(customer);
     }
 
     public formNewQuotation() {
@@ -191,7 +186,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         resetSideView();                                            // Resets the side view
 
         dcDateCreated.setDate(new Date());                          // Puts the current date as the date created value in case the user forgets to specify it himself
-    
+
         jTable_QuotationDetails = Utility.setColumnWidths(jTable_QuotationDetails, new int[]{300, 100, 60, 90, 90});
     }
 
@@ -235,9 +230,12 @@ public class formNewQuotation extends javax.swing.JFrame {
 
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
 
-            if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                System.out.println("-------------------------------");
+            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
+                System.out.println("The category name is too long");
+
+            } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("Category under this name already exists");
+
             } else {                                                // If it is a unique category
                 String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
@@ -298,7 +296,6 @@ public class formNewQuotation extends javax.swing.JFrame {
             System.out.println("-------------------------------");
             while (rs.next()) {
                 System.out.println(rs.getString(1));                // For debugging
-                System.out.println(rs.getString(1));
                 cbItemCategories.addItem(rs.getString(1));          // Adds the category to the combo box
             }
         } catch (SQLException e) {
@@ -596,27 +593,26 @@ public class formNewQuotation extends javax.swing.JFrame {
 
     // Add the item in the side view into the table if it is valid
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
-        int checks = 0;                                             // Counter for all validity checks
-        if (!txtItem.getText().equals("")) {                        // If the description of the item is not ""
-            checks++;
-        }
-        if (Pattern.matches("^[0-9]+$", txtQuantity.getText())) {   // If the quantity entered is a valid integer
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is a valid double
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtItemTotal.getText())) { // If the calculated Item total is valid double
-            checks++;                                                               // ... might be unnecessary but whatever
-        }
-        if (checks == 4) {                                          // If the item data passed all the checks
+        conn = sqlManager.openConnection();
+        if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
+            System.out.println("You must enter something for the description of the item");
+
+        } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
+            System.out.println("Entered quantity is not a valid integer");
+
+        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
+            System.out.println("Entered Unit Price is not a valid decimal");
+
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
+            System.out.println("The entered item description is too long");
+
+        } else {
             // Adds the item to the table
             model.addRow(new Object[]{txtItem.getText(), cbItemCategories.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
             resetSideView();                                        // Resets the side view
             updateTableTotal();                                     // Recalculates the total for the entire quotation
-        } else {
-            System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
         }
+        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnAddItemActionPerformed
 
     // Back button for going back to the previous form
@@ -631,29 +627,25 @@ public class formNewQuotation extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnBackActionPerformed
 
-    // This button sets the invoice given all the inputs are valid and insert a row into the DB
+    // This button sets the quotation given all the inputs are valid and insert a row into the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
-        int checks = 0;                                             // Counter for all validity checks
-        if (cbCustomers.getSelectedIndex() != cbCustomers.getItemCount() - 1) { // Makes sure the 'Add new customer' option isn't selected
-            checks++;
-        }
-        if (dcDateCreated.getDate() != null) {                      // Makes sure the selected date is valid
-            checks++;
-        }
-        if (model.getRowCount() != 0) {                             // Makes sure there items in the table - cannot be a blank quotation
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtTotal.getText())) {         // If the calculated total is valid double
-            checks++;
-        }
-        if (checks == 4) {                                          // If the input data passed all the validity checks
+        if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
+            System.out.println("The 'Add new customer' option is not a valid customer");
+
+        } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
+            System.out.println("Not a valid start date");
+
+        } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank quotation
+            System.out.println("Quotation must have at least one item");
+
+        } else {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
 
             conn = sqlManager.openConnection();
             String query = "INSERT INTO tblQuotations (quotation_id,customer_id,date_created,employee_id) VALUES (?,?,?,?)";
             try {
-                // Makes a new record in tblInvoices with the invoice metadata
+                // Makes a new record in tblQuotations with the quotation metadata
                 PreparedStatement pstmt = conn.prepareStatement(query);
                 int new_quotationID = sqlManager.getNextPKValue(conn, "tblQuotations", "quotation_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_quotationID);
@@ -665,16 +657,13 @@ public class formNewQuotation extends javax.swing.JFrame {
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
                 System.out.println(rowsAffected + " row inserted.");
-                if (rowsAffected > 0) {                             // If the quotation was successfully added to the DBMS
-                    uploadQuotationDetails(new_quotationID);
-                }
+
+                uploadQuotationDetails(new_quotationID);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             sqlManager.closeConnection(conn);
             goBack();
-        } else {
-            System.out.println("Didn't pass checks - " + checks + "/6 checks passed");
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
@@ -709,16 +698,18 @@ public class formNewQuotation extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
+        sqlManager.closeConnection(conn);
     }
 
     // Remove button to remove the selected item in the table from the table
     private void btnRemoveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItemActionPerformed
-        int selectedRow = jTable_QuotationDetails.getSelectedRow();   // Gets the index of the selected row
+        int selectedRow = jTable_QuotationDetails.getSelectedRow(); // Gets the index of the selected row
+
         if (selectedRow != -1) {                                    // -1 = no row selected
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?", "Remove invoice item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?", "Remove quotation item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {
                 model.removeRow(selectedRow);                       // Removes the row
-                updateTableTotal();                                // Recalculates the invoice totals
+                updateTableTotal();                                 // Recalculates the quotation total
                 resetSideView();                                    // Resets the side view
                 selectedItem = 0;                                   // No item in the table is now 'selected'
             }
@@ -732,44 +723,41 @@ public class formNewQuotation extends javax.swing.JFrame {
             txtItem.setEditable(true);
             txtQuantity.setEditable(true);                          // Makes the fields editable
             txtUnitPrice.setEditable(true);
-            txtItemTotal.setEditable(true);
             btnEditItem.setText("Confirm Edit");                    // Changes the button text
             btnRemoveItem.setEnabled(false);
             btnAddItem.setEnabled(false);                           // Disables the other buttons
         } else {
-            int checks = 0;                                         // Counter for all validity checks
-            if (!txtItem.getText().equals("")) {                    // If the description of the item is not ""
-                checks++;
-            }
-            if (Pattern.matches("^[0-9]+$", txtQuantity.getText())) {   // If the quantity entered is a valid integer
-                checks++;
-            }
-            if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is a valid double
-                checks++;
-            }
-            if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtItemTotal.getText())) { // If the calculated Item total is valid double
-                checks++;                                                               // ... might be unnecessary but whatever
-            }
-            if (checks == 4) {                                      // If the edit passed al validity checks
+            conn = sqlManager.openConnection();
+            if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
+                System.out.println("You must enter something for the description of the item");
+
+            } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
+                System.out.println("Entered quantity is not a valid integer");
+
+            } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
+                System.out.println("Entered Unit Price is not a valid decimal");
+
+            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
+                System.out.println("The entered item description is too long");
+
+            } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbItemCategories.getSelectedItem(), selectedItem, 1);
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
                 model.setValueAt(txtUnitPrice.getText(), selectedItem, 3);
                 model.setValueAt(txtItemTotal.getText(), selectedItem, 4);
 
-                updateTableTotal();                                // Recalculates the invoice totals
+                updateTableTotal();                                // Recalculates the quotation total
 
                 CurrentlyEditing = false;                           // Flips the boolean
                 txtItem.setEditable(false);
                 txtQuantity.setEditable(false);                     // Makes the fields uneditable
                 txtUnitPrice.setEditable(false);
-                txtItemTotal.setEditable(false);
                 btnEditItem.setText("Edit Item");                   // Changes the button text
                 btnRemoveItem.setEnabled(true);
                 btnAddItem.setEnabled(true);                        // Enables the other buttons
-            } else {
-                System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
             }
+            sqlManager.closeConnection(conn);
         }
 
     }//GEN-LAST:event_btnEditItemActionPerformed
@@ -794,7 +782,6 @@ public class formNewQuotation extends javax.swing.JFrame {
         txtUnitPrice.setEditable(true);
 
         txtItemTotal.setText("");
-        txtItemTotal.setEditable(true);
 
         cbItemCategories.setSelectedIndex(0);
 
