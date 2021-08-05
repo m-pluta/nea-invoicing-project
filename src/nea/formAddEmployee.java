@@ -296,7 +296,7 @@ public class formAddEmployee extends javax.swing.JFrame {
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?", "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 addLogin();
-                conn = sqlManager.openConnection();                 // Opens connection to the DB
+                conn = sqlManager.openConnection();
 
                 String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement pstmt = null;
@@ -318,7 +318,7 @@ public class formAddEmployee extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                sqlManager.closeConnection(conn);                   // Closes connection to the DB
+                sqlManager.closeConnection(conn);
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee details were changed
                 this.dispose();                                     // Closes the add new employee form (current form)
             }
@@ -387,7 +387,7 @@ public class formAddEmployee extends javax.swing.JFrame {
                 validDetails = true;
 
             }
-            sqlManager.closeConnection(conn);                   // Closes connection to the DB
+            sqlManager.closeConnection(conn);
         }
     }
 
