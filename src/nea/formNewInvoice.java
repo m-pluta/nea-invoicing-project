@@ -61,18 +61,13 @@ public class formNewInvoice extends javax.swing.JFrame {
             this.dispose();
         }
     }
-    
+
     public void selectCustomer(int customerID) {
         conn = sqlManager.openConnection();
         String customer = sqlManager.getCustomerFullName(conn, customerID);
         sqlManager.closeConnection(conn);
 
-        int NoCustomers = cbCustomers.getItemCount() - 1;
-        for (int i = 0; i < NoCustomers; i++) {
-            if (cbCustomers.getItemAt(i).equals(customer)) {
-                cbCustomers.setSelectedIndex(i);
-            }
-        }
+        cbCustomers.setSelectedItem(customer);
     }
 
     public formNewInvoice() {
@@ -106,10 +101,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                         // Loads the row into the side view
                         selectedItem = selectedRow;
                         txtItem.setText(model.getValueAt(selectedRow, 0).toString());
-                        Connection conn = sqlManager.openConnection();
-                        int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
-                        sqlManager.closeConnection(conn);
-                        cbItemCategories.setSelectedIndex(category_id - 1);
+                        cbItemCategories.setSelectedItem(model.getValueAt(selectedRow, 1).toString());
                         txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
                         txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
                         txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
@@ -208,7 +200,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         resetSideView();                                            // Resets the side view
 
         dcDateCreated.setDate(new Date());                          // Puts the current date as the date created value in case the user forgets to specify it himself
-    
+
         jTable_InvoiceDetails = Utility.setColumnWidths(jTable_InvoiceDetails, new int[]{300, 100, 60, 90, 90});
     }
 
@@ -267,6 +259,9 @@ public class formNewInvoice extends javax.swing.JFrame {
 
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
 
+            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
+                System.out.println("The category name is too long");
+            }
             if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                 System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
@@ -653,27 +648,26 @@ public class formNewInvoice extends javax.swing.JFrame {
 
     // Add the item in the side view into the table if it is valid
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
-        int checks = 0;                                             // Counter for all validity checks
-        if (!txtItem.getText().equals("")) {                        // If the description of the item is not ""
-            checks++;
-        }
-        if (Pattern.matches("^[0-9]+$", txtQuantity.getText())) {   // If the quantity entered is a valid integer
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is a valid double
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtItemTotal.getText())) { // If the calculated Item total is valid double
-            checks++;                                                               // ... might be unnecessary but whatever
-        }
-        if (checks == 4) {                                          // If the item data passed all the checks
+        conn = sqlManager.openConnection();
+        if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
+            System.out.println("You must enter something for the description of the item");
+            
+        } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
+            System.out.println("Entered quantity is not a valid integer");
+            
+        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
+            System.out.println("Entered Unit Price is not a valid decimal");
+            
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
+            System.out.println("The entered item description is too long");
+            
+        } else {
             // Adds the item to the table
             model.addRow(new Object[]{txtItem.getText(), cbItemCategories.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
             resetSideView();                                        // Resets the side view
             updateTableTotals();                                    // Recalculates the totals for the entire invoice
-        } else {
-            System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
         }
+        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnAddItemActionPerformed
 
     // Back button for going back to the previous form
@@ -690,26 +684,19 @@ public class formNewInvoice extends javax.swing.JFrame {
 
     // This button sets the invoice given all the inputs are valid and insert a row into the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
-        int checks = 0;                                             // Counter for all validity checks
-        if (cbCustomers.getSelectedIndex() != cbCustomers.getItemCount() - 1) { // Makes sure the 'Add new customer' option isn't selected
-            checks++;
-        }
-        if (dcDateCreated.getDate() != null) {                      // Makes sure the selected date is valid
-            checks++;
-        }
-        if (model.getRowCount() != 0) {                             // Makes sure there items in the table - cannot be a blank invoice
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtSubtotal.getText())) {      // If the calculated subtotal is valid double
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {   // If the payments value is a valid double
-            checks++;
-        }
-        if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtTotal.getText())) {         // If the calculated total is valid double
-            checks++;
-        }
-        if (checks == 6) {                                          // If the input data passed all the validity checks
+        if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
+            System.out.println("The 'Add new customer' option is not a valid customer");
+            
+        } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
+            System.out.println("Not a valid start date");
+            
+        } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank invoice
+            System.out.println("Invoice must have at least one item");
+            
+        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {    // Checks if the payments value  is a valid double
+            System.out.println("The entered payments value is not valid");
+            
+        } else {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
 
@@ -737,8 +724,6 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
             sqlManager.closeConnection(conn);
             goBack();
-        } else {
-            System.out.println("Didn't pass checks - " + checks + "/6 checks passed");
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
@@ -773,11 +758,13 @@ public class formNewInvoice extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
+        sqlManager.closeConnection(conn);
     }
 
     // Remove button to remove the selected item in the table from the table
     private void btnRemoveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItemActionPerformed
         int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the index of the selected row
+
         if (selectedRow != -1) {                                    // -1 = no row selected
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?", "Remove invoice item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {
@@ -796,25 +783,24 @@ public class formNewInvoice extends javax.swing.JFrame {
             txtItem.setEditable(true);
             txtQuantity.setEditable(true);                          // Makes the fields editable
             txtUnitPrice.setEditable(true);
-            txtItemTotal.setEditable(true);
             btnEditItem.setText("Confirm Edit");                    // Changes the button text
             btnRemoveItem.setEnabled(false);
             btnAddItem.setEnabled(false);                           // Disables the other buttons
         } else {
-            int checks = 0;                                         // Counter for all validity checks
-            if (!txtItem.getText().equals("")) {                    // If the description of the item is not ""
-                checks++;
-            }
-            if (Pattern.matches("^[0-9]+$", txtQuantity.getText())) {   // If the quantity entered is a valid integer
-                checks++;
-            }
-            if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is a valid double
-                checks++;
-            }
-            if (Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtItemTotal.getText())) { // If the calculated Item total is valid double
-                checks++;                                                               // ... might be unnecessary but whatever
-            }
-            if (checks == 4) {                                      // If the edit passed al validity checks
+            conn = sqlManager.openConnection();
+            if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
+                System.out.println("You must enter something for the description of the item");
+                
+            } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
+                System.out.println("Entered quantity is not a valid integer");
+                
+            } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
+                System.out.println("Entered Unit Price is not a valid decimal");
+                
+            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
+                System.out.println("The entered item description is too long");
+                
+            } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbItemCategories.getSelectedItem(), selectedItem, 1);
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
@@ -827,15 +813,12 @@ public class formNewInvoice extends javax.swing.JFrame {
                 txtItem.setEditable(false);
                 txtQuantity.setEditable(false);                     // Makes the fields uneditable
                 txtUnitPrice.setEditable(false);
-                txtItemTotal.setEditable(false);
                 btnEditItem.setText("Edit Item");                   // Changes the button text
                 btnRemoveItem.setEnabled(true);
                 btnAddItem.setEnabled(true);                        // Enables the other buttons
-            } else {
-                System.out.println("Didn't pass checks - " + checks + "/4 checks passed");
             }
+            sqlManager.closeConnection(conn);
         }
-
     }//GEN-LAST:event_btnEditItemActionPerformed
 
     // Clear button for clearing all the fields in the side view
@@ -858,7 +841,6 @@ public class formNewInvoice extends javax.swing.JFrame {
         txtUnitPrice.setEditable(true);
 
         txtItemTotal.setText("");
-        txtItemTotal.setEditable(true);
 
         cbItemCategories.setSelectedIndex(0);
 
