@@ -281,40 +281,37 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         int row = jTable_CustomerCategories.getSelectedRow();       // Gets the currently selected row in the table
+        String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
+        String category = model.getValueAt(row, 1).toString();
+
+        int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
 
         if (row == -1) {                                            // If no row is selected
             System.out.println("-------------------------------");
             System.out.println("No row selected");
-        } else {
-            String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
-            String category = model.getValueAt(row, 1).toString();
+        } else if (id == 1) {                                          // Checks if the user is trying to remove the first row - this is the default row and cannot be removed
+            System.out.println("-------------------------------");
+            System.out.println("This is the default row and cannot be removed");
+        } else {                                                // If it is any other row other than row 1
+            conn = sqlManager.openConnection();
+            int usersWithCategory = sqlManager.countRecords(conn, "tblCustomers", "type_id", id);
+            if (usersWithCategory == -1) {
+                System.out.println("Error fetching customers with this category");
+            } else if (usersWithCategory > 0) {
+                System.out.println("Cannot remove category since " + usersWithCategory + " customer(s) are under this category");
+            } else {
 
-            int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
+                // Asks user whether they really want to remove the category
+                int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+                if (YesNo == 0) {                               // If response is yes
+                    System.out.println("-------------------------------");
+                    System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
 
-            if (id == 1) {                                          // Checks if the user is trying to remove the first row - this is the default row and cannot be removed
-                System.out.println("-------------------------------");
-                System.out.println("This is the default row and cannot be removed");
-            } else {                                                // If it is any other row other than row 1
-                conn = sqlManager.openConnection();
-                int usersWithCategory = sqlManager.countRecords(conn, "tblCustomers", "type_id", id);
-                if (usersWithCategory == -1) {
-                    System.out.println("Error fetching customers with this category");
-                } else if (usersWithCategory > 0) {
-                    System.out.println("Cannot remove category since " + usersWithCategory + " customer(s) are under this category");
-                } else {
-
-                    // Asks user whether they really want to remove the category
-                    int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-                    if (YesNo == 0) {                               // If response is yes
-                        System.out.println("-------------------------------");
-                        System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
-
-                        sqlManager.removeRecord(conn, "tblCustomerCategories", "customer_category_id", id); // Removes the selected category
-                        loadCategories();                           //Refreshes table since a record was removed
-                    }
+                    sqlManager.removeRecord(conn, "tblCustomerCategories", "customer_category_id", id); // Removes the selected category
+                    loadCategories();                           //Refreshes table since a record was removed
                 }
-                sqlManager.closeConnection(conn);
             }
+            sqlManager.closeConnection(conn);
         }
     }//GEN-LAST:event_btnRemoveActionPerformed
 
@@ -332,7 +329,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         } else {
             conn = sqlManager.openConnection();
             boolean picked = false;
-            
+
             while (!picked) {
                 // Asks user what the new name of the category should be
                 String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
@@ -347,7 +344,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                     } else if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
                         System.out.println("Category under this name already exists");
                         // #TODO Allow the user to merge the two categories together under the wanted name
-                        
+
                     } else {
                         String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE customer_category_id = ?";
                         PreparedStatement pstmt = null;
