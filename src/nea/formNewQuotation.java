@@ -675,7 +675,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
-            int category = sqlManager.getIDofCategory(conn, model.getValueAt(i, 1).toString());
+            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", "item_category_id", model.getValueAt(i, 1).toString());
 
             String query = "INSERT INTO tblQuotationDetails (row_id,quotation_id,description,quantity,unit_price,item_category_id) VALUES (?,?,?,?,?,?)";
             try {

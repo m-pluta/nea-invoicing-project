@@ -266,9 +266,9 @@ public class sqlManager {
         return -1;
     }
 
-    // Returns the id of the item category given its name
-    public static int getIDofCategory(Connection conn, String category) {
-        String query = "SELECT item_category_id FROM tblItemCategories WHERE category_name = ?";
+    // Returns the id of the item category given its name and table
+    public static int getIDofCategory(Connection conn, String tableName, String PK_name, String category) {
+        String query = "SELECT " + PK_name + " FROM " + tableName + " WHERE category_name = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, category);
@@ -352,7 +352,7 @@ public class sqlManager {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, tableName);
             pstmt.setString(2, column);
-            
+
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a result is found
                 return rs.getInt(1);
