@@ -288,9 +288,11 @@ public class formAddEmployee extends javax.swing.JFrame {
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+            JOptionPane.showMessageDialog(null, "One or more of the input fields is empty", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("One or more of the input fields is empty");
         } else if (!validInputs()) {                                            // Validates input lengths
-            System.out.println("One or more of the inputs' length is too long");
+
         } else {
             // Asks user whether they really want to add this employee
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?", "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
@@ -299,9 +301,8 @@ public class formAddEmployee extends javax.swing.JFrame {
                 conn = sqlManager.openConnection();
 
                 String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                PreparedStatement pstmt = null;
                 try {
-                    pstmt = conn.prepareStatement(query);
+                    PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, EmployeeID);
                     pstmt.setString(2, txtForename.getText());
                     pstmt.setString(3, txtSurname.getText());
@@ -314,7 +315,8 @@ public class formAddEmployee extends javax.swing.JFrame {
                     pstmt.setString(10, txtEmailAddress.getText());
 
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println(rowsAffected + " row updated.");
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row(s) inserted.");
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -330,23 +332,50 @@ public class formAddEmployee extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
-            System.out.println("Forename too long");
+            JOptionPane.showMessageDialog(null, "The entered forename is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Forename is too long");
+
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
+            JOptionPane.showMessageDialog(null, "The entered surname is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Surname too long");
+
         } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
+            JOptionPane.showMessageDialog(null, "The entered address line 1 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Address line 1 too long");
+
         } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
+            JOptionPane.showMessageDialog(null, "The entered address line 2 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Address line 2 too long");
+
         } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
+            JOptionPane.showMessageDialog(null, "The entered address line 3 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Address line 3 too long");
+
         } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
+            JOptionPane.showMessageDialog(null, "The entered county is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("County too long");
+
         } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
+            JOptionPane.showMessageDialog(null, "The entered postcode is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Postcode too long");
+
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
+            JOptionPane.showMessageDialog(null, "The entered phone number is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Phone number too long");
+
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
+            JOptionPane.showMessageDialog(null, "The entered email address is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Email Address too long");
+
         } else {
             output = true;
         }
@@ -360,18 +389,29 @@ public class formAddEmployee extends javax.swing.JFrame {
             String[] responses = Utility.JOptionPaneMultiInput("What login details should this employee have?", new String[]{"Username", "Confirm username", "Password", "Confirm password"});
             conn = sqlManager.openConnection();
             if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
+                JOptionPane.showMessageDialog(null, "Login details do not match, check if you have entered them correctly", "Input Details Mismatch Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
                 System.out.println("Login details do not match, check you have entered them correctly");
+
             } else if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
-                System.out.println("An employee with this username already exists");
+                JOptionPane.showMessageDialog(null, "Employee with this username already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Employee with this username already exists");
+
             } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) {
-                System.out.println("Username too long");
+                JOptionPane.showMessageDialog(null, "The entered username is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Username is too long");
+
             } else if (responses[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) {
-                System.out.println("Password too long");
+                JOptionPane.showMessageDialog(null, "The entered password is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Password is too long");
+
             } else {
                 String query = "INSERT into tblLogins (employee_id, username, password, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?)";
-                PreparedStatement pstmt = null;
                 try {
-                    pstmt = conn.prepareStatement(query);
+                    PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, EmployeeID);
                     pstmt.setString(2, responses[0]);
                     pstmt.setString(3, responses[2]);
@@ -379,13 +419,13 @@ public class formAddEmployee extends javax.swing.JFrame {
                     pstmt.setString(5, Utility.getCurrentDate());
 
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println(rowsAffected + " row updated.");
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row(s) inserted.");
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
 
                 validDetails = true;
-
             }
             sqlManager.closeConnection(conn);
         }
