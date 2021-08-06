@@ -82,6 +82,7 @@ public class formReportThree extends javax.swing.JFrame {
             System.out.println("SQLException");
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
 
         int preferredAmount = 5;                                    // The preferred amount of categories to display
         SpinnerModel sm = new SpinnerNumberModel(NoEmployees < preferredAmount ? NoEmployees : preferredAmount, 1, NoEmployees, 1); // Default, LB, UB, Increment
@@ -148,6 +149,7 @@ public class formReportThree extends javax.swing.JFrame {
             System.out.println("SQLException");
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
         return dataset;
     }
 

@@ -82,7 +82,9 @@ public class formNewQuotation extends javax.swing.JFrame {
 
         JTextField[] fields = {txtQuotationID, txtTotal, txtItemTotal};     // Makes some of the fields which are automatically filled uneditable
         setEditable(fields, false);
-        QuotationID = sqlManager.getNextPKValue(sqlManager.openConnection(), "tblQuotations", "quotation_id"); // Gets the next available quotation id
+        conn = sqlManager.openConnection();
+        QuotationID = sqlManager.getNextPKValue(conn, "tblQuotations", "quotation_id"); // Gets the next available quotation id
+        sqlManager.closeConnection(conn);
         txtQuotationID.setText(String.valueOf(QuotationID));
         loadCustomersIntoCB();
         loadItemCategoriesIntoCB();
@@ -101,10 +103,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                         // Loads the row into the side view
                         selectedItem = selectedRow;
                         txtItem.setText(model.getValueAt(selectedRow, 0).toString());
-                        Connection conn = sqlManager.openConnection();
-                        int category_id = sqlManager.getIDofCategory(conn, model.getValueAt(selectedRow, 1).toString());
-                        sqlManager.closeConnection(conn);
-                        cbItemCategories.setSelectedIndex(category_id - 1);
+                        cbItemCategories.setSelectedItem(model.getValueAt(selectedRow, 1).toString());
                         txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
                         txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
                         txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
@@ -215,7 +214,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         double total = 0.0;                                         // Init
         int NoRows = model.getRowCount();                           // Gets the number of rows in the table
         for (int i = 0; i < NoRows; i++) {
-            String value = model.getValueAt(i, 4).toString().replace("£", "");  // Gets the value of the item(s) as a string
+            String value = model.getValueAt(i, 4).toString().replace("£", "").replace(",", "");  // Gets the value of the item(s) as a string
             total += Double.valueOf(value);                         // Converts the value in string type into double type and add it to the running total
         }
 

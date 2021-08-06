@@ -109,7 +109,6 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton4 = new javax.swing.JButton();
         lblManageCustomerCategories = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_CustomerCategories = new javax.swing.JTable();
@@ -120,8 +119,6 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         lblSearch = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
         lblCategoryCount = new javax.swing.JLabel();
-
-        jButton4.setText("jButton4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Customer Category Management");
@@ -420,7 +417,6 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnRemove;
-    private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_CustomerCategories;
     private javax.swing.JLabel lblCategoryCount;

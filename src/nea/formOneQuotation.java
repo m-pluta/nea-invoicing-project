@@ -65,7 +65,7 @@ public class formOneQuotation extends javax.swing.JFrame {
             pstmt.setInt(1, QuotationID);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {                                        // If an document with the given id was found
+            if (rs.next()) {
                 txtQuotationID.setText(String.valueOf(QuotationID));
                 txtCustomer.setText(rs.getString(1));
                 txtEmployee.setText(rs.getString(2));
@@ -82,6 +82,7 @@ public class formOneQuotation extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
 
     }
 
@@ -94,7 +95,7 @@ public class formOneQuotation extends javax.swing.JFrame {
             pstmt.setInt(1, quotationID);
 
             ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {                                        // If an document with the given id was found
+            while (rs.next()) {
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 QuotationTotal += itemTotal;
 
@@ -106,6 +107,7 @@ public class formOneQuotation extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
         return QuotationTotal;
     }
 

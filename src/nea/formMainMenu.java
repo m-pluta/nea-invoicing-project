@@ -60,6 +60,7 @@ public class formMainMenu extends javax.swing.JFrame {
             btnManageItemCategories.setEnabled(true);
             btnManageCustomerCategories.setEnabled(true);
         }
+        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -398,7 +399,6 @@ public class formMainMenu extends javax.swing.JFrame {
                         if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
                             System.out.println("User with this username already exists");
                         } else {
-                            sqlManager.closeConnection(conn);
                             System.out.println("-------------------------------");
                             System.out.println("User ID: " + fetchedID);
                             updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
@@ -475,9 +475,8 @@ public class formMainMenu extends javax.swing.JFrame {
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();
         String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = ?";
-        PreparedStatement pstmt = null;
         try {
-            pstmt = conn.prepareStatement(query);
+            PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, newUsername);
             pstmt.setString(2, newPassword);
             pstmt.setInt(3, id);

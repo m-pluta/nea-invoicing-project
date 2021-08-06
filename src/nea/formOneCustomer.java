@@ -458,7 +458,7 @@ public class formOneCustomer extends javax.swing.JFrame {
 
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        
+
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
             System.out.println("One or more of the input fields is empty");
         } else if (isAddNewCategorySelected()) {                                // Checks if the user has the 'Add category' option selected
@@ -482,7 +482,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category
+                    pstmt.setInt(10, cbCategory.getSelectedIndex() + 1);  // Gets the index of the selected customer category #TODO
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();
@@ -504,6 +504,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     // Validating input length against the max lengths in the DB
     private boolean validInputs() {
         conn = sqlManager.openConnection();
+        boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "forename")) {
             System.out.println("Forename too long");
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "surname")) {
@@ -523,14 +524,13 @@ public class formOneCustomer extends javax.swing.JFrame {
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "email_address")) {
             System.out.println("Email Address too long");
         } else {
-            sqlManager.closeConnection(conn);
-            return true;
+            output = true;
         }
         sqlManager.closeConnection(conn);
-        return false;
+        return output;
     }
-    
-    
+
+
     private void btnSetInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
         form.previousForm3 = this;                                  // Makes this form the previousForm so the back buttons work

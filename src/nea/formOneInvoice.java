@@ -65,7 +65,7 @@ public class formOneInvoice extends javax.swing.JFrame {
             pstmt.setInt(1, InvoiceID);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {                                        // If an document with the given id was found
+            if (rs.next()) {
                 txtInvoiceID.setText(String.valueOf(InvoiceID));
                 txtCustomer.setText(rs.getString(1));
                 txtEmployee.setText(rs.getString(2));
@@ -84,7 +84,7 @@ public class formOneInvoice extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        sqlManager.closeConnection(conn);
     }
 
     public double loadInvoiceDetails(int invoiceID) {
@@ -96,7 +96,7 @@ public class formOneInvoice extends javax.swing.JFrame {
             pstmt.setInt(1, InvoiceID);
 
             ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {                                        // If an document with the given id was found
+            while (rs.next()) {
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 InvoiceTotal += itemTotal;
 
@@ -108,6 +108,7 @@ public class formOneInvoice extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sqlManager.closeConnection(conn);
         return InvoiceTotal;
     }
 

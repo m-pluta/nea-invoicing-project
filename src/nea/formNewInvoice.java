@@ -82,7 +82,9 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal, txtItemTotal};  // Makes some of the fields which are automatically filled uneditable
         setEditable(fields, false);
-        InvoiceID = sqlManager.getNextPKValue(sqlManager.openConnection(), "tblInvoices", "invoice_id"); // Gets the next available invoice id
+        conn = sqlManager.openConnection();
+        InvoiceID = sqlManager.getNextPKValue(conn, "tblInvoices", "invoice_id"); // Gets the next available invoice id
+        sqlManager.closeConnection(conn);
         txtInvoiceID.setText(String.valueOf(InvoiceID));
         loadCustomersIntoCB();
         loadItemCategoriesIntoCB();
@@ -244,7 +246,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         double subTotal = 0.0;                                      // Init
         int NoRows = model.getRowCount();                           // Gets the number of rows in the table
         for (int i = 0; i < NoRows; i++) {
-            String value = model.getValueAt(i, 4).toString().replace("£", "");  // Gets the value of the item(s) as a string
+            String value = model.getValueAt(i, 4).toString().replace("£", "").replace(",", "");  // Gets the value of the item(s) as a string
             subTotal += Double.valueOf(value);                      // Converts the value in string type into double type and add it to the running subtotal
         }
 

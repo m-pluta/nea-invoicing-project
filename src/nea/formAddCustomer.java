@@ -438,6 +438,7 @@ public class formAddCustomer extends javax.swing.JFrame {
     // Validating input length against the max lengths in the DB
     private boolean validInputs() {
         conn = sqlManager.openConnection();
+        boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "forename")) {
             System.out.println("Forename too long");
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "surname")) {
@@ -457,11 +458,10 @@ public class formAddCustomer extends javax.swing.JFrame {
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "email_address")) {
             System.out.println("Email Address too long");
         } else {
-            sqlManager.closeConnection(conn);
-            return true;
+            output = true;
         }
         sqlManager.closeConnection(conn);
-        return false;
+        return output;
     }
 
     /**
