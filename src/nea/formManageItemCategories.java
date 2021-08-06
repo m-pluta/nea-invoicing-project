@@ -247,7 +247,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
+        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the item category
         if (inputCategory != null) {                                // If the dialog input was valid 
             conn = sqlManager.openConnection();
 

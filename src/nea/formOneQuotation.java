@@ -124,7 +124,7 @@ public class formOneQuotation extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblInvoiceID = new javax.swing.JLabel();
+        lblQuotationID = new javax.swing.JLabel();
         lblCustomer = new javax.swing.JLabel();
         lblEmployee = new javax.swing.JLabel();
         lblDateCreated = new javax.swing.JLabel();
@@ -140,8 +140,8 @@ public class formOneQuotation extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Quotation");
 
-        lblInvoiceID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblInvoiceID.setText("Quotation ID:");
+        lblQuotationID.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblQuotationID.setText("Quotation ID:");
 
         lblCustomer.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomer.setText("Customer:");
@@ -174,7 +174,7 @@ public class formOneQuotation extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblInvoiceID)
+                        .addComponent(lblQuotationID)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtQuotationID, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -204,7 +204,7 @@ public class formOneQuotation extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblInvoiceID)
+                    .addComponent(lblQuotationID)
                     .addComponent(txtQuotationID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -283,7 +283,7 @@ public class formOneQuotation extends javax.swing.JFrame {
     private javax.swing.JLabel lblCustomer;
     private javax.swing.JLabel lblDateCreated;
     private javax.swing.JLabel lblEmployee;
-    private javax.swing.JLabel lblInvoiceID;
+    private javax.swing.JLabel lblQuotationID;
     private javax.swing.JLabel lblTotal;
     private javax.swing.JTextField txtCustomer;
     private javax.swing.JTextField txtDateCreated;

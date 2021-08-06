@@ -263,9 +263,9 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         if (!CurrentlyAddingEmployee) {
-            formAddEmployee form = new formAddEmployee().getFrame();    // Opens a new instance of the formAddCustomer() form
-            form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
-            form.setVisible(true);                          // Makes the new customer view visible
+            formAddEmployee form = new formAddEmployee().getFrame();    // Opens a new instance of the formAddEmployee() form
+            form.setLocationRelativeTo(null);               // Sets the location of the employee view to the right of the current employee management form
+            form.setVisible(true);                          // Makes the new employee view visible
             form.previousForm = this;
             CurrentlyAddingEmployee = true;
         }
