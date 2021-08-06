@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -253,7 +254,7 @@ public class formManageQuotations extends javax.swing.JFrame {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(mainQuery);
-            
+
             int quotationCounter = 0;                               // variable for counting how many quotations are being shown in the table
             while (rs.next()) {
                 String quotationTotal = Utility.formatCurrency(rs.getDouble(5));
@@ -264,7 +265,6 @@ public class formManageQuotations extends javax.swing.JFrame {
             }
             lblQuotationCount.setText("Number of quotations: " + String.valueOf(quotationCounter)); // Updates quotation counter label
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
@@ -275,7 +275,10 @@ public class formManageQuotations extends javax.swing.JFrame {
         int selectedRow = jTable_Quotations.getSelectedRow();       // Gets the selected row in the table
 
         if (selectedRow == -1) {                                    // If no row is selected in the table
+            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("No row selected");
+
         } else {                                                    // If there is a row selected in the table
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
             int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type

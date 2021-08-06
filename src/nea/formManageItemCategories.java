@@ -86,9 +86,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             int categoryCounter = 0;                                // variable for counting how many category are being shown in the table
             while (rs.next()) {
                 System.out.println("-------------------------------");
-                System.out.println(rs.getString(1));
                 System.out.println(rs.getString(2));    // For debugging, shows each item category that is in the table
-                System.out.println(rs.getString(3));
 
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});  // Adds the category data as a new row in the table
                 categoryCounter++;                                  // Increments category counter as a new category was added to the table
@@ -254,11 +252,16 @@ public class formManageItemCategories extends javax.swing.JFrame {
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
 
             if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
-                System.out.println("The category name is too long");
+                JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Category name is too long");
+
             } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
                 System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
-            } else {                                                // If it is a unique category
+
+            } else {
                 String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
@@ -269,7 +272,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row inserted.");
+                    System.out.println(rowsAffected + " row(s) inserted.");
                     loadCategories();                               // Refreshes Table
 
                 } catch (SQLException e) {
@@ -288,19 +291,28 @@ public class formManageItemCategories extends javax.swing.JFrame {
         int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
 
         if (row == -1) {                                            // If no row is selected
+            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("No row selected");
+
         } else if (id == 1) {                                          // Checks if the user is trying to remove the first row - this is the default row and cannot be removed
-            System.out.println("This is the default row and cannot be removed");
+            JOptionPane.showMessageDialog(null, "This is the default row and cannot be removed", "Cannot Remove Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Default row cannot be removed");
+
         } else {                                                // If it is any other row other than row 1
             conn = sqlManager.openConnection();
             int invoiceRowsWithCategory = sqlManager.countRecords(conn, "tblInvoiceDetails", "item_category_id", id);
             int quotationRowsWithCategory = sqlManager.countRecords(conn, "tblQuotationDetails", "item_category_id", id);
             if (invoiceRowsWithCategory == -1 || quotationRowsWithCategory == -1) {
+                System.out.println("-------------------------------");
                 System.out.println("Error fetching document rows with this category");
             } else if (invoiceRowsWithCategory > 0 || quotationRowsWithCategory > 0) {
-                System.out.println("Cannot remove category since " + invoiceRowsWithCategory + " invoice rows and " + quotationRowsWithCategory + " quotation rows are under this category");
-            } else {
+                JOptionPane.showMessageDialog(null, "Cannot remove category since " + invoiceRowsWithCategory + " invoice rows and " + quotationRowsWithCategory + " quotation rows are under this category", "Cannot Remove Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Cannot remove category: " + invoiceRowsWithCategory + " invoice rows & " + quotationRowsWithCategory + " quotation rows");
 
+            } else {
                 // Asks user whether they really want to remove the category
                 int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
                 if (YesNo == 0) {                               // If response is yes
@@ -324,9 +336,15 @@ public class formManageItemCategories extends javax.swing.JFrame {
         int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
 
         if (row == -1) {                                            // If no row is selected
+            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("No row selected");
+
         } else if (id == 1) {                                          // Checks if the user is trying to edit the first row - this is the default row and cannot be edited
-            System.out.println("This is the default row and cannot be edited");
+            JOptionPane.showMessageDialog(null, "This is the default row and cannot be edited", "Cannot Edit Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Default row cannot be edited");
+
         } else {
             conn = sqlManager.openConnection();
             boolean picked = false;
@@ -341,21 +359,26 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     inputCategory = inputCategory.trim();           // Removes all leading and trailing whitespace characters
 
                     if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {   // Checks if the entered category name is longer than max length in DB
-                        System.out.println("Category name too long");
+                        JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
+                        System.out.println("Category name is too long");
+
                     } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                        JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
                         System.out.println("Category under this name already exists");
                         // # TODO Allow the user to merge the two categories together under the wanted name
 
                     } else {
                         String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
-                        PreparedStatement pstmt = null;
                         try {
-                            pstmt = conn.prepareStatement(query);
+                            PreparedStatement pstmt = conn.prepareStatement(query);
                             pstmt.setString(1, inputCategory);
                             pstmt.setInt(2, id);
 
                             int rowsAffected = pstmt.executeUpdate();
-                            System.out.println(rowsAffected + " row updated.");
+                            System.out.println("-------------------------------");
+                            System.out.println(rowsAffected + " row(s) updated.");
                             loadCategories();                       // Refreshes table since a record was updated
                         } catch (SQLException e) {
                             e.printStackTrace();

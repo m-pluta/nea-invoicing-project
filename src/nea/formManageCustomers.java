@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -100,10 +101,10 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
 
         });
-        
+
         jTable_Customers = Utility.setColumnWidths(jTable_Customers, new int[]{40, 120, 100, 100, 175});
     }
-    
+
     public formManageCustomers getFrame() {
         return this;
     }
@@ -112,7 +113,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     public void loadCustomers() {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
-        
+
         String query = "SELECT customer_id, CONCAT(forename,' ', surname) AS FullName, postcode, phone_number, email_address FROM tblCustomers";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
@@ -124,16 +125,16 @@ public class formManageCustomers extends javax.swing.JFrame {
             query += " OR email_address LIKE '%" + sp + "%'";                   // /
         }
 
-        query +=  " ORDER BY customer_id";
-        
+        query += " ORDER BY customer_id";
+
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            
+
             int customerCounter = 0;                                // variable for counting how many customers are being shown in the table
             while (rs.next()) {
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)}); // Adds the customer to the table
-                
+
                 customerCounter++;                                  // Increments customer counter as a new customer was added to the table
             }
             lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter)); // Updates customer counter label
@@ -281,8 +282,10 @@ public class formManageCustomers extends javax.swing.JFrame {
     // Returns the customer_id of the selected customer in the customer table
     public int getSelectedCustomer() {
         int selectedRow = jTable_Customers.getSelectedRow();        // Gets the selected row in the table
-        
+
         if (selectedRow == -1) {                                    // If no row is selected in the table
+            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("No row selected");
         } else {                                                    // If there is a row selected in the table
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form

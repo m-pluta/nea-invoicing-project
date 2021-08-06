@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -252,18 +253,17 @@ public class formManageInvoices extends javax.swing.JFrame {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(mainQuery);
-            
+
             int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
             while (rs.next()) {
                 String invoiceTotal = Utility.formatCurrency(rs.getDouble(5));
-                
+
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), invoiceTotal}); // Adds the invoice to the table
-                
+
                 invoiceCounter++;                                   // Increments invoice counter as a new invoice was added to the table
             }
             lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
@@ -272,8 +272,10 @@ public class formManageInvoices extends javax.swing.JFrame {
     // Returns the invoice_id of the selected invoice in the invoice table
     public int getSelectedInvoice() {
         int selectedRow = jTable_Invoices.getSelectedRow();         // Gets the selected row in the table
-        
+
         if (selectedRow == -1) {                                    // If no row is selected in the table
+            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("No row selected");
         } else {
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form

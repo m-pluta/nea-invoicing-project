@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -126,13 +127,13 @@ public class formManageEmployees extends javax.swing.JFrame {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            
+
             int employeeCounter = 0;                                // variable for counting how many employees are being shown in the table
             while (rs.next()) {
                 String last_login_date = sqlManager.getLastLogin(conn, Utility.StringToInt(rs.getString(1)));
 
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), last_login_date}); // Adds the employee to the table
-                
+
                 employeeCounter++;                                  // Increments employee counter as a new employee was added to the table
             }
             lblEmployeeCount.setText("Number of employees: " + String.valueOf(employeeCounter)); // Updates employee counter label
@@ -274,8 +275,10 @@ public class formManageEmployees extends javax.swing.JFrame {
     // Returns the Employee_id of the selected employee in the employee table
     public int getSelectedEmployee() {
         int selectedRow = jTable_Employees.getSelectedRow();        // Gets the selected row in the table
-        
+
         if (selectedRow == -1) {                                    // If no row is selected in the table
+            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("No row selected");
         } else {                                                    // If there is a row selected in the table
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
