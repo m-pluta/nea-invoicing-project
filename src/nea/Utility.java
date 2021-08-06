@@ -25,7 +25,7 @@ import javax.swing.JTextField;
  * @author Michal
  */
 public class Utility {
- 
+
     // Given a date, this method returns the year property of the financial year the given date is in
     public static LocalDate getFinancialYear(LocalDate input) {
         if (input.isAfter(LocalDate.of(input.getYear(), Month.APRIL, 5))) {

@@ -74,7 +74,7 @@ public class formReportTwo extends javax.swing.JFrame {
         int NoCategories = 1;
         conn = sqlManager.openConnection();
         try {
-            String query = "SELECT COUNT(item_category_id) FROM tblItemCategories";
+            String query = "SELECT COUNT(category_id) FROM tblItemCategories";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query
@@ -96,32 +96,32 @@ public class formReportTwo extends javax.swing.JFrame {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
 
         // Raw SQL query: https://pastebin.com/5n2Pi2qn
-        String queryRawInvoiceCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
+        String queryRawInvoiceCategoryCosts = "SELECT a.category_id, (b.quantity * b.unit_price) as itemCost"
                 + " FROM tblitemcategories as a"
-                + " INNER JOIN tblinvoicedetails as b ON a.item_category_id = b.item_category_id"
+                + " INNER JOIN tblinvoicedetails as b ON a.category_id = b.category_id"
                 + " INNER JOIN tblinvoices as c ON b.invoice_id = c.invoice_id"
                 + " WHERE c.date_created BETWEEN ? AND ?";
 
-        String queryRawQuotationCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
+        String queryRawQuotationCategoryCosts = "SELECT a.category_id, (b.quantity * b.unit_price) as itemCost"
                 + " FROM tblitemcategories as a"
-                + " INNER JOIN tblquotationdetails as b ON a.item_category_id = b.item_category_id"
+                + " INNER JOIN tblquotationdetails as b ON a.category_id = b.category_id"
                 + " INNER JOIN tblquotations as c ON b.quotation_id = c.quotation_id"
                 + " WHERE c.date_created BETWEEN ? AND ?";
 
-        String queryInvoiceCategoryTotals = "SELECT sq.item_category_id, SUM(sq.itemCost) as cT"
+        String queryInvoiceCategoryTotals = "SELECT sq.category_id, SUM(sq.itemCost) as cT"
                 + " FROM (" + queryRawInvoiceCategoryCosts + ") as sq"
-                + " GROUP BY sq.item_category_id";
+                + " GROUP BY sq.category_id";
 
-        String queryQuotationCategoryTotals = "SELECT sq.item_category_id, SUM(sq.itemCost) as cT"
+        String queryQuotationCategoryTotals = "SELECT sq.category_id, SUM(sq.itemCost) as cT"
                 + " FROM (" + queryRawQuotationCategoryCosts + ") as sq"
-                + " GROUP BY sq.item_category_id";
+                + " GROUP BY sq.category_id";
 
         String mainQuery = "SELECT a.category_name, COALESCE(sq1.cT, 0) AS invoiceTotal, COALESCE(sq2.cT, 0) AS quotationTotal, (COALESCE(sq1.cT, 0) + COALESCE(sq2.cT, 0)) as combinedTotal"
                 + " FROM tblitemcategories as a"
                 + " LEFT JOIN (" + queryInvoiceCategoryTotals + ") as sq1"
-                + " ON a.item_category_id = sq1.item_category_id"
+                + " ON a.category_id = sq1.category_id"
                 + " LEFT JOIN (" + queryQuotationCategoryTotals + ") as sq2"
-                + " ON a.item_category_id = sq2.item_category_id"
+                + " ON a.category_id = sq2.category_id"
                 + " ORDER BY combinedTotal DESC"
                 + " LIMIT ?";
 

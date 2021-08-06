@@ -75,10 +75,10 @@ public class formOneCustomer extends javax.swing.JFrame {
                 System.out.println("Category under this name already exists");
 
             } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                String query = "INSERT INTO tblCustomerCategories (category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
+                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "category_id");   // Gets the next available value of the primary key
                     pstmt.setInt(1, newID);
                     pstmt.setString(2, inputCategory);
                     pstmt.setString(3, Utility.getCurrentDate());
@@ -135,7 +135,7 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         String query = "SELECT CONCAT(forename,' ', surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, cc.category_name FROM tblCustomers as c"
                 + " INNER JOIN tblcustomercategories as cc"
-                + " ON c.type_id = cc.customer_category_id"
+                + " ON c.type_id = cc.category_id"
                 + " WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -497,7 +497,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategories", "customer_category_id", cbCategory.getSelectedItem().toString()));  // Gets the index of the selected customer category #TODO
+                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategories", "category_id", cbCategory.getSelectedItem().toString()));  // Gets the index of the selected customer category #TODO
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();

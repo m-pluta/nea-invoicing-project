@@ -241,10 +241,10 @@ public class formNewQuotation extends javax.swing.JFrame {
                 System.out.println("Category under this name already exists");
 
             } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+                String query = "INSERT INTO tblItemCategories (category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "item_category_id");   // Gets the next available value of the primary key
+                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "category_id");   // Gets the next available value of the primary key
                     pstmt.setInt(1, newID);
                     pstmt.setString(2, inputCategory);
                     pstmt.setString(3, Utility.getCurrentDate());
@@ -694,9 +694,9 @@ public class formNewQuotation extends javax.swing.JFrame {
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
-            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", "item_category_id", model.getValueAt(i, 1).toString());
+            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", "category_id", model.getValueAt(i, 1).toString());
 
-            String query = "INSERT INTO tblQuotationDetails (row_id,quotation_id,description,quantity,unit_price,item_category_id) VALUES (?,?,?,?,?,?)";
+            String query = "INSERT INTO tblQuotationDetails (row_id,quotation_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
             try {
                 // Inserts data about each row into tblQuotationDetails
                 PreparedStatement pstmt = conn.prepareStatement(query);

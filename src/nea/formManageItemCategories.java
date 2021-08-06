@@ -70,11 +70,11 @@ public class formManageItemCategories extends javax.swing.JFrame {
     public void loadCategories() {
         conn = sqlManager.openConnection();
         model.setRowCount(0);                                       // Empties the table
-        String query = "SELECT item_category_id, category_name, date_created FROM tblItemCategories";
+        String query = "SELECT category_id, category_name, date_created FROM tblItemCategories";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";
-            query += " item_category_id LIKE '%" + sp + "%'";       // \
+            query += " category_id LIKE '%" + sp + "%'";       // \
             query += " OR category_name LIKE '%" + sp + "%'";       //  |-- Check whether a column value contains the searchParameter
             query += " OR date_created LIKE '%" + sp + "%'";        // /
         }
@@ -262,10 +262,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 System.out.println("Category under this name already exists");
 
             } else {
-                String query = "INSERT INTO tblItemCategories (item_category_id, category_name, date_created) VALUES (?,?,?)";
+                String query = "INSERT INTO tblItemCategories (category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "item_category_id");   // Gets the next available value of the primary key
+                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "category_id");   // Gets the next available value of the primary key
                     pstmt.setInt(1, newID);
                     pstmt.setString(2, inputCategory);
                     pstmt.setString(3, Utility.getCurrentDate());
@@ -302,8 +302,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
         } else {                                                // If it is any other row other than row 1
             conn = sqlManager.openConnection();
-            int invoiceRowsWithCategory = sqlManager.countRecords(conn, "tblInvoiceDetails", "item_category_id", id);
-            int quotationRowsWithCategory = sqlManager.countRecords(conn, "tblQuotationDetails", "item_category_id", id);
+            int invoiceRowsWithCategory = sqlManager.countRecords(conn, "tblInvoiceDetails", "category_id", id);
+            int quotationRowsWithCategory = sqlManager.countRecords(conn, "tblQuotationDetails", "category_id", id);
             if (invoiceRowsWithCategory == -1 || quotationRowsWithCategory == -1) {
                 System.out.println("-------------------------------");
                 System.out.println("Error fetching document rows with this category");
@@ -319,7 +319,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     System.out.println("-------------------------------");
                     System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
 
-                    sqlManager.removeRecord(conn, "tblItemCategories", "item_category_id", id); // Removes the selected category
+                    sqlManager.removeRecord(conn, "tblItemCategories", "category_id", id); // Removes the selected category
                     loadCategories();                           //Refreshes table since a record was removed
                 }
             }
@@ -370,7 +370,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         // # TODO Allow the user to merge the two categories together under the wanted name
 
                     } else {
-                        String query = "UPDATE tblItemCategories SET category_name = ? WHERE item_category_id = ?";
+                        String query = "UPDATE tblItemCategories SET category_name = ? WHERE category_id = ?";
                         try {
                             PreparedStatement pstmt = conn.prepareStatement(query);
                             pstmt.setString(1, inputCategory);

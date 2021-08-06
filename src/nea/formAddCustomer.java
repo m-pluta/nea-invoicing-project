@@ -137,10 +137,10 @@ public class formAddCustomer extends javax.swing.JFrame {
                 System.out.println("Category under this name already exists");
                 
             } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                String query = "INSERT INTO tblCustomerCategories (category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
+                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "category_id");   // Gets the next available value of the primary key
                     pstmt.setInt(1, newID);
                     pstmt.setString(2, inputCategory);
                     pstmt.setString(3, Utility.getCurrentDate());

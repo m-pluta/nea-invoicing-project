@@ -70,11 +70,11 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
     public void loadCategories() {
         conn = sqlManager.openConnection();
         model.setRowCount(0);                                       // Empties the table
-        String query = "SELECT customer_category_id, category_name, date_created FROM tblCustomerCategories";
+        String query = "SELECT category_id, category_name, date_created FROM tblCustomerCategories";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";
-            query += " customer_category_id LIKE '%" + sp + "%'";   // \
+            query += " category_id LIKE '%" + sp + "%'";   // \
             query += " OR category_name LIKE '%" + sp + "%'";       //  |-- Check whether a column value contains the searchParameter
             query += " OR date_created LIKE '%" + sp + "%'";        // /
         }
@@ -258,10 +258,10 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                 System.out.println("Category under this name already exists");
 
             } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                String query = "INSERT INTO tblCustomerCategories (category_id, category_name, date_created) VALUES (?,?,?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
+                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "category_id");   // Gets the next available value of the primary key
                     pstmt.setInt(1, newID);
                     pstmt.setString(2, inputCategory);
                     pstmt.setString(3, Utility.getCurrentDate());
@@ -315,7 +315,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                     System.out.println("-------------------------------");
                     System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
 
-                    sqlManager.removeRecord(conn, "tblCustomerCategories", "customer_category_id", id); // Removes the selected category
+                    sqlManager.removeRecord(conn, "tblCustomerCategories", "category_id", id); // Removes the selected category
                     loadCategories();                           //Refreshes table since a record was removed
                 }
             }
@@ -365,7 +365,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                         // #TODO Allow the user to merge the two categories together under the wanted name
 
                     } else {
-                        String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE customer_category_id = ?";
+                        String query = "UPDATE tblCustomerCategories SET category_name = ? WHERE category_id = ?";
                         try {
                             PreparedStatement pstmt = conn.prepareStatement(query);
                             pstmt.setString(1, inputCategory);
