@@ -316,7 +316,7 @@ public class formReportThree extends javax.swing.JFrame {
         LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
 
         //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
-        boolean valid = true;                                       // boolean for input validity, assume always valid
+        boolean valid = false;                                       // boolean for input validity, assume always valid
         if (cbTime.getSelectedIndex() == 0) {                                           // Past month
             start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 1) {                                    // Past year
@@ -364,6 +364,7 @@ public class formReportThree extends javax.swing.JFrame {
             } else {
                 start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
                 end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
+                valid = true;
             }
             //</editor-fold>
         }
