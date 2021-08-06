@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import javax.swing.JOptionPane;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import org.jfree.chart.ChartFactory;
@@ -95,7 +96,6 @@ public class formReportTwo extends javax.swing.JFrame {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
 
         // Raw SQL query: https://pastebin.com/5n2Pi2qn
-        
         String queryRawInvoiceCategoryCosts = "SELECT a.item_category_id, (b.quantity * b.unit_price) as itemCost"
                 + " FROM tblitemcategories as a"
                 + " INNER JOIN tblinvoicedetails as b ON a.item_category_id = b.item_category_id"
@@ -143,7 +143,6 @@ public class formReportTwo extends javax.swing.JFrame {
                 dataset.addValue(rs.getDouble(4), "Both", category_name);
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
@@ -344,9 +343,21 @@ public class formReportTwo extends javax.swing.JFrame {
             //</editor-fold>
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
-            if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {    // Checks if input is valid
-                valid = false;
-                System.out.println("Start date or end date missing or end date is after start date");
+            if (dcStart.getDate() == null) {
+                JOptionPane.showMessageDialog(null, "Start date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Start date null");
+
+            } else if (dcEnd.getDate() == null) {
+                JOptionPane.showMessageDialog(null, "End date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("End date null");
+
+            } else if (dcEnd.getDate().before(dcStart.getDate())) {
+                JOptionPane.showMessageDialog(null, "Start Date should be before the end date", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Start date > End date");
+
             } else {
                 start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
                 end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected

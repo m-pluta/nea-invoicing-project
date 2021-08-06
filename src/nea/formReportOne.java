@@ -22,6 +22,7 @@ import java.time.format.TextStyle;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import javax.swing.JOptionPane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -100,8 +101,7 @@ public class formReportOne extends javax.swing.JFrame {
                 pstmt.setObject(1, start);
                 pstmt.setObject(2, end);
 
-                ResultSet rs = null;
-                rs = pstmt.executeQuery();
+                ResultSet rs = rs = pstmt.executeQuery();
                 if (barSpacing == 0) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
                     while (rs.next()) {
@@ -185,8 +185,7 @@ public class formReportOne extends javax.swing.JFrame {
                 pstmt.setObject(1, start);
                 pstmt.setObject(2, end);
 
-                ResultSet rs = null;
-                rs = pstmt.executeQuery();
+                ResultSet rs = rs = pstmt.executeQuery();
                 if (barSpacing == 0) {
                     //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
                     while (rs.next()) {
@@ -556,9 +555,21 @@ public class formReportOne extends javax.swing.JFrame {
             //</editor-fold>
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
-            if (dcStart.getDate() == null || dcEnd.getDate() == null || dcEnd.getDate().before(dcStart.getDate())) {    // Checks if input is valid
-                valid = false;
-                System.out.println("Start date or end date missing or end date is after start date");
+            if (dcStart.getDate() == null) {
+                JOptionPane.showMessageDialog(null, "Start date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Start date null");
+
+            } else if (dcEnd.getDate() == null) {
+                JOptionPane.showMessageDialog(null, "End date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("End date null");
+
+            } else if (dcEnd.getDate().before(dcStart.getDate())) {
+                JOptionPane.showMessageDialog(null, "Start Date should be before the end date", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Start date > End date");
+                
             } else {
                 start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
                 end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected

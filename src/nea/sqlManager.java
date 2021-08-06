@@ -31,8 +31,8 @@ public class sqlManager {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, username, password);
-        } catch (ClassNotFoundException cE) {
-            cE.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,7 +57,6 @@ public class sqlManager {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Could not close!");
             e.printStackTrace();
         }
         return false;
@@ -77,7 +76,6 @@ public class sqlManager {
             }
 
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -93,10 +91,9 @@ public class sqlManager {
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("-------------------------------");
-            System.out.println(rowsAffected + " row affected.");
+            System.out.println(rowsAffected + " row(s) removed.");
 
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -114,7 +111,6 @@ public class sqlManager {
                 return false;
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -136,7 +132,6 @@ public class sqlManager {
                 System.out.println("Error fetching category");
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
 
@@ -155,7 +150,6 @@ public class sqlManager {
             }
 
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -176,7 +170,6 @@ public class sqlManager {
                 System.out.println("Error fetching last login date");
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return null;
@@ -199,7 +192,6 @@ public class sqlManager {
                 System.out.println("Error fetching admin status");
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return false;
@@ -220,7 +212,6 @@ public class sqlManager {
                 System.out.println("Error fetching employee name with id: " + employee_id);
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return null;
@@ -241,7 +232,6 @@ public class sqlManager {
                 System.out.println("Error fetching customer name with id: " + customer_id);
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return null;
@@ -260,7 +250,6 @@ public class sqlManager {
                 return rs.getDouble(1);                             // Returns the total value of the document
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -281,7 +270,6 @@ public class sqlManager {
                 System.out.println("Error fetching category id of category with name: " + category);
             }
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         return -1;
@@ -297,9 +285,8 @@ public class sqlManager {
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("-------------------------------");
-            System.out.println(rowsAffected + " row updated.");
+            System.out.println(rowsAffected + " row(s) updated.");
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
     }
@@ -314,11 +301,8 @@ public class sqlManager {
                 return rs.getDate(1).toLocalDate().atTime(0, 0, 0); // Gets the date and sets the time to 00:00:00
             }
         } catch (SQLException e) {
-            System.out.println("-------------------------------");
-            System.out.println("SQL Exception: " + e);
+            e.printStackTrace();
         }
-
-        System.out.println("No match found or error occured");
         return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);            // If an error occurs or no result is found then the date is set to the unix base date
     }
 
@@ -338,7 +322,6 @@ public class sqlManager {
                 return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current invoice
             }
         } catch (SQLException e) {
-            System.out.println("SQL Exception");
             e.printStackTrace();
         }
 
@@ -358,7 +341,6 @@ public class sqlManager {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            System.out.println("SQL Exception");
             e.printStackTrace();
         }
 
