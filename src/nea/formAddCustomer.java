@@ -130,28 +130,28 @@ public class formAddCustomer extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
                 System.out.println("-------------------------------");
                 System.out.println("Category name is too long");
-            } else {
-                if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                    JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                    System.out.println("-------------------------------");
-                    System.out.println("Category under this name already exists");
-                } else {                                                // If it is a unique category
-                    String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
-                    try {
-                        PreparedStatement pstmt = conn.prepareStatement(query);
-                        int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
-                        pstmt.setInt(1, newID);
-                        pstmt.setString(2, inputCategory);
-                        pstmt.setString(3, Utility.getCurrentDate());
+                
+            } else if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Category under this name already exists");
+                
+            } else {                                                // If it is a unique category
+                String query = "INSERT INTO tblCustomerCategories (customer_category_id, category_name, date_created) VALUES (?,?,?)";
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "customer_category_id");   // Gets the next available value of the primary key
+                    pstmt.setInt(1, newID);
+                    pstmt.setString(2, inputCategory);
+                    pstmt.setString(3, Utility.getCurrentDate());
 
-                        int rowsAffected = pstmt.executeUpdate();
-                        System.out.println("-------------------------------");
-                        System.out.println(rowsAffected + " row(s) inserted.");
-                        loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(inputCategory);      // Set the selected item to whatever category the user just added
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    int rowsAffected = pstmt.executeUpdate();
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row(s) inserted.");
+                    loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
+                    cbCategory.setSelectedItem(inputCategory);      // Set the selected item to whatever category the user just added
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
             sqlManager.closeConnection(conn);
