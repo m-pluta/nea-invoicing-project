@@ -313,7 +313,7 @@ public class formReportTwo extends javax.swing.JFrame {
         LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
 
         //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
-        boolean valid = false;                                       // boolean for input validity, assume always valid
+        boolean valid = true;                                       // boolean for input validity, assume always valid
         if (cbTime.getSelectedIndex() == 0) {                                           // Past month
             start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
         } else if (cbTime.getSelectedIndex() == 1) {                                    // Past year
@@ -347,21 +347,23 @@ public class formReportTwo extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Start date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
                 System.out.println("-------------------------------");
                 System.out.println("Start date null");
+                valid = false;
 
             } else if (dcEnd.getDate() == null) {
                 JOptionPane.showMessageDialog(null, "End date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
                 System.out.println("-------------------------------");
                 System.out.println("End date null");
+                valid = false;
 
             } else if (dcEnd.getDate().before(dcStart.getDate())) {
                 JOptionPane.showMessageDialog(null, "Start Date should be before the end date", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
                 System.out.println("-------------------------------");
                 System.out.println("Start date > End date");
+                valid = false;
 
             } else {
                 start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
                 end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
-                valid = true;
             }
             //</editor-fold>
         }
