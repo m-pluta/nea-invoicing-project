@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -45,6 +46,7 @@ public class formMainMenu extends javax.swing.JFrame {
             System.out.println(employeeFullName);
             lblLoggedInAs.setText("Logged in as " + employeeFullName);    // Updates label to say who is currently logged in
         } else {
+            System.out.println("-------------------------------");
             System.out.println("Error logging in.");
             // This point should theoretically not be reachable as the user would not be able to login if the user's name data didnt exist
         }
@@ -380,27 +382,43 @@ public class formMainMenu extends javax.swing.JFrame {
                 }
 
                 if (!found) {
-                    System.out.println("Incorrect login details");
-                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect login details, check you have entered them correctly", "Invalid Login Details Error", JOptionPane.ERROR_MESSAGE);
                     System.out.println("-------------------------------");
-                    System.out.println("User ID: " + fetchedID);
+                    System.out.println("Incorrect login details");
 
+                } else {
                     if (!inputDetails[2].equals(inputDetails[3]) || !inputDetails[4].equals(inputDetails[5])) {
-                        System.out.println("The entered login details do not match");
-                    } else if (inputDetails[2].length() < 4) {
-                        System.out.println("Entered username is too short");    // Checks if the new username is of minimum length (4)
-                    } else if (inputDetails[4].length() < 4) {
-                        System.out.println("Entered password is too short");    // Checks if the new password is of minimum length (4)
+                        JOptionPane.showMessageDialog(null, "Login details do not match, check if you have entered them correctly", "Input Details Mismatch Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
+                        System.out.println("Login details do not match");
+
+                    } else if (inputDetails[2].length() < 4) {                  // Checks if the new username is of minimum length (4)
+                        JOptionPane.showMessageDialog(null, "The entered username is too short", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
+                        System.out.println("Entered username is too short");
+
+                    } else if (inputDetails[4].length() < 4) {                  // Checks if the new password is of minimum length (4)
+                        JOptionPane.showMessageDialog(null, "The entered password is too short", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
+                        System.out.println("Entered password is too short");
+
                     } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) { // Checks if the new username does not exceed the maximum length in the DB
+                        JOptionPane.showMessageDialog(null, "The entered username is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
                         System.out.println("Entered username is too long");
+
                     } else if (inputDetails[4].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) { // Checks if the new password does not exceed the maximum length in the DB
+                        JOptionPane.showMessageDialog(null, "The entered password is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                        System.out.println("-------------------------------");
                         System.out.println("Entered password is too long");
+
                     } else {
                         if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
-                            System.out.println("User with this username already exists");
-                        } else {
+                            JOptionPane.showMessageDialog(null, "User with these details already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
                             System.out.println("-------------------------------");
-                            System.out.println("User ID: " + fetchedID);
+                            System.out.println("User with these details already exists");
+
+                        } else {
                             updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
                             changingDetails = false;
                         }
@@ -411,6 +429,24 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
+
+    public void updateLoginDetails(int id, String newUsername, String newPassword) {
+        conn = sqlManager.openConnection();
+        String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, newUsername);
+            pstmt.setString(2, newPassword);
+            pstmt.setInt(3, id);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("-------------------------------");
+            System.out.println(rowsAffected + " row(s) updated.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sqlManager.closeConnection(conn);
+    }
 
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
@@ -471,24 +507,6 @@ public class formMainMenu extends javax.swing.JFrame {
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport3ActionPerformed
-
-    public void updateLoginDetails(int id, String newUsername, String newPassword) {
-        conn = sqlManager.openConnection();
-        String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, newUsername);
-            pstmt.setString(2, newPassword);
-            pstmt.setInt(3, id);
-
-            int rowsAffected = pstmt.executeUpdate();
-            System.out.println(rowsAffected + " row updated.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        sqlManager.closeConnection(conn);
-
-    }
 
     /**
      * @param args the command line arguments

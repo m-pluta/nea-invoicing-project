@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -162,6 +163,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             templateFilePath = file.getAbsolutePath();
             System.out.println(templateFilePath);
         } else {
+            System.out.println("-------------------------------");
             System.out.println("Open command cancelled");
         }
     }//GEN-LAST:event_btnChooseTemplateActionPerformed
@@ -177,6 +179,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             outputFilePath = file.getAbsolutePath();
             System.out.println(outputFilePath);
         } else {
+            System.out.println("-------------------------------");
             System.out.println("Open command cancelled");
         }
     }//GEN-LAST:event_btnChooseOutputActionPerformed
@@ -184,7 +187,18 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     private void btnGenerateDocumentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateDocumentActionPerformed
         DateTimeFormatter year_short = DateTimeFormatter.ofPattern("yy");           // Date formatters
         DateTimeFormatter full_short = DateTimeFormatter.ofPattern("dd/MM/yy");     //
-        if (templateFilePath != null && outputFilePath != null) {                   // If the person has selected a template and output directory
+
+        if (templateFilePath == null) {                             // If the person has not supplied a filepath to the template
+            JOptionPane.showMessageDialog(null, "No template filepath supplied", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("No template filepath supplied");
+
+        } else if (outputFilePath == null) {                        // If the person has not supplied a filepath to the output folder
+            JOptionPane.showMessageDialog(null, "No output filepath supplied", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("No output filepath supplied");
+
+        } else {
             File f = new File(templateFilePath);                                    // Opens the template
             if (f.exists()) {                                       // The template must exist
 
@@ -292,17 +306,16 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     saveDocument(doc, outputFilePath, "Output", true);                          //
 
                     removeFile(outputFilePath + "\\Temp.docx");                 // Removing the temporary file 
-                } catch (InvalidFormatException ex) {
-                    ex.printStackTrace();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                } catch (InvalidFormatException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
             } else {
-                System.out.println("File does not exist.");
+                JOptionPane.showMessageDialog(null, "Template file does not exist", "Doesn't Exist Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Template file does not exist");
             }
-        } else {
-            System.out.println("One of the filepath requirements was not satisfied.");
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
@@ -310,8 +323,10 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     public static void removeFile(String filepath) {
         File temp = new File(filepath);
         if (temp.delete()) {                                        // Returns true if the file was deleted successfully
+            System.out.println("-------------------------------");
             System.out.println(temp.getName() + " deleted successfully");
         } else {
+            System.out.println("-------------------------------");
             System.out.println("Failed to delete " + temp.getName());
         }
 
@@ -431,13 +446,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     XWPFTableRow newRow = new XWPFTableRow(ctrow, table);
                     table.addRow(newRow, 2);                        // Adds the empty row to the table
                 }
-            } catch (XmlException xe) {
-                xe.printStackTrace();
-            } catch (IOException Ie) {
-                Ie.printStackTrace();
+            } catch (XmlException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } else {
-            System.out.println("Not a valid amount of rows specified");
         }
 
         return document;
@@ -447,9 +460,10 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     public static void saveDocument(XWPFDocument document, String destination, String fileName, boolean withCounter) {
 
         String savingDestination = destination + "\\" + fileName + ".docx";     // The directory where the file will be saved
-        if (withCounter) {  
+        if (withCounter) {
             File f = new File(savingDestination);                   // Checks if the destination the user wanted is already occupied by another file
             if (f.exists()) {
+                System.out.println("-------------------------------");
                 System.out.println("File already exists under " + f.toPath().toString());   // Debug
 
                 boolean found = false;
@@ -471,9 +485,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             out = new FileOutputStream(savingDestination);  // FileOutputStream with a set destination directory
             document.write(out);                            // Saves the document using the stream
             out.close();                                    // Closes the OutputStream
+            System.out.println("-------------------------------");
             System.out.println("Document successfully saved to: " + savingDestination); // Debug
-            
+
         } catch (IOException e) {
+            System.out.println("-------------------------------");
             System.out.println("Error saving file");        // Unsuccessful saving
             e.printStackTrace();
         }

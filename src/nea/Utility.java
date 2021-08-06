@@ -101,8 +101,7 @@ public class Utility {
         try {
             output = Integer.parseInt(input);                       // String is converted to an integer
         } catch (NumberFormatException e) {                         // If there was an exception
-            System.out.println("-------------------------------");
-            System.out.println("NumberFormatException: " + e);
+            e.printStackTrace();
         }
         return output;                                              // Return the converted integer
     }

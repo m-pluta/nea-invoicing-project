@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class formLogin extends javax.swing.JFrame {
 
@@ -67,10 +68,9 @@ public class formLogin extends javax.swing.JFrame {
                 Image.SCALE_SMOOTH);
         ImageIcon imageIcon1 = new ImageIcon(scaledMainLogo);
         ImageIcon imageIcon2 = new ImageIcon(scaledLogos);
-        
+
         lblMainLogo.setIcon(imageIcon1);
         lblLogos.setIcon(imageIcon2);
-
     }
 
     /**
@@ -269,11 +269,10 @@ public class formLogin extends javax.swing.JFrame {
         }
 
         if (!found) {                                               // If a user was not found
-            System.out.println("Incorrect username and/or password.");
-        } else {                                                    // If a user was found with those login details
+            JOptionPane.showMessageDialog(null, "Incorrect login details, check you have entered them correctly", "Invalid Login Details Error", JOptionPane.ERROR_MESSAGE);
             System.out.println("-------------------------------");
-            System.out.println("User ID: " + fetchedID);
-
+            System.out.println("Incorrect login details");
+        } else {                                                    // If a user was found with those login details
             sqlManager.updateLastLogin(conn, fetchedID);
 
             formMainMenu MainMenu = new formMainMenu().getFrame();  // Creates a new instance of the main menu form
