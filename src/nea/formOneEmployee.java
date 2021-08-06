@@ -327,7 +327,10 @@ public class formOneEmployee extends javax.swing.JFrame {
         System.out.println("No. of invoices: " + NoInvoices);
         System.out.println("No. of quotations: " + NoQuotations);
         if (NoInvoices > 0 || NoQuotations > 0) {                   // If the employee has any invoices or quotations associated with them then the user is informed
-            JOptionPane.showMessageDialog(null, "This employee has " + NoInvoices + " invoices and " + NoQuotations + " quotations associated with them and therefore cannot be removed.", "Not possible to remove employee", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "This employee has " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "") + " associated with them and therefore cannot be removed.", "Cannot Remove Error", JOptionPane.WARNING_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Employee cannot be removed: " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : ""));
+
         } else {
             // Asks user whether they really want to remove this employee
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?", "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
@@ -357,9 +360,11 @@ public class formOneEmployee extends javax.swing.JFrame {
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+            JOptionPane.showMessageDialog(null, "One or more of the input fields is empty", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("One or more of the input fields is empty");
+
         } else if (!validInputs()) {                                            // Validates input lengths
-            System.out.println("One or more of the inputs' length is too long");
         } else {
             // Asks user whether they really want to edit this employee's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?", "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
@@ -381,7 +386,8 @@ public class formOneEmployee extends javax.swing.JFrame {
                     pstmt.setInt(10, EmployeeID);
 
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println(rowsAffected + " row updated.");
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row(s) updated.");
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -401,23 +407,50 @@ public class formOneEmployee extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
-            System.out.println("Forename too long");
+            JOptionPane.showMessageDialog(null, "The entered forename is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Forename is too long");
+
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
+            JOptionPane.showMessageDialog(null, "The entered surname is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Surname too long");
+
         } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
+            JOptionPane.showMessageDialog(null, "The entered address line 1 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Address line 1 too long");
+
         } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
+            JOptionPane.showMessageDialog(null, "The entered address line 2 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Address line 2 too long");
+
         } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
+            JOptionPane.showMessageDialog(null, "The entered address line 3 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Address line 3 too long");
+
         } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
+            JOptionPane.showMessageDialog(null, "The entered county is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("County too long");
+
         } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
+            JOptionPane.showMessageDialog(null, "The entered postcode is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Postcode too long");
+
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
+            JOptionPane.showMessageDialog(null, "The entered phone number is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Phone number too long");
+
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
+            JOptionPane.showMessageDialog(null, "The entered email address is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Email Address too long");
+
         } else {
             output = true;
         }

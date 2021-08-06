@@ -119,7 +119,8 @@ public class formNewInvoice extends javax.swing.JFrame {
                         btnAddItem.setEnabled(true);
 
                     } else {
-                        System.out.println("No row is selected");
+                        System.out.println("-------------------------------");
+                        System.out.println("No row selected");
                     }
                 }
             }
@@ -262,9 +263,13 @@ public class formNewInvoice extends javax.swing.JFrame {
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
 
             if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
-                System.out.println("The category name is too long");
+                JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Category name is too long");
 
             } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
                 System.out.println("Category under this name already exists");
 
             } else {                                                // If it is a unique category
@@ -278,7 +283,7 @@ public class formNewInvoice extends javax.swing.JFrame {
 
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row inserted.");
+                    System.out.println(rowsAffected + " row(s) inserted.");
                     loadItemCategoriesIntoCB();                     // Refreshes combo box
 
                 } catch (SQLException e) {
@@ -651,16 +656,24 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
         conn = sqlManager.openConnection();
         if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
-            System.out.println("You must enter something for the description of the item");
+            JOptionPane.showMessageDialog(null, "You must enter something for the description of the item", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Empty item description");
 
         } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
-            System.out.println("Entered quantity is not a valid integer");
+            JOptionPane.showMessageDialog(null, "Entered quantity is not a valid integer", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Quantity not an integer");
 
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
-            System.out.println("Entered Unit Price is not a valid decimal");
+            JOptionPane.showMessageDialog(null, "Entered Unit Price is not a valid decimal", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Unit price not a double");
 
         } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
-            System.out.println("The entered item description is too long");
+            JOptionPane.showMessageDialog(null, "The entered item description is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
+            System.out.println("Item description is too long");
 
         } else {
             // Adds the item to the table
@@ -686,15 +699,23 @@ public class formNewInvoice extends javax.swing.JFrame {
     // This button sets the invoice given all the inputs are valid and insert a row into the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
         if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
+            JOptionPane.showMessageDialog(null, "The 'Add new customer' option is not a valid customer", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("The 'Add new customer' option is not a valid customer");
 
         } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
+            JOptionPane.showMessageDialog(null, "The entered start date is not valid", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Not a valid start date");
 
         } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank invoice
+            JOptionPane.showMessageDialog(null, "Invoice must have at least one item", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("Invoice must have at least one item");
 
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {    // Checks if the payments value  is a valid double
+            JOptionPane.showMessageDialog(null, "The entered payments value is not a valid decimal", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("-------------------------------");
             System.out.println("The entered payments value is not valid");
 
         } else {
@@ -716,7 +737,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
-                System.out.println(rowsAffected + " row inserted.");
+                System.out.println(rowsAffected + " row(s) inserted.");
 
                 uploadInvoiceDetails(new_invoiceID);
             } catch (SQLException e) {
@@ -753,7 +774,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
-                System.out.println(rowsAffected + " row inserted.");
+                System.out.println(rowsAffected + " row(s) inserted.");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -789,16 +810,24 @@ public class formNewInvoice extends javax.swing.JFrame {
         } else {
             conn = sqlManager.openConnection();
             if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
-                System.out.println("You must enter something for the description of the item");
+                JOptionPane.showMessageDialog(null, "You must enter something for the description of the item", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Empty item description");
 
             } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
-                System.out.println("Entered quantity is not a valid integer");
+                JOptionPane.showMessageDialog(null, "Entered quantity is not a valid integer", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Quantity not an integer");
 
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
-                System.out.println("Entered Unit Price is not a valid decimal");
+                JOptionPane.showMessageDialog(null, "Entered Unit Price is not a valid decimal", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Unit price not a double");
 
             } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
-                System.out.println("The entered item description is too long");
+                JOptionPane.showMessageDialog(null, "The entered item description is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("-------------------------------");
+                System.out.println("Item description is too long");
 
             } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
