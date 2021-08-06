@@ -86,7 +86,8 @@ public class Utility {
         } else {                                                    // If the input dialog wasn't closed
             if (input.replaceAll(" ", "").equals("")) {             // Removes all whitespace characters and checks if the string is left as ""
                 System.out.println("-------------------------------");
-                System.out.println("No input was registered.");
+                System.out.println("No input was registered.");     // #TODO
+                return Utility.StringInputDialog(message, title);
             } else {                                                // If the user input is valid then the input string is returned
                 return input;
             }

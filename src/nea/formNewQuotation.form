@@ -96,7 +96,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="lblCategory" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="cbItemCategories" min="-2" pref="250" max="-2" attributes="0"/>
+                                  <Component id="cbCategory" min="-2" pref="250" max="-2" attributes="0"/>
                               </Group>
                               <Component id="jSeparator2" alignment="0" max="32767" attributes="0"/>
                           </Group>
@@ -175,7 +175,7 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="lblCategory" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbItemCategories" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbCategory" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -353,7 +353,7 @@
         <Property name="text" type="java.lang.String" value="Category:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JComboBox" name="cbItemCategories">
+    <Component class="javax.swing.JComboBox" name="cbCategory">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>

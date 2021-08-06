@@ -243,43 +243,13 @@ public class formManageItemCategories extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the item category
-        if (inputCategory != null) {                                // If the dialog input was valid 
-            conn = sqlManager.openConnection();
+        conn = sqlManager.openConnection();
+        String addedCategory = sqlManager.addNewItemCategory(conn);
+        sqlManager.closeConnection(conn);
 
-            inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
-
-            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
-                JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category name is too long");
-
-            } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category under this name already exists");
-
-            } else {
-                String query = "INSERT INTO tblItemCategories (category_id, category_name, date_created) VALUES (?,?,?)";
-                try {
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "category_id");   // Gets the next available value of the primary key
-                    pstmt.setInt(1, newID);
-                    pstmt.setString(2, inputCategory);
-                    pstmt.setString(3, Utility.getCurrentDate());
-
-                    int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) inserted.");
-                    loadCategories();                               // Refreshes Table
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            sqlManager.closeConnection(conn);
+        if (addedCategory != null) {
+            loadCategories();                               // Refreshes Combo box so the new category is visible
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 

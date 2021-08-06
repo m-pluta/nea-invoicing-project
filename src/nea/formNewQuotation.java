@@ -103,7 +103,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                         // Loads the row into the side view
                         selectedItem = selectedRow;
                         txtItem.setText(model.getValueAt(selectedRow, 0).toString());
-                        cbItemCategories.setSelectedItem(model.getValueAt(selectedRow, 1).toString());
+                        cbCategory.setSelectedItem(model.getValueAt(selectedRow, 1).toString());
                         txtQuantity.setText(model.getValueAt(selectedRow, 2).toString());
                         txtUnitPrice.setText(model.getValueAt(selectedRow, 3).toString());
                         txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
@@ -154,11 +154,20 @@ public class formNewQuotation extends javax.swing.JFrame {
             }
         });
         // Add new item category row
-        cbItemCategories.addActionListener(new ActionListener() {   // When an action happens within the combo box - e.g. the selectedIndex changed
+        cbCategory.addActionListener(new ActionListener() {   // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbItemCategories.getSelectedIndex() == cbItemCategories.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
-                    addNewItemCategory();                           // Method for adding a new item category
+                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
+                    conn = sqlManager.openConnection();
+                    String addedCategory = sqlManager.addNewItemCategory(conn);
+                    sqlManager.closeConnection(conn);
+
+                    if (addedCategory != null) {
+                        loadItemCategoriesIntoCB();                     // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
+                    } else {
+                        cbCategory.setSelectedIndex(0);
+                    }
                 }
             }
         });
@@ -222,47 +231,6 @@ public class formNewQuotation extends javax.swing.JFrame {
         txtTotal.setText(Utility.formatCurrency(total));                //Updates the total field
     }
 
-    // Method for allowing the user to add a new Item Category into the system - This was pretty much copied from one of the other forms
-    public void addNewItemCategory() {
-        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the new category
-        if (inputCategory != null) {                                // If the dialog input was valid 
-            conn = sqlManager.openConnection();
-
-            inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters
-
-            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {
-                JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category name is too long");
-
-            } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category under this name already exists");
-
-            } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblItemCategories (category_id, category_name, date_created) VALUES (?,?,?)";
-                try {
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblItemCategories", "category_id");   // Gets the next available value of the primary key
-                    pstmt.setInt(1, newID);
-                    pstmt.setString(2, inputCategory);
-                    pstmt.setString(3, Utility.getCurrentDate());
-
-                    int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) inserted.");
-                    loadItemCategoriesIntoCB();                     // Refreshes combo box
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            sqlManager.closeConnection(conn);
-        }
-
-    }
-
     public formNewQuotation getFrame() {
         return this;
     }
@@ -290,7 +258,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
     // Method for loading all the item categories currently in the system into the combo box
     public void loadItemCategoriesIntoCB() {
-        cbItemCategories.removeAllItems();
+        cbCategory.removeAllItems();
         conn = sqlManager.openConnection();
         String query = "SELECT category_name FROM tblItemCategories";
         try {
@@ -300,13 +268,13 @@ public class formNewQuotation extends javax.swing.JFrame {
             System.out.println("-------------------------------");
             while (rs.next()) {
                 System.out.println(rs.getString(1));                // For debugging
-                cbItemCategories.addItem(rs.getString(1));          // Adds the category to the combo box
+                cbCategory.addItem(rs.getString(1));          // Adds the category to the combo box
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
-        cbItemCategories.addItem("Add a new category...");          // Adds an option for adding a new category
+        cbCategory.addItem("Add a new category...");          // Adds an option for adding a new category
     }
 
     // Sets these components to either visible or invisible depending on the boolean state
@@ -349,7 +317,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         txtItemTotal = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
         lblCategory = new javax.swing.JLabel();
-        cbItemCategories = new javax.swing.JComboBox<>();
+        cbCategory = new javax.swing.JComboBox<>();
         btnRemoveItem = new javax.swing.JButton();
         btnEditItem = new javax.swing.JButton();
         btnAddItem = new javax.swing.JButton();
@@ -514,7 +482,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(lblCategory)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jSeparator2)))
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createSequentialGroup()
@@ -577,7 +545,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblCategory)
-                            .addComponent(cbItemCategories, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -620,7 +588,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
         } else {
             // Adds the item to the table
-            model.addRow(new Object[]{txtItem.getText(), cbItemCategories.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
+            model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
             resetSideView();                                        // Resets the side view
             updateTableTotal();                                     // Recalculates the total for the entire quotation
         }
@@ -768,7 +736,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
             } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
-                model.setValueAt(cbItemCategories.getSelectedItem(), selectedItem, 1);
+                model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
                 model.setValueAt(txtUnitPrice.getText(), selectedItem, 3);
                 model.setValueAt(txtItemTotal.getText(), selectedItem, 4);
@@ -809,7 +777,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
         txtItemTotal.setText("");
 
-        cbItemCategories.setSelectedIndex(0);
+        cbCategory.setSelectedIndex(0);
 
         btnRemoveItem.setEnabled(false);
         btnEditItem.setEnabled(false);
@@ -865,8 +833,8 @@ public class formNewQuotation extends javax.swing.JFrame {
     private javax.swing.JButton btnEditItem;
     private javax.swing.JButton btnFinish;
     private javax.swing.JButton btnRemoveItem;
+    private javax.swing.JComboBox<String> cbCategory;
     private javax.swing.JComboBox<String> cbCustomers;
-    private javax.swing.JComboBox<String> cbItemCategories;
     private com.toedter.calendar.JDateChooser dcDateCreated;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

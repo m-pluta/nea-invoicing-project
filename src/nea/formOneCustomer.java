@@ -44,7 +44,16 @@ public class formOneCustomer extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isAddNewCategorySelected()) {   // If the user selected the last item ('Add a new category...')
-                    addNewCategory();                               // Prompts the user to add the new category
+                    conn = sqlManager.openConnection();
+                    String addedCategory = sqlManager.addNewCustomerCategory(conn);
+                    sqlManager.closeConnection(conn);
+
+                    if (addedCategory != null) {
+                        loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
+                    } else {
+                        cbCategory.setSelectedIndex(0);
+                    }
                 }
             }
         });
@@ -54,46 +63,6 @@ public class formOneCustomer extends javax.swing.JFrame {
     // Returns true if the 'Add new category' option in the combo box is selected
     private boolean isAddNewCategorySelected() {
         return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
-    }
-
-    // Allows the user to add a new customer category - This is almost entirely the same code as in fromManageCustomerCategories with minor changes
-    public void addNewCategory() {
-        String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category"); // Asks user for the name of the customer category
-        if (inputCategory != null) {                                // If the dialog input was valid    
-            conn = sqlManager.openConnection();
-
-            inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
-
-            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblCustomerCategories", "category_name")) {
-                JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category name is too long");
-
-            } else if (sqlManager.RecordExists(conn, "tblCustomerCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
-                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category under this name already exists");
-
-            } else {                                                // If it is a unique category
-                String query = "INSERT INTO tblCustomerCategories (category_id, category_name, date_created) VALUES (?,?,?)";
-                try {
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    int newID = sqlManager.getNextPKValue(conn, "tblCustomerCategories", "category_id");   // Gets the next available value of the primary key
-                    pstmt.setInt(1, newID);
-                    pstmt.setString(2, inputCategory);
-                    pstmt.setString(3, Utility.getCurrentDate());
-
-                    int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) inserted.");
-                    loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-                    cbCategory.setSelectedItem(inputCategory);      // Set the selected item to whatever category the user just added
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            sqlManager.closeConnection(conn);
-        }
     }
 
     public formOneCustomer getFrame() {
