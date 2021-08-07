@@ -17,7 +17,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import javax.swing.JOptionPane;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import org.jfree.chart.ChartFactory;
@@ -80,7 +79,6 @@ public class formReportTwo extends javax.swing.JFrame {
             rs.next();                                              // Gets the next result from query
             NoCategories = rs.getInt(1);
         } catch (SQLException e) {
-            System.out.println("SQLException");
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
@@ -344,21 +342,15 @@ public class formReportTwo extends javax.swing.JFrame {
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
             if (dcStart.getDate() == null) {
-                JOptionPane.showMessageDialog(null, "Start date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Start date null");
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
                 valid = false;
 
             } else if (dcEnd.getDate() == null) {
-                JOptionPane.showMessageDialog(null, "End date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("End date null");
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "End date cannot be empty");
                 valid = false;
 
             } else if (dcEnd.getDate().before(dcStart.getDate())) {
-                JOptionPane.showMessageDialog(null, "Start Date should be before the end date", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Start date > End date");
+                ErrorMsg.throwCustomError("Start Date should be before the end date", "Invalid Input Error");
                 valid = false;
 
             } else {

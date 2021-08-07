@@ -198,7 +198,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(52, 52, 52)
@@ -246,12 +246,12 @@ public class formOneEmployee extends javax.swing.JFrame {
                         .addComponent(btnRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
                     .addComponent(btnConfirmEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGap(10, 10, 10))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(4, 4, 4)
+                .addContainerGap(9, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblFullName)
@@ -272,7 +272,9 @@ public class formOneEmployee extends javax.swing.JFrame {
                             .addComponent(lblAddress)
                             .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtAddress2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtAddress2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtAddress3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -280,9 +282,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnConfirmEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAddress3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtCounty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCounty))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -305,7 +305,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblAdmin)
                     .addComponent(cbAdmin))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         pack();
@@ -316,6 +316,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         setEditable(fields, true);                                  // Makes all the fields editable
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
         txtForename.requestFocus();
+        btnEdit.setEnabled(false);
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
@@ -327,9 +328,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         System.out.println("No. of invoices: " + NoInvoices);
         System.out.println("No. of quotations: " + NoQuotations);
         if (NoInvoices > 0 || NoQuotations > 0) {                   // If the employee has any invoices or quotations associated with them then the user is informed
-            JOptionPane.showMessageDialog(null, "This employee has " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "") + " associated with them and therefore cannot be removed.", "Cannot Remove Error", JOptionPane.WARNING_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Employee cannot be removed: " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : ""));
+            ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, "This employee has " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "") + " associated with them and therefore cannot be removed.");
 
         } else {
             // Asks user whether they really want to remove this employee
@@ -360,10 +359,8 @@ public class formOneEmployee extends javax.swing.JFrame {
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
-            JOptionPane.showMessageDialog(null, "One or more of the input fields is empty", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("One or more of the input fields is empty");
-
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR)
+                    ;
         } else if (!validInputs()) {                                            // Validates input lengths
         } else {
             // Asks user whether they really want to edit this employee's details
@@ -396,6 +393,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                 txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
                 txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
                 btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
+                btnEdit.setEnabled(true);
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed
             }
         }
@@ -407,49 +405,31 @@ public class formOneEmployee extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
-            JOptionPane.showMessageDialog(null, "The entered forename is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Forename is too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
-            JOptionPane.showMessageDialog(null, "The entered surname is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Surname too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
         } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 1 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 1 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
         } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 2 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 2 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
         } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 3 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 3 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
         } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
-            JOptionPane.showMessageDialog(null, "The entered county is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("County too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
         } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
-            JOptionPane.showMessageDialog(null, "The entered postcode is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Postcode too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
-            JOptionPane.showMessageDialog(null, "The entered phone number is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Phone number too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
-            JOptionPane.showMessageDialog(null, "The entered email address is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Email Address too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
             output = true;

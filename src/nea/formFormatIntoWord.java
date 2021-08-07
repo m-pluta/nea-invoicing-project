@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -189,14 +188,10 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         DateTimeFormatter full_short = DateTimeFormatter.ofPattern("dd/MM/yy");     //
 
         if (templateFilePath == null) {                             // If the person has not supplied a filepath to the template
-            JOptionPane.showMessageDialog(null, "No template filepath supplied", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("No template filepath supplied");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "No template filepath supplied");
 
         } else if (outputFilePath == null) {                        // If the person has not supplied a filepath to the output folder
-            JOptionPane.showMessageDialog(null, "No output filepath supplied", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("No output filepath supplied");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "No output filepath supplied");
 
         } else {
             File f = new File(templateFilePath);                                    // Opens the template
@@ -219,7 +214,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         invoiceRows.add(row);                       // Adds the tableRow object into an arraylist
                     }
                 } catch (SQLException e) {
-                    System.out.println("SQLException");
                     e.printStackTrace();
                 }
                 //</editor-fold>
@@ -243,7 +237,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         invoiceMetaData.put("$InvoiceNo", InvoiceNoThisFinYear + "/" + currentYear);
                     }
                 } catch (SQLException e) {
-                    System.out.println("SQLException");
                     e.printStackTrace();
                 }
                 //</editor-fold>
@@ -273,7 +266,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         customerData.put("$postcode", rs.getString(6));         //
                     }
                 } catch (SQLException e) {
-                    System.out.println("SQLException");
                     e.printStackTrace();
                 }
                 //</editor-fold>
@@ -305,16 +297,15 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     doc = insertInvoiceData(doc, invoiceRows, invoiceMetaData);                 // Inserting the invoice details into the document
                     saveDocument(doc, outputFilePath, "Output", true);                          //
 
-                    removeFile(outputFilePath + "\\Temp.docx");                 // Removing the temporary file 
+                    removeFile(outputFilePath + "\\Temp.docx");                 // Removing the temporary file
+                    this.dispose();
                 } catch (InvalidFormatException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Template file does not exist", "Doesn't Exist Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Template file does not exist");
+                ErrorMsg.throwError(ErrorMsg.DOES_NOT_EXIST_ERROR);
             }
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
@@ -463,8 +454,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         if (withCounter) {
             File f = new File(savingDestination);                   // Checks if the destination the user wanted is already occupied by another file
             if (f.exists()) {
-                System.out.println("-------------------------------");
-                System.out.println("File already exists under " + f.toPath().toString());   // Debug
 
                 boolean found = false;
                 int counter = 1;
@@ -475,6 +464,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         counter++;                          // Increment the counter
                     } else {
                         found = true;                       // The filepath is not occupied so this is set as the filepath
+                        ErrorMsg.throwCustomError(fileName + " already exists. The file was saved as " + fileName + counter + " instead", "Already Exists Error");
                     }
                 }
             }
@@ -489,8 +479,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             System.out.println("Document successfully saved to: " + savingDestination); // Debug
 
         } catch (IOException e) {
-            System.out.println("-------------------------------");
-            System.out.println("Error saving file");        // Unsuccessful saving
             e.printStackTrace();
         }
     }

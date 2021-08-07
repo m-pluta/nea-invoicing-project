@@ -85,8 +85,7 @@ public class Utility {
             System.out.println("Input window closed.");
         } else {                                                    // If the input dialog wasn't closed
             if (input.replaceAll(" ", "").equals("")) {             // Removes all whitespace characters and checks if the string is left as ""
-                System.out.println("-------------------------------");
-                System.out.println("No input was registered.");     // #TODO
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Category name cannot be empty");
                 return Utility.StringInputDialog(message, title);
             } else {                                                // If the user input is valid then the input string is returned
                 return input;

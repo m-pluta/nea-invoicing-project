@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -284,9 +283,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         int selectedRow = jTable_Customers.getSelectedRow();        // Gets the selected row in the table
 
         if (selectedRow == -1) {                                    // If no row is selected in the table
-            JOptionPane.showMessageDialog(null, "No row selected", "Nothing Selected Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("No row selected");
+            ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
         } else {                                                    // If there is a row selected in the table
             String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
             int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type

@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -382,46 +381,30 @@ public class formMainMenu extends javax.swing.JFrame {
                 }
 
                 if (!found) {
-                    JOptionPane.showMessageDialog(null, "Incorrect login details, check you have entered them correctly", "Invalid Login Details Error", JOptionPane.ERROR_MESSAGE);
-                    System.out.println("-------------------------------");
-                    System.out.println("Incorrect login details");
+                    ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
 
                 } else {
                     if (!inputDetails[2].equals(inputDetails[3]) || !inputDetails[4].equals(inputDetails[5])) {
-                        JOptionPane.showMessageDialog(null, "Login details do not match, check if you have entered them correctly", "Input Details Mismatch Error", JOptionPane.ERROR_MESSAGE);
-                        System.out.println("-------------------------------");
-                        System.out.println("Login details do not match");
+                        ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
 
                     } else if (inputDetails[2].length() < 4) {                  // Checks if the new username is of minimum length (4)
-                        JOptionPane.showMessageDialog(null, "The entered username is too short", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                        System.out.println("-------------------------------");
-                        System.out.println("Entered username is too short");
+                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "username");
 
                     } else if (inputDetails[4].length() < 4) {                  // Checks if the new password is of minimum length (4)
-                        JOptionPane.showMessageDialog(null, "The entered password is too short", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                        System.out.println("-------------------------------");
-                        System.out.println("Entered password is too short");
+                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
                     } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) { // Checks if the new username does not exceed the maximum length in the DB
-                        JOptionPane.showMessageDialog(null, "The entered username is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                        System.out.println("-------------------------------");
-                        System.out.println("Entered username is too long");
+                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
                     } else if (inputDetails[4].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) { // Checks if the new password does not exceed the maximum length in the DB
-                        JOptionPane.showMessageDialog(null, "The entered password is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                        System.out.println("-------------------------------");
-                        System.out.println("Entered password is too long");
+                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
+
+                    } else if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
+                        ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "User with these details");
 
                     } else {
-                        if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
-                            JOptionPane.showMessageDialog(null, "User with these details already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                            System.out.println("-------------------------------");
-                            System.out.println("User with these details already exists");
-
-                        } else {
-                            updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
-                            changingDetails = false;
-                        }
+                        updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
+                        changingDetails = false;
                     }
 
                 }

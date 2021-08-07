@@ -288,9 +288,8 @@ public class formAddEmployee extends javax.swing.JFrame {
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
-            JOptionPane.showMessageDialog(null, "One or more of the input fields is empty", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("One or more of the input fields is empty");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
+
         } else if (!validInputs()) {                                            // Validates input lengths
 
         } else {
@@ -332,49 +331,31 @@ public class formAddEmployee extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
-            JOptionPane.showMessageDialog(null, "The entered forename is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Forename is too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
-            JOptionPane.showMessageDialog(null, "The entered surname is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Surname too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
         } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 1 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 1 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
         } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 2 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 2 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
         } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 3 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 3 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
         } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
-            JOptionPane.showMessageDialog(null, "The entered county is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("County too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
         } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
-            JOptionPane.showMessageDialog(null, "The entered postcode is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Postcode too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
-            JOptionPane.showMessageDialog(null, "The entered phone number is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Phone number too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
-            JOptionPane.showMessageDialog(null, "The entered email address is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Email Address too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
             output = true;
@@ -388,25 +369,24 @@ public class formAddEmployee extends javax.swing.JFrame {
         while (!validDetails) {
             String[] responses = Utility.JOptionPaneMultiInput("What login details should this employee have?", new String[]{"Username", "Confirm username", "Password", "Confirm password"});
             conn = sqlManager.openConnection();
-            if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
-                JOptionPane.showMessageDialog(null, "Login details do not match, check if you have entered them correctly", "Input Details Mismatch Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Login details do not match, check you have entered them correctly");
 
-            } else if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
-                JOptionPane.showMessageDialog(null, "Employee with this username already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Employee with this username already exists");
+            if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
+                ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
+
+            } else if (responses[0].length() < 4) {                  // Checks if the username is of minimum length (4)
+                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "username");
+
+            } else if (responses[2].length() < 4) {                  // Checks if the password is of minimum length (4)
+                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
             } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) {
-                JOptionPane.showMessageDialog(null, "The entered username is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Username is too long");
+                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
             } else if (responses[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) {
-                JOptionPane.showMessageDialog(null, "The entered password is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Password is too long");
+                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
+
+            } else if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
+                ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Employee with this username");
 
             } else {
                 String query = "INSERT into tblLogins (employee_id, username, password, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?)";

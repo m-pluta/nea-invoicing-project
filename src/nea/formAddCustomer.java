@@ -58,7 +58,7 @@ public class formAddCustomer extends javax.swing.JFrame {
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewCustomerCategory(conn);
                     sqlManager.closeConnection(conn);
-                    
+
                     if (addedCategory != null) {
                         loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
                         cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
@@ -347,22 +347,11 @@ public class formAddCustomer extends javax.swing.JFrame {
         return emptyFields;
     }
 
-    // Returns true if the 'Add new category' option in the combo box is selected
-    private boolean isAddNewCategorySelected() {
-        return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
-    }
-
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
-            JOptionPane.showMessageDialog(null, "One or more of the input fields is empty", "Empty Input Field Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("One or more of the input fields is empty");
-        } else if (isAddNewCategorySelected()) {                                // Checks if the user has the 'Add category' option selected
-            JOptionPane.showMessageDialog(null, "The 'Add category' option is not a valid category", "Invalid Category Selected Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("The 'Add category' option is not a valid category");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
         } else if (!validInputs()) {                                            // Validates input lengths
         } else {
             // Asks user whether they really want to add this customer
@@ -415,49 +404,31 @@ public class formAddCustomer extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         boolean output = false;
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "forename")) {
-            JOptionPane.showMessageDialog(null, "The entered forename is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Forename is too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
         } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "surname")) {
-            JOptionPane.showMessageDialog(null, "The entered surname is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Surname too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
         } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address1")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 1 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 1 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
         } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address2")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 2 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 2 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
         } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "address3")) {
-            JOptionPane.showMessageDialog(null, "The entered address line 3 is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Address line 3 too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
         } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "county")) {
-            JOptionPane.showMessageDialog(null, "The entered county is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("County too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
         } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "postcode")) {
-            JOptionPane.showMessageDialog(null, "The entered postcode is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Postcode too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "phone_number")) {
-            JOptionPane.showMessageDialog(null, "The entered phone number is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Phone number too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomers", "email_address")) {
-            JOptionPane.showMessageDialog(null, "The entered email address is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Email Address too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
             output = true;

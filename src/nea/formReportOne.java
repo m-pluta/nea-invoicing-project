@@ -22,7 +22,6 @@ import java.time.format.TextStyle;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.swing.JOptionPane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -157,7 +156,6 @@ public class formReportOne extends javax.swing.JFrame {
                     //</editor-fold>
                 }
             } catch (SQLException e) {
-                System.out.println("SQLException");
                 e.printStackTrace();
             }
             //</editor-fold>
@@ -241,7 +239,6 @@ public class formReportOne extends javax.swing.JFrame {
                     //</editor-fold>
                 }
             } catch (SQLException e) {
-                System.out.println("SQLException");
                 e.printStackTrace();
             }
             //</editor-fold>
@@ -557,21 +554,15 @@ public class formReportOne extends javax.swing.JFrame {
         } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
             if (dcStart.getDate() == null) {
-                JOptionPane.showMessageDialog(null, "Start date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Start date null");
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
                 valid = false;
 
             } else if (dcEnd.getDate() == null) {
-                JOptionPane.showMessageDialog(null, "End date input is missing", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("End date null");
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "End date cannot be empty");
                 valid = false;
 
             } else if (dcEnd.getDate().before(dcStart.getDate())) {
-                JOptionPane.showMessageDialog(null, "Start Date should be before the end date", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Start date > End date");
+                ErrorMsg.throwCustomError("Start Date should be before the end date", "Invalid Input Error");
                 valid = false;
 
             } else {

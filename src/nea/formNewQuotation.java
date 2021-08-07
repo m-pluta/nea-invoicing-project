@@ -110,7 +110,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
                         // Makes some of the fields uneditable since a row was loaded into side view
                         txtItem.setEditable(false);
-                        JTextField[] fields = {txtQuantity, txtUnitPrice, txtItemTotal};
+                        JTextField[] fields = {txtQuantity, txtUnitPrice};
                         setEditable(fields, false);
 
                         // Makes all the row management rows available
@@ -149,6 +149,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                         form.setVisible(true);                      // Makes the new customer view visible
                         form.previousForm3 = formNewQuotation.this;
                         CurrentlyAddingCustomer = true;
+                        cbCustomers.setSelectedIndex(0);
                     }
                 }
             }
@@ -567,24 +568,16 @@ public class formNewQuotation extends javax.swing.JFrame {
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
         conn = sqlManager.openConnection();
         if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
-            JOptionPane.showMessageDialog(null, "You must enter something for the description of the item", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Empty item description");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
 
         } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
-            JOptionPane.showMessageDialog(null, "Entered quantity is not a valid integer", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Quantity not an integer");
+            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
 
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
-            JOptionPane.showMessageDialog(null, "Entered Unit Price is not a valid decimal", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Unit price not a double");
+            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
 
         } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
-            JOptionPane.showMessageDialog(null, "The entered item description is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Item description is too long");
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
 
         } else {
             // Adds the item to the table
@@ -610,19 +603,13 @@ public class formNewQuotation extends javax.swing.JFrame {
     // This button sets the quotation given all the inputs are valid and insert a row into the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
         if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
-            JOptionPane.showMessageDialog(null, "The 'Add new customer' option is not a valid customer", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("The 'Add new customer' option is not a valid customer");
+            ErrorMsg.throwError(ErrorMsg.DEFAULT_ERROR, "The 'Add new customer' option is not a valid customer");
 
         } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
-            JOptionPane.showMessageDialog(null, "The entered start date is not valid", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Not a valid start date");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Date cannot be empty");
 
         } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank quotation
-            JOptionPane.showMessageDialog(null, "Quotation must have at least one item", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Quotation must have at least one item");
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Quotation must have at least one item");
 
         } else {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -715,31 +702,23 @@ public class formNewQuotation extends javax.swing.JFrame {
         } else {
             conn = sqlManager.openConnection();
             if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
-                JOptionPane.showMessageDialog(null, "You must enter something for the description of the item", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Empty item description");
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
 
             } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
-                JOptionPane.showMessageDialog(null, "Entered quantity is not a valid integer", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Quantity not an integer");
+                ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
 
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
-                JOptionPane.showMessageDialog(null, "Entered Unit Price is not a valid decimal", "Invalid Input Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Unit price not a double");
+                ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
 
-            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
-                JOptionPane.showMessageDialog(null, "The entered item description is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Item description is too long");
+            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
+                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
 
             } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
-                model.setValueAt(txtUnitPrice.getText(), selectedItem, 3);
-                model.setValueAt(txtItemTotal.getText(), selectedItem, 4);
+                model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
+                model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
 
                 updateTableTotal();                                // Recalculates the quotation total
 

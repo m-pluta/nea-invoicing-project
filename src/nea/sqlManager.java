@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -38,11 +37,6 @@ public class sqlManager {
             e.printStackTrace();
         }
         return conn;
-    }
-
-    // Opens connection to db, no specific url given so the default url is used.
-    public static Connection openConnection(String username, String password) {
-        return openConnection(DEFAULT_url, username, password);
     }
 
     // Opens connection to db, no specific url, username or password given so a default connection is opened
@@ -367,14 +361,10 @@ public class sqlManager {
             inputCategory = inputCategory.trim();                   // Removes all leading and trailing whitespace characters           
 
             if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, tableName, "category_name")) {
-                JOptionPane.showMessageDialog(null, "The entered category name is too long", "Input Length Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category name is too long");
+                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "category name");
 
             } else if (sqlManager.RecordExists(conn, tableName, "category_name", inputCategory)) { // Checks if category already exists in DB
-                JOptionPane.showMessageDialog(null, "Category under this name already exists", "Already Exists Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("-------------------------------");
-                System.out.println("Category under this name already exists");
+                ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Category");
 
             } else {                                                // If it is a unique category
                 String query = "INSERT INTO " + tableName + " (category_id, category_name, date_created) VALUES (?,?,?)";

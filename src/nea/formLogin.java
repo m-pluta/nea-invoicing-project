@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 public class formLogin extends javax.swing.JFrame {
 
@@ -269,9 +268,7 @@ public class formLogin extends javax.swing.JFrame {
         }
 
         if (!found) {                                               // If a user was not found
-            JOptionPane.showMessageDialog(null, "Incorrect login details, check you have entered them correctly", "Invalid Login Details Error", JOptionPane.ERROR_MESSAGE);
-            System.out.println("-------------------------------");
-            System.out.println("Incorrect login details");
+            ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
         } else {                                                    // If a user was found with those login details
             sqlManager.updateLastLogin(conn, fetchedID);
 
