@@ -38,19 +38,19 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
         JTextField[] fields = {txtCustomerID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        setEditable(fields, false);                                         // Makes all the fields uneditable
+        setEditable(fields, false);                                 // Makes all the fields uneditable
 
         cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isAddNewCategorySelected()) {   // If the user selected the last item ('Add a new category...')
+                if (isAddNewCategorySelected()) {                   // If the user selected the last item ('Add a new category...')
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewCustomerCategory(conn);
                     sqlManager.closeConnection(conn);
 
                     if (addedCategory != null) {
-                        loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
+                        loadCustomerCategoriesIntoCB();             // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
                     } else {
                         cbCategory.setSelectedIndex(0);
                     }
@@ -114,7 +114,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             if (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));    // For debugging, shows customer data
+                System.out.println(rs.getString(2));                // For debugging, shows customer data
                 System.out.println(rs.getString(3));
                 System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));

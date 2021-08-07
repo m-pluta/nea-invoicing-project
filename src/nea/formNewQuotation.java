@@ -74,13 +74,13 @@ public class formNewQuotation extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         
-        model = (DefaultTableModel) jTable_QuotationDetails.getModel();     // Fetches the table model of the table
-        jTable_QuotationDetails.setDefaultEditor(Object.class, null);       // Makes it so the user cannot edit the table
+        model = (DefaultTableModel) jTable_QuotationDetails.getModel();         // Fetches the table model of the table
+        jTable_QuotationDetails.setDefaultEditor(Object.class, null);           // Makes it so the user cannot edit the table
 
         JTableHeader header = jTable_QuotationDetails.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));                 // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));                     // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        JTextField[] fields = {txtQuotationID, txtTotal, txtItemTotal};     // Makes some of the fields which are automatically filled uneditable
+        JTextField[] fields = {txtQuotationID, txtTotal, txtItemTotal};         // Makes some of the fields which are automatically filled uneditable
         setEditable(fields, false);
         conn = sqlManager.openConnection();
         QuotationID = sqlManager.getNextPKValue(conn, "tblQuotations", "quotation_id"); // Gets the next available quotation id
@@ -90,7 +90,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         loadItemCategoriesIntoCB();
 
         // Mouse Listener for when someone clicks on a row in the table
-        jTable_QuotationDetails.addMouseListener(new MouseListener() {      // Mouse listener for when the user clicks on a row in the quotation table
+        jTable_QuotationDetails.addMouseListener(new MouseListener() {          // Mouse listener for when the user clicks on a row in the quotation table
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -98,8 +98,8 @@ public class formNewQuotation extends javax.swing.JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (!CurrentlyEditing) {
-                    int selectedRow = jTable_QuotationDetails.getSelectedRow();   // Gets the id of the quotation which is currently selected in the table
-                    if (selectedRow != -1) {                            // -1 = no row selected
+                    int selectedRow = jTable_QuotationDetails.getSelectedRow(); // Gets the id of the quotation which is currently selected in the table
+                    if (selectedRow != -1) {                                    // -1 = no row selected
                         // Loads the row into the side view
                         selectedItem = selectedRow;
                         txtItem.setText(model.getValueAt(selectedRow, 0).toString());
@@ -142,9 +142,9 @@ public class formNewQuotation extends javax.swing.JFrame {
         cbCustomers.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
+                if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // If the user selected the last item ('Add a new customer...')
                     if (!CurrentlyAddingCustomer) {
-                        formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
+                        formAddCustomer form = new formAddCustomer().getFrame();        // Opens a new instance of the formAddCustomer() form
                         form.setLocationRelativeTo(null);
                         form.setVisible(true);                      // Makes the new customer view visible
                         form.previousForm3 = formNewQuotation.this;
@@ -155,7 +155,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             }
         });
         // Add new item category row
-        cbCategory.addActionListener(new ActionListener() {   // When an action happens within the combo box - e.g. the selectedIndex changed
+        cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
@@ -164,8 +164,8 @@ public class formNewQuotation extends javax.swing.JFrame {
                     sqlManager.closeConnection(conn);
                     
                     if (addedCategory != null) {
-                        loadItemCategoriesIntoCB();                     // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
+                        loadItemCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
                     } else {
                         cbCategory.setSelectedIndex(0);
                     }
@@ -192,7 +192,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         txtQuantity.getDocument().addDocumentListener(listener);
         txtUnitPrice.getDocument().addDocumentListener(listener);
         
-        updateTableTotal();                                        // Calculates the initial totals and puts them in the text fields - these should just be £0
+        updateTableTotal();                                         // Calculates the initial totals and puts them in the text fields - these should just be £0
         resetSideView();                                            // Resets the side view
 
         dcDateCreated.setDate(new Date());                          // Puts the current date as the date created value in case the user forgets to specify it himself
@@ -229,7 +229,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             total += Double.valueOf(value);                         // Converts the value in string type into double type and add it to the running total
         }
         
-        txtTotal.setText(Utility.formatCurrency(total));                //Updates the total field
+        txtTotal.setText(Utility.formatCurrency(total));            //Updates the total field
     }
     
     public formNewQuotation getFrame() {
@@ -269,13 +269,13 @@ public class formNewQuotation extends javax.swing.JFrame {
             System.out.println("-------------------------------");
             while (rs.next()) {
                 System.out.println(rs.getString(1));                // For debugging
-                cbCategory.addItem(rs.getString(1));          // Adds the category to the combo box
+                cbCategory.addItem(rs.getString(1));                // Adds the category to the combo box
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
-        cbCategory.addItem("Add a new category...");          // Adds an option for adding a new category
+        cbCategory.addItem("Add a new category...");                // Adds an option for adding a new category
     }
 
     // Sets these components to either visible or invisible depending on the boolean state
@@ -720,7 +720,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                 model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
                 model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
                 
-                updateTableTotal();                                // Recalculates the quotation total
+                updateTableTotal();                                 // Recalculates the quotation total
 
                 CurrentlyEditing = false;                           // Flips the boolean
                 txtItem.setEditable(false);

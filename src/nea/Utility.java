@@ -68,7 +68,7 @@ public class Utility {
         }
     }
 
-// Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
+    // Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
     public static String getCurrentDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();

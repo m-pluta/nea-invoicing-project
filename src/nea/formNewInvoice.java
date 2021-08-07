@@ -74,8 +74,8 @@ public class formNewInvoice extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         
-        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();    // Fetches the table model of the table
-        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
+        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();   // Fetches the table model of the table
+        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);     // Makes it so the user cannot edit the table
 
         JTableHeader header = jTable_InvoiceDetails.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
@@ -90,7 +90,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         loadItemCategoriesIntoCB();
 
         // Mouse Listener for when someone clicks on a row in the table
-        jTable_InvoiceDetails.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the invoice table
+        jTable_InvoiceDetails.addMouseListener(new MouseListener() {            // Mouse listener for when the user clicks on a row in the invoice table
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -99,7 +99,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void mousePressed(MouseEvent e) {
                 if (!CurrentlyEditing) {
                     int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
-                    if (selectedRow != -1) {                            // -1 = no row selected
+                    if (selectedRow != -1) {                        // -1 = no row selected
                         // Loads the row into the side view
                         selectedItem = selectedRow;
                         txtItem.setText(model.getValueAt(selectedRow, 0).toString());
@@ -155,7 +155,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
         // Add new item category row
-        cbCategory.addActionListener(new ActionListener() {   // When an action happens within the combo box - e.g. the selectedIndex changed
+        cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
@@ -164,8 +164,8 @@ public class formNewInvoice extends javax.swing.JFrame {
                     sqlManager.closeConnection(conn);
                     
                     if (addedCategory != null) {
-                        loadItemCategoriesIntoCB();                     // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
+                        loadItemCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
                     } else {
                         cbCategory.setSelectedIndex(0);
                     }
@@ -244,12 +244,12 @@ public class formNewInvoice extends javax.swing.JFrame {
         
         String sPayments = txtPayments.getText().replace("£", "").replace(",", "");
         double payments = 0;
-        if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {    // If the payments value is a valid double
+        if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {// If the payments value is a valid double
             payments = Double.valueOf(sPayments);
         }
         
         double total = subtotal - payments;
-        txtTotal.setText(Utility.formatCurrency(total));                //Updates the total field
+        txtTotal.setText(Utility.formatCurrency(total));            //Updates the total field
     }
 
     // Function for calculating the subtotal of the invoice by summing all the values in the table
@@ -301,13 +301,13 @@ public class formNewInvoice extends javax.swing.JFrame {
             System.out.println("-------------------------------");
             while (rs.next()) {
                 System.out.println(rs.getString(1));                // For debugging
-                cbCategory.addItem(rs.getString(1));          // Adds the category to the combo box
+                cbCategory.addItem(rs.getString(1));                // Adds the category to the combo box
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
-        cbCategory.addItem("Add a new category...");          // Adds an option for adding a new category
+        cbCategory.addItem("Add a new category...");                // Adds an option for adding a new category
     }
 
     // Sets these components to either visible or invisible depending on the boolean state

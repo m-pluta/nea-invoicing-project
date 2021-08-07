@@ -31,7 +31,7 @@ public class formMainMenu extends javax.swing.JFrame {
         btnReport1.setEnabled(false);
         btnReport2.setEnabled(false);
         btnReport3.setEnabled(false);
-        // btnManageEmployees.setEnabled(false);
+        btnManageEmployees.setEnabled(false);
     }
 
     // Fetches the full name of whoever is currently logged in and updates label
@@ -42,9 +42,9 @@ public class formMainMenu extends javax.swing.JFrame {
 
         if (employeeFullName != null) {
             System.out.println("-------------------------------");
-            System.out.println(WHO_LOGGED_IN);                    // Debug code
+            System.out.println(WHO_LOGGED_IN);
             System.out.println(employeeFullName);
-            lblLoggedInAs.setText("Logged in as " + employeeFullName);    // Updates label to say who is currently logged in
+            lblLoggedInAs.setText("Logged in as " + employeeFullName);          // Updates label to say who is currently logged in
         } else {
             System.out.println("-------------------------------");
             System.out.println("Error logging in.");
@@ -315,7 +315,7 @@ public class formMainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManageCustomersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomersActionPerformed
-        formManageCustomers form = new formManageCustomers().getFrame();        // Opens new Customer Management form
+        formManageCustomers form = new formManageCustomers().getFrame();                    // Opens new Customer Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
         form.WHO_LOGGED_IN = WHO_LOGGED_IN;
@@ -443,7 +443,7 @@ public class formMainMenu extends javax.swing.JFrame {
 
     private void btnNewQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewQuotationActionPerformed
         formNewQuotation form = new formNewQuotation().getFrame();  // Opens new NewQuotation form
-        form.previousForm1 = this;                                   // Makes this form the previousForm so the back buttons work
+        form.previousForm1 = this;                                  // Makes this form the previousForm so the back buttons work
         form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible

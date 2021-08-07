@@ -60,8 +60,8 @@ public class formAddCustomer extends javax.swing.JFrame {
                     sqlManager.closeConnection(conn);
 
                     if (addedCategory != null) {
-                        loadCustomerCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
+                        loadCustomerCategoriesIntoCB();             // Refreshes Combo box so the new category is visible
+                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
                     } else {
                         cbCategory.setSelectedIndex(0);
                     }
@@ -350,9 +350,9 @@ public class formAddCustomer extends javax.swing.JFrame {
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
-        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+        if (countEmptyFields(inputFields) != 0) {                   // Checks if any of the input fields are empty
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
-        } else if (!validInputs()) {                                            // Validates input lengths
+        } else if (!validInputs()) {                                // Validates input lengths
         } else {
             // Asks user whether they really want to add this customer
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?", "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);

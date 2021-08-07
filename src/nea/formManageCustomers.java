@@ -270,9 +270,9 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         if (!CurrentlyAddingCustomer) {
-            formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
-            form.setLocationRelativeTo(null);               // Sets the location of the customer view to the right of the current customer management form
-            form.setVisible(true);                          // Makes the new customer view visible
+            formAddCustomer form = new formAddCustomer().getFrame();            // Opens a new instance of the formAddCustomer() form
+            form.setLocationRelativeTo(null);                       // Sets the location of the customer view to the right of the current customer management form
+            form.setVisible(true);                                  // Makes the new customer view visible
             form.previousForm1 = this;
             CurrentlyAddingCustomer = true;
         }
@@ -285,7 +285,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         if (selectedRow == -1) {                                    // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
         } else {                                                    // If there is a row selected in the table
-            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
+            String string_id = model.getValueAt(selectedRow, 0).toString();     // Gets the id of the selected in string form
             int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
             return id;
         }

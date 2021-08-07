@@ -65,9 +65,9 @@ public class sqlManager {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(strSQL);
             if (rs.next()) {
-                id = rs.getInt("nextID") + 1;              // Increments the current max PK value to get the new max value
+                id = rs.getInt("nextID") + 1;                       // Increments the current max PK value to get the new max value
             } else {
-                id = 1;                                     // If there are not records in the table then the default value is 1
+                id = 1;                                             // If there are not records in the table then the default value is 1
             }
 
         } catch (SQLException e) {

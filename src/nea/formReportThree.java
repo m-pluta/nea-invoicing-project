@@ -40,7 +40,7 @@ public class formReportThree extends javax.swing.JFrame {
      */
     Connection conn = null;                                         // Shows the connection object to the DB
     formMainMenu previousForm = null;                               // Stores the previousForm object to make the Back button work
-    int WHO_LOGGED_IN = 1;                                             // The employee id of the logged in employee
+    int WHO_LOGGED_IN = 1;                                          // The employee id of the logged in employee
 
     public formReportThree() {
         initComponents();
@@ -52,7 +52,7 @@ public class formReportThree extends javax.swing.JFrame {
         dcEnd.setVisible(false);
 
         // ActionListener for when the users changes the selected item in the time combo box
-        cbTime.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
+        cbTime.addActionListener(new ActionListener() {             // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {   // If the user selected the last item ('Other')
@@ -91,7 +91,7 @@ public class formReportThree extends javax.swing.JFrame {
 
     // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
     private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int EmployeeCount) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();                          // the final output dataset
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();          // the final output dataset
 
         // Raw SQL query: https://pastebin.com/RXQdWpH1
         String queryInvoiceTotals = "SELECT i.employee_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
@@ -367,7 +367,7 @@ public class formReportThree extends javax.swing.JFrame {
         int categoryCount = (int) spEmployeeCount.getValue();       // Gets the amount of employees the user wants to see
 
         if (valid) {
-            data = getData(start, end, categoryCount);                      // Gets the CategoryDataset with all the data
+            data = getData(start, end, categoryCount);              // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
                     "Value invoiced/quoted per employee",
                     "Employee name",
@@ -383,10 +383,10 @@ public class formReportThree extends javax.swing.JFrame {
             CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
             axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);   // Makes the x axis labels vertical to conserve space
 
-            ChartPanel barPanel = new ChartPanel(barChart);                 // chartPanel will hold the bar chart
-            pOutput.removeAll();                                            // Clears the JPanel
-            pOutput.add(barPanel, BorderLayout.CENTER);                     // Adds the chartPanel
-            pOutput.validate();                                             // Validates the JPanel to make sure changes are visible
+            ChartPanel barPanel = new ChartPanel(barChart);         // chartPanel will hold the bar chart
+            pOutput.removeAll();                                    // Clears the JPanel
+            pOutput.add(barPanel, BorderLayout.CENTER);             // Adds the chartPanel
+            pOutput.validate();                                     // Validates the JPanel to make sure changes are visible
 
         }
     }//GEN-LAST:event_btnAnalyzeActionPerformed

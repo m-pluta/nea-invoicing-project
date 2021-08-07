@@ -68,7 +68,7 @@ public class formManageQuotations extends javax.swing.JFrame {
                     if (Quotation_in_view != null) {
                         Quotation_in_view.dispose();
                     }
-                    formOneQuotation form = new formOneQuotation().getFrame();    // Opens a new instance of the formOneQuotation() form
+                    formOneQuotation form = new formOneQuotation().getFrame();  // Opens a new instance of the formOneQuotation() form
                     form.setLocation(1630, 422);                    // Sets the location of the quotation view to the right of the current quotation management form
                     form.setVisible(true);                          // Makes the new quotation view visible
                     form.QuotationID = selectedID;                  // Tells the quotation view form which quotation to load

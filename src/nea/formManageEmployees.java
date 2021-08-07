@@ -265,9 +265,9 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         if (!CurrentlyAddingEmployee) {
-            formAddEmployee form = new formAddEmployee().getFrame();    // Opens a new instance of the formAddEmployee() form
-            form.setLocationRelativeTo(null);               // Sets the location of the employee view to the right of the current employee management form
-            form.setVisible(true);                          // Makes the new employee view visible
+            formAddEmployee form = new formAddEmployee().getFrame();            // Opens a new instance of the formAddEmployee() form
+            form.setLocationRelativeTo(null);                       // Sets the location of the employee view to the right of the current employee management form
+            form.setVisible(true);                                  // Makes the new employee view visible
             form.previousForm = this;
             CurrentlyAddingEmployee = true;
         }
@@ -280,7 +280,7 @@ public class formManageEmployees extends javax.swing.JFrame {
         if (selectedRow == -1) {                                    // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
         } else {                                                    // If there is a row selected in the table
-            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
+            String string_id = model.getValueAt(selectedRow, 0).toString();     // Gets the id of the selected in string form
             int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
             return id;
         }

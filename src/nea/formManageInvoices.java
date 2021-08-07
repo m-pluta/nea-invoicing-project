@@ -38,13 +38,13 @@ public class formManageInvoices extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_Invoices.getModel();    // Fetches the table model of the table
-        jTable_Invoices.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
+        model = (DefaultTableModel) jTable_Invoices.getModel();     // Fetches the table model of the table
+        jTable_Invoices.setDefaultEditor(Object.class, null);       // Makes it so the user cannot edit the table
 
         JTableHeader header = jTable_Invoices.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
-        jTable_Invoices.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the invoice table
+        jTable_Invoices.addMouseListener(new MouseListener() {      // Mouse listener for when the user clicks on a row in the invoice table
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -68,13 +68,13 @@ public class formManageInvoices extends javax.swing.JFrame {
                     if (Invoice_in_view != null) {
                         Invoice_in_view.dispose();
                     }
-                    formOneInvoice form = new formOneInvoice().getFrame();    // Opens a new instance of the formOneInvoice() form
+                    formOneInvoice form = new formOneInvoice().getFrame();      // Opens a new instance of the formOneInvoice() form
                     form.setLocation(1630, 422);                    // Sets the location of the invoice view to the right of the current invoice management form
                     form.setVisible(true);                          // Makes the new invoice view visible
-                    form.InvoiceID = selectedID;                   // Tells the invoice view form which invoice to load
-                    form.previousForm = formManageInvoices.this;   // Informs the invoice view what the previous form is 
-                    form.loadInvoice();                            // Runs the loadInvoice() method which will load all of the specified invoice's details
-                    Invoice_in_view = form;                        // Sets the invoice in view to this
+                    form.InvoiceID = selectedID;                    // Tells the invoice view form which invoice to load
+                    form.previousForm = formManageInvoices.this;    // Informs the invoice view what the previous form is 
+                    form.loadInvoice();                             // Runs the loadInvoice() method which will load all of the specified invoice's details
+                    Invoice_in_view = form;                         // Sets the invoice in view to this
                 }
             }
         });
@@ -275,7 +275,7 @@ public class formManageInvoices extends javax.swing.JFrame {
         if (selectedRow == -1) {                                    // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
         } else {
-            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
+            String string_id = model.getValueAt(selectedRow, 0).toString();     // Gets the id of the selected in string form
             int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
             return id;
         }
@@ -283,8 +283,8 @@ public class formManageInvoices extends javax.swing.JFrame {
     }
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (Invoice_in_view != null) {                             // Checks whether there is another form opened showing the selected invoice
-            Invoice_in_view.dispose();                             // If there is another form then it gets rid of it
+        if (Invoice_in_view != null) {                              // Checks whether there is another form opened showing the selected invoice
+            Invoice_in_view.dispose();                              // If there is another form then it gets rid of it
         }
         previousForm.setVisible(true);                              // Makes main previous form visible
         this.dispose();                                             // Closes the document management form (current form)

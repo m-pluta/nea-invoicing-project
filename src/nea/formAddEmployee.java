@@ -287,10 +287,10 @@ public class formAddEmployee extends javax.swing.JFrame {
     private void btnAddEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEmployeeActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
-        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+        if (countEmptyFields(inputFields) != 0) {                   // Checks if any of the input fields are empty
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
 
-        } else if (!validInputs()) {                                            // Validates input lengths
+        } else if (!validInputs()) {                                // Validates input lengths
 
         } else {
             // Asks user whether they really want to add this employee

@@ -41,9 +41,54 @@ public class formReportOne extends javax.swing.JFrame {
     /**
      * Creates new form formReportOne
      */
+    /**
+     * One per day
+     * <p>
+     * Shows the day and month dd/mm
+     * <p>
+     * Maximum: 7 bars
+     */
+    int BAR_SPACING_DAY = 0;
+
+    /**
+     * One per week
+     * <p>
+     * shows the w/c day of each month
+     * <p>
+     * Maximum: 12 bars
+     */
+    int BAR_SPACING_WEEK = 1;
+
+    /**
+     * One per month
+     * <p>
+     * Shown the month name
+     * <p>
+     * Maximum: 13 bars
+     */
+    int BAR_SPACING_MONTH = 2;
+
+    /**
+     * One per quarter
+     * <p>
+     * Shows the quarter and year
+     * <p>
+     * Maximum: 13 bars
+     */
+    int BAR_SPACING_QUARTER = 3;
+
+    /**
+     * One per year
+     * <p>
+     * Shows the year YYyy
+     * <p>
+     * Maximum: None
+     */
+    int BAR_SPACING_YEAR = 4;
+
     Connection conn = null;                                         // Shows the connection object to the DB
     formMainMenu previousForm = null;                               // Stores the previousForm object to make the Back button work
-    int WHO_LOGGED_IN = 1;                                             // The employee id of the logged in employee
+    int WHO_LOGGED_IN = 1;                                          // The employee id of the logged in employee
 
     public formReportOne() {
         initComponents();
@@ -55,7 +100,7 @@ public class formReportOne extends javax.swing.JFrame {
         dcEnd.setVisible(false);
 
         // ActionListener for when the users changes the selected item in the time combo box
-        cbTime.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
+        cbTime.addActionListener(new ActionListener() {             // When an action happens within the combo box - e.g. the selectedIndex changed
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {   // If the user selected the last item ('Other')
@@ -101,16 +146,16 @@ public class formReportOne extends javax.swing.JFrame {
                 pstmt.setObject(2, end);
 
                 ResultSet rs = rs = pstmt.executeQuery();
-                if (barSpacing == 0) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
+                if (barSpacing == BAR_SPACING_DAY) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
                         String key = rs.getDate(1).toLocalDate().format(daymonth);          // The key in the hashmap
                         Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);  // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
-                } else if (barSpacing == 1) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 1 data categorising">
+                } else if (barSpacing == BAR_SPACING_WEEK) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     LocalDateTime counter = start;
                     while (rs.next()) {
                         //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
@@ -130,28 +175,28 @@ public class formReportOne extends javax.swing.JFrame {
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);
                     }
                     //</editor-fold>
-                } else if (barSpacing == 2) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 2 data categorising">
+                } else if (barSpacing == BAR_SPACING_MONTH) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
                         String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
                         Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
-                } else if (barSpacing == 3) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 3 data categorising">
+                } else if (barSpacing == BAR_SPACING_QUARTER) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
                         String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
                         Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
                         dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
-                } else if (barSpacing == 4) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 4 data categorising">
+                } else if (barSpacing == BAR_SPACING_YEAR) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
-                        String key = "" + rs.getDate(1).toLocalDate().getYear();                    // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        String key = "" + rs.getDate(1).toLocalDate().getYear();            // The key in the hashmap
+                        Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
+                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);  // Add the invoiceTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 }
@@ -184,16 +229,16 @@ public class formReportOne extends javax.swing.JFrame {
                 pstmt.setObject(2, end);
 
                 ResultSet rs = rs = pstmt.executeQuery();
-                if (barSpacing == 0) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 data categorising">
+                if (barSpacing == BAR_SPACING_DAY) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
-                        String key = rs.getDate(1).toLocalDate().format(daymonth);  // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                        String key = rs.getDate(1).toLocalDate().format(daymonth);                  // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
-                } else if (barSpacing == 1) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 1 data categorising">
+                } else if (barSpacing == BAR_SPACING_WEEK) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     LocalDateTime counter = start;
                     while (rs.next()) {
                         //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
@@ -208,33 +253,33 @@ public class formReportOne extends javax.swing.JFrame {
                             }
                         }
                         //</editor-fold>
-                        String key = counter.format(daymonth);          // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
+                        String key = counter.format(daymonth);                          // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);                        // The total value of the quotation
                         dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);
                     }
                     //</editor-fold>
-                } else if (barSpacing == 2) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 2 data categorising">
+                } else if (barSpacing == BAR_SPACING_MONTH) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
                         String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
-                } else if (barSpacing == 3) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 3 data categorising">
+                } else if (barSpacing == BAR_SPACING_QUARTER) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
                         String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
-                } else if (barSpacing == 4) {
-                    //<editor-fold defaultstate="collapsed" desc="barSpacing == 4 data categorising">
+                } else if (barSpacing == BAR_SPACING_YEAR) {
+                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
                     while (rs.next()) {
-                        String key = "" + rs.getDate(1).toLocalDate().getYear();   // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);          // Add the quotationTotal to the hashmap by adding it to the existing value
+                        String key = "" + rs.getDate(1).toLocalDate().getYear();                    // The key in the hashmap
+                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
+                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
                     }
                     //</editor-fold>
                 }
@@ -269,11 +314,11 @@ public class formReportOne extends javax.swing.JFrame {
         DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");          // DateTimeFormatters for all the dates
         DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
 
-        System.out.println(start.format(DateTimeFormatter.ISO_DATE));               // Debug
+        System.out.println(start.format(DateTimeFormatter.ISO_DATE));
         System.out.println(end.format(DateTimeFormatter.ISO_DATE));
 
-        if (barSpacing == 0) {
-            //<editor-fold defaultstate="collapsed" desc="barSpacing == 0 time category generation">
+        if (barSpacing == BAR_SPACING_DAY) {
+            //<editor-fold defaultstate="collapsed" desc="Time category generation">
             LocalDateTime counter = start;
             output.put(counter.format(daymonth), 0.00);
 
@@ -282,8 +327,8 @@ public class formReportOne extends javax.swing.JFrame {
                 output.put(counter.format(daymonth), 0.00);
             }
             //</editor-fold>
-        } else if (barSpacing == 1) {
-            //<editor-fold defaultstate="collapsed" desc="barSpacing == 1 time category generation">
+        } else if (barSpacing == BAR_SPACING_WEEK) {
+            //<editor-fold defaultstate="collapsed" desc="Time category generation">
             LocalDateTime counter = start;
 
             while (counter.toLocalDate().isBefore(end.toLocalDate()) || counter.toLocalDate().isEqual(end.toLocalDate())) {
@@ -291,8 +336,8 @@ public class formReportOne extends javax.swing.JFrame {
                 counter = counter.plusWeeks(1);
             }
             //</editor-fold>
-        } else if (barSpacing == 2) {
-            //<editor-fold defaultstate="collapsed" desc="barSpacing == 2 time category generation">
+        } else if (barSpacing == BAR_SPACING_MONTH) {
+            //<editor-fold defaultstate="collapsed" desc="Time category generation">
             LocalDateTime counter = start;
 
             while (counter.toLocalDate().isBefore(end.toLocalDate())) {
@@ -301,8 +346,8 @@ public class formReportOne extends javax.swing.JFrame {
             }
             output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + end.format(year), 0.00);
             //</editor-fold>
-        } else if (barSpacing == 3) {
-            //<editor-fold defaultstate="collapsed" desc="barSpacing == 3 time category generation">
+        } else if (barSpacing == BAR_SPACING_QUARTER) {
+            //<editor-fold defaultstate="collapsed" desc="Time category generation">
             LocalDateTime counter = start;
 
             while (counter.toLocalDate().isBefore(end.toLocalDate())) {
@@ -311,8 +356,8 @@ public class formReportOne extends javax.swing.JFrame {
             }
             output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
             //</editor-fold>
-        } else if (barSpacing == 4) {
-            //<editor-fold defaultstate="collapsed" desc="barSpacing == 4 time category generation">
+        } else if (barSpacing == BAR_SPACING_YEAR) {
+            //<editor-fold defaultstate="collapsed" desc="Time category generation">
             LocalDateTime counter = start;
             while (counter.toLocalDate().isBefore(end.toLocalDate())) {
                 output.put("" + counter.getYear(), 0.00);
@@ -513,20 +558,20 @@ public class formReportOne extends javax.swing.JFrame {
         }
 
         //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
-        boolean valid = true;                                       // boolean for input validity, assume always valid
-        if (cbTime.getSelectedIndex() == 0) {                                           // Past month
+        boolean valid = true;                                                   // boolean for input validity, assume always valid
+        if (cbTime.getSelectedIndex() == 0) {                                   // Past month
             start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 1) {                                    // Past year
+        } else if (cbTime.getSelectedIndex() == 1) {                            // Past year
             start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 2) {                                    // This month
+        } else if (cbTime.getSelectedIndex() == 2) {                            // This month
             start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 3) {                                    // This quarter
+        } else if (cbTime.getSelectedIndex() == 3) {                            // This quarter
             start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 4) {                                    // This year
+        } else if (cbTime.getSelectedIndex() == 4) {                            // This year
             start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 5) {                                    // This financial year
+        } else if (cbTime.getSelectedIndex() == 5) {                            // This financial year
             start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
+        } else if (cbTime.getSelectedIndex() == 6) {                            // All time
             //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
             conn = sqlManager.openConnection();
 
@@ -551,7 +596,7 @@ public class formReportOne extends javax.swing.JFrame {
             }
             sqlManager.closeConnection(conn);
             //</editor-fold>
-        } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
+        } else if (cbTime.getSelectedIndex() == 7) {                            // Other
             //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
             if (dcStart.getDate() == null) {
                 ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
@@ -577,23 +622,25 @@ public class formReportOne extends javax.swing.JFrame {
             Duration dr = Duration.between(start, end);
             int daysBetweenDates = (int) dr.toDays();               // Calculates the amounts of days between the dates
 
-            int barSpacing = 1;                                     // Sets the spacing of the bars in the bar chart and the xLabels
-            if (daysBetweenDates < 7) {                             // 0 - max 7 bars, one per day, shows the day and month dd/mm
-                barSpacing = 0;                                     // 1 - max 12 bars, one per week, shows the w/c day of each month
-                xLabel = "Date of day (dd/mm)";                     // 2 - max 13 bars, one per month, shown the month name
-            } else if (daysBetweenDates < 84) {                     // 3 - max 13 bars, one per quarter, shows the quarter and year
-                barSpacing = 1;                                     // 4 - no maximum, one per year
+            //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
+            int barSpacing = BAR_SPACING_WEEK;                                     // Sets the spacing of the bars in the bar chart and the xLabels
+            if (daysBetweenDates < 7) {
+                barSpacing = BAR_SPACING_DAY;
+                xLabel = "Date of day (dd/mm)";
+            } else if (daysBetweenDates < 84) {
+                barSpacing = BAR_SPACING_WEEK;
                 xLabel = "Date of day of commencing week (dd/mm)";
             } else if (daysBetweenDates < 366) {
-                barSpacing = 2;
+                barSpacing = BAR_SPACING_MONTH;
                 xLabel = "Month (month-year)";
             } else if (daysBetweenDates < 365 * 3) {
-                barSpacing = 3;
+                barSpacing = BAR_SPACING_QUARTER;
                 xLabel = "Quarter (quarter-year)";
             } else if (daysBetweenDates >= 365 * 3) {
-                barSpacing = 4;
+                barSpacing = BAR_SPACING_YEAR;
                 xLabel = "Year";
             }
+            //</editor-fold>
 
             data = getData(getInvoices, getQuotations, start, end, barSpacing); // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
@@ -609,12 +656,12 @@ public class formReportOne extends javax.swing.JFrame {
             CategoryPlot p = barChart.getCategoryPlot();
             p.setRangeGridlinePaint(Color.black);
             CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
-            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);   // Makes the x axis labels vertical to conserve space
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);       // Makes the x axis labels vertical to conserve space
 
-            ChartPanel barPanel = new ChartPanel(barChart);                 // chartPanel will hold the bar chart
-            pOutput.removeAll();                                            // Clears the JPanel
-            pOutput.add(barPanel, BorderLayout.CENTER);                     // Adds the chartPanel
-            pOutput.validate();                                             // Validates the JPanel to make sure changes are visible
+            ChartPanel barPanel = new ChartPanel(barChart);         // chartPanel will hold the bar chart
+            pOutput.removeAll();                                    // Clears the JPanel
+            pOutput.add(barPanel, BorderLayout.CENTER);             // Adds the chartPanel
+            pOutput.validate();                                     // Validates the JPanel to make sure changes are visible
         }
         //<editor-fold defaultstate="collapsed" desc="Leftover code in case I want to open the report as a new window">
 //      To open a new form with the report

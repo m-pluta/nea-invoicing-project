@@ -36,10 +36,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_ItemCategories.getModel(); // Fetches the table model of the table
+        model = (DefaultTableModel) jTable_ItemCategories.getModel();           // Fetches the table model of the table
 
         JTableHeader header = jTable_ItemCategories.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));                     // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
 
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
             @Override
@@ -74,7 +74,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
         if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";
-            query += " category_id LIKE '%" + sp + "%'";       // \
+            query += " category_id LIKE '%" + sp + "%'";            // \
             query += " OR category_name LIKE '%" + sp + "%'";       //  |-- Check whether a column value contains the searchParameter
             query += " OR date_created LIKE '%" + sp + "%'";        // /
         }
@@ -249,7 +249,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);
 
         if (addedCategory != null) {
-            loadCategories();                               // Refreshes Combo box so the new category is visible
+            loadCategories();                                       // Refreshes Combo box so the new category is visible
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 
@@ -284,7 +284,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         System.out.println("-------------------------------");
                         System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
 
-                        sqlManager.removeRecord(conn, "tblItemCategories", "category_id", id); // Removes the selected category
+                        sqlManager.removeRecord(conn, "tblItemCategories", "category_id", id);          // Removes the selected category
                         loadCategories();                           //Refreshes table since a record was removed
                     }
                 }
@@ -316,10 +316,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     // Asks user what the new name of the category should be
                     String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
 
-                    if (inputCategory == null) {                        // If the dialog window was closed 
+                    if (inputCategory == null) {                    // If the dialog window was closed 
                         break;
                     } else {
-                        inputCategory = inputCategory.trim();           // Removes all leading and trailing whitespace characters
+                        inputCategory = inputCategory.trim();       // Removes all leading and trailing whitespace characters
 
                         if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {   // Checks if the entered category name is longer than max length in DB
                             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "category name");
@@ -338,7 +338,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                                 int rowsAffected = pstmt.executeUpdate();
                                 System.out.println("-------------------------------");
                                 System.out.println(rowsAffected + " row(s) updated.");
-                                loadCategories();                       // Refreshes table since a record was updated
+                                loadCategories();                   // Refreshes table since a record was updated
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }

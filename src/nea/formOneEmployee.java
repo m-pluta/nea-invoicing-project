@@ -62,7 +62,7 @@ public class formOneEmployee extends javax.swing.JFrame {
             if (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));    // For debugging, shows employee data
+                System.out.println(rs.getString(2));                // For debugging, shows employee data
                 System.out.println(rs.getString(3));
                 System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));
@@ -366,9 +366,9 @@ public class formOneEmployee extends javax.swing.JFrame {
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+        if (countEmptyFields(inputFields) != 0) {                   // Checks if any of the input fields are empty
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
-        } else if (!validInputs()) {                                            // Validates input lengths
+        } else if (!validInputs()) {                                // Validates input lengths
         } else {
             // Asks user whether they really want to edit this employee's details
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?", "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);

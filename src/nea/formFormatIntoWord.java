@@ -194,15 +194,15 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "No output filepath supplied");
 
         } else {
-            File f = new File(templateFilePath);                                    // Opens the template
-            if (f.exists()) {                                       // The template must exist
+            File f = new File(templateFilePath);                                        // Opens the template
+            if (f.exists()) {                                                           // The template must exist
 
-                ArrayList<tableRow> invoiceRows = new ArrayList<tableRow>();        // Stores each row of the invoice
-                double invoiceSubtotal = 0.0;                                       // The subtotal of the invoice
+                ArrayList<tableRow> invoiceRows = new ArrayList<tableRow>();            // Stores each row of the invoice
+                double invoiceSubtotal = 0.0;                                           // The subtotal of the invoice
                 conn = sqlManager.openConnection();
 
                 //<editor-fold defaultstate="collapsed" desc="Gets the table rows of the invoice and calculates the subtotal of the invoice">
-                try {   // Gets all the row information from the DB
+                try {
                     String query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblInvoiceDetails WHERE invoice_id = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, InvoiceID);
@@ -273,20 +273,20 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 sqlManager.closeConnection(conn);
 
                 //<editor-fold defaultstate="collapsed" desc="Debug">
-                System.out.println("");
+                System.out.println("-------------------------------");
                 System.out.println("invoiceRows: ");
                 for (tableRow row : invoiceRows) {
                     System.out.println(row.toString());
                 }
-                System.out.println("");
+                System.out.println("-------------------------------");
                 System.out.println("invoiceMetaData" + ": ");
                 System.out.println(invoiceMetaData);
-                System.out.println("");
+                System.out.println("-------------------------------");
                 System.out.println("customerData: ");
                 System.out.println(customerData);
                 //</editor-fold>
 
-                XWPFDocument doc = null;                            // Declares a variable to store an XWPFDocument
+                XWPFDocument doc = null;                                        // Declares a variable to store an XWPFDocument
                 try {
                     doc = new XWPFDocument(OPCPackage.open(templateFilePath));  //
                     doc = resizeDocumentTable(doc, invoiceRows.size());         // Resizing the amount of rows in the 
@@ -377,8 +377,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         List<XWPFTable> tables = document.getTables();
         XWPFTable table = tables.get(1);                            // Gets the second table which is the table that stores details about the invoice
 
-        for (int i = 0; i < NoRows; i++) {      // Each row in the invoiceRows ArrayList
-            for (int j = 0; j < 4; j++) {       // 0-3 is the index of the cells in each table row
+        for (int i = 0; i < NoRows; i++) {                          // Each row in the invoiceRows ArrayList
+            for (int j = 0; j < 4; j++) {                           // 0-3 is the index of the cells in each table row
                 XWPFTableCell cell = table.getRows().get(i + 1).getTableCells().get(j); // Gets the cell, (i+1) is used to avoid inserting into the table headers
                 if (cell.getParagraphs().size() == 0) {
                     cell.addParagraph();                            // Paragraph is added to the cell if there was not already one in the cell
@@ -396,6 +396,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             for (XWPFTableCell cell : table.getRow(i).getTableCells()) {    //
                 for (XWPFParagraph p : cell.getParagraphs()) {              // Goes through every run in this part of the table
                     for (XWPFRun r : p.getRuns()) {                         //
+
                         // If it finds a run with the target name then it replaces it with the invoice data
                         if (r.getText(0).equals("$subtotal")) {
                             r.setText(invoiceMD.get("$subtotal"), 0);
@@ -427,7 +428,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             table.removeRow(1);                         //
 
         } else if (amtRows == 1) {                                  // If the invoice has only one row
-            table.removeRow(2);                                     // Removes the second empty row
+            table.removeRow(2);                         // Removes the second empty row
 
         } else if (amtRows > 2) {
             int newRowsNeeded = amtRows - 2;                        // How many more empty rows need to be inserted into the table
@@ -435,7 +436,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 for (int i = 2; i < newRowsNeeded + 2; i++) {       // Goes through the index of all the new rows that are going to be added
                     CTRow ctrow = CTRow.Factory.parse(blankRow.getCtRow().newInputStream());    // Takes the blankRow and converts it to a CTRow
                     XWPFTableRow newRow = new XWPFTableRow(ctrow, table);
-                    table.addRow(newRow, 2);                        // Adds the empty row to the table
+                    table.addRow(newRow, 2);                                                    // Adds the empty row to the table
                 }
             } catch (XmlException e) {
                 e.printStackTrace();
@@ -452,7 +453,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
         String savingDestination = destination + "\\" + fileName + ".docx";     // The directory where the file will be saved
         if (withCounter) {
-            File f = new File(savingDestination);                   // Checks if the destination the user wanted is already occupied by another file
+            File f = new File(savingDestination);                               // Checks if the destination the user wanted is already occupied by another file
             if (f.exists()) {
 
                 boolean found = false;
@@ -461,20 +462,20 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     savingDestination = destination + "\\" + fileName + counter + ".docx";  // e.g. Output1, Output2, Output3... until an used name is found
                     File t = new File(savingDestination);
                     if (t.exists()) {                               // If it already exists
-                        counter++;                          // Increment the counter
+                        counter++;                                  // Increment the counter
                     } else {
-                        found = true;                       // The filepath is not occupied so this is set as the filepath
+                        found = true;                               // The filepath is not occupied so this is set as the filepath
                         ErrorMsg.throwCustomError(fileName + " already exists. The file was saved as " + fileName + counter + " instead", "Already Exists Error");
                     }
                 }
             }
         }
 
-        FileOutputStream out = null;                        // Empty FileOutputStream
+        FileOutputStream out = null;                                // Empty FileOutputStream
         try {
-            out = new FileOutputStream(savingDestination);  // FileOutputStream with a set destination directory
-            document.write(out);                            // Saves the document using the stream
-            out.close();                                    // Closes the OutputStream
+            out = new FileOutputStream(savingDestination);          // FileOutputStream with a set destination directory
+            document.write(out);                                    // Saves the document using the stream
+            out.close();                                            // Closes the OutputStream
             System.out.println("-------------------------------");
             System.out.println("Document successfully saved to: " + savingDestination); // Debug
 

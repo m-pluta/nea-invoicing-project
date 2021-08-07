@@ -33,8 +33,8 @@ public class formOneQuotation extends javax.swing.JFrame {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        model = (DefaultTableModel) jTable_QuotationDetails.getModel();    // Fetches the table model of the table
-        jTable_QuotationDetails.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
+        model = (DefaultTableModel) jTable_QuotationDetails.getModel();         // Fetches the table model of the table
+        jTable_QuotationDetails.setDefaultEditor(Object.class, null);           // Makes it so the user cannot edit the table
 
         JTableHeader header = jTable_QuotationDetails.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end

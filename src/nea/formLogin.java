@@ -259,7 +259,7 @@ public class formLogin extends javax.swing.JFrame {
             if (rs.next()) {                                        // If any results were fetched from the DB
                 if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
 
-                    fetchedID = rs.getInt(1);      // Gets the id of whoever logged in
+                    fetchedID = rs.getInt(1);                       // Gets the id of whoever logged in
                     found = true;
                 }
             }
@@ -273,7 +273,7 @@ public class formLogin extends javax.swing.JFrame {
             sqlManager.updateLastLogin(conn, fetchedID);
 
             formMainMenu MainMenu = new formMainMenu().getFrame();  // Creates a new instance of the main menu form
-            MainMenu.WHO_LOGGED_IN = fetchedID;                   // The employee_id of whoever is logged in
+            MainMenu.WHO_LOGGED_IN = fetchedID;                     // The employee_id of whoever is logged in
             MainMenu.whoLoggedIn();                                 // Updates label in Main Menu form to show who logged in
             MainMenu.checkWhetherAdmin();                           // If the user is an admin then they will have permission to all the management features
             MainMenu.setVisible(true);                              // Makes the main menu visible
