@@ -153,7 +153,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void btnChooseTemplateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseTemplateActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));  // The starting directory
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop"));  // The starting directory
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);              // So the user can only select a file
         int option = fileChooser.showOpenDialog(new JFrame());
         if (option == JFileChooser.APPROVE_OPTION) {
@@ -169,7 +169,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void btnChooseOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseOutputActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop\\Development"));  // The starting directory
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "\\Desktop"));  // The starting directory
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);        // So the user can only select a directory (folder)
         int option = fileChooser.showOpenDialog(new JFrame());
         if (option == JFileChooser.APPROVE_OPTION) {
