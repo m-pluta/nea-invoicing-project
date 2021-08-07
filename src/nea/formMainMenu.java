@@ -90,6 +90,7 @@ public class formMainMenu extends javax.swing.JFrame {
         btnReport2 = new javax.swing.JButton();
         btnReport3 = new javax.swing.JButton();
         btnChangeLoginDetails = new javax.swing.JButton();
+        btnChangePersonalDetails = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Main Menu");
@@ -277,6 +278,14 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         });
 
+        btnChangePersonalDetails.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnChangePersonalDetails.setText("Change personal details");
+        btnChangePersonalDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangePersonalDetailsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -293,22 +302,28 @@ public class formMainMenu extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(lblLoggedInAs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnChangePersonalDetails)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnChangeLoginDetails)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnChangeLoginDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblLoggedInAs))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnChangeLoginDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblLoggedInAs)))
+                    .addComponent(btnChangePersonalDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(pDocuments, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pManagement, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pReports, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -493,6 +508,16 @@ public class formMainMenu extends javax.swing.JFrame {
         form.setVisible(true);
     }//GEN-LAST:event_btnReport3ActionPerformed
 
+    private void btnChangePersonalDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePersonalDetailsActionPerformed
+        formOneEmployee form = new formOneEmployee().getFrame();    // Opens a new instance of the formOneEmployee() form
+        form.setVisible(true);                          // Makes the new employee view visible
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+        form.EmployeeID = WHO_LOGGED_IN;                // Tells the employee view form which employee to load 
+        form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details
+        form.enableEditMode();
+        form.disableButtonsForSelfChanges();
+    }//GEN-LAST:event_btnChangePersonalDetailsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -534,6 +559,7 @@ public class formMainMenu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChangeLoginDetails;
+    private javax.swing.JButton btnChangePersonalDetails;
     private javax.swing.JButton btnManageCustomerCategories;
     private javax.swing.JButton btnManageCustomers;
     private javax.swing.JButton btnManageEmployees;

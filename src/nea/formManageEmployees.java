@@ -77,6 +77,9 @@ public class formManageEmployees extends javax.swing.JFrame {
                     form.EmployeeID = selectedID;                   // Tells the employee view form which employee to load
                     form.previousForm = formManageEmployees.this;   // Informs the employee view what the previous form is 
                     form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details
+                    if (selectedID == WHO_LOGGED_IN) {
+                        form.disableButtonsForSelfChanges();
+                    }
                     Employee_in_view = form;                        // Sets the employee in view to this
                 }
             }

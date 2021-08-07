@@ -30,6 +30,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     public formOneEmployee() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
         btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
         JTextField[] fields = {txtEmployeeID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress, txtLastLogin};
@@ -331,10 +332,18 @@ public class formOneEmployee extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        enableEditMode();
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    public void disableButtonsForSelfChanges() {
+        btnRemove.setEnabled(false);
+        cbAdmin.setEnabled(false);
+    }
+
+    public void enableEditMode() {
         JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         setEditable(fields, true);                                  // Makes all the fields editable
         conn = sqlManager.openConnection();
-        System.out.println(EmployeeID);
         if (sqlManager.isAdmin(conn, WHO_LOGGED_IN)) {
             cbAdmin.setEnabled(true);
         }
@@ -342,7 +351,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
         txtForename.requestFocus();
         btnEdit.setEnabled(false);
-    }//GEN-LAST:event_btnEditActionPerformed
+    }
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         conn = sqlManager.openConnection();
@@ -426,7 +435,11 @@ public class formOneEmployee extends javax.swing.JFrame {
                 cbAdmin.setEnabled(false);
                 btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
                 btnEdit.setEnabled(true);
-                previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed
+                if (previousForm != null) {
+                    previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed
+                } else {
+                    this.dispose();
+                }
             }
         }
         txtEmployeeID.requestFocus();
