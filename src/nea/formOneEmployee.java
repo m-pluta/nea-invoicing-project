@@ -335,6 +335,8 @@ public class formOneEmployee extends javax.swing.JFrame {
         enableEditMode();
     }//GEN-LAST:event_btnEditActionPerformed
 
+    // Disable the button and combo box that a user should not be able to modify about themself
+    // e.g. Can't remove themself and cant change their admin status
     public void disableButtonsForSelfChanges() {
         btnRemove.setEnabled(false);
         cbAdmin.setEnabled(false);

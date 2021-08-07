@@ -403,7 +403,6 @@ public class sqlManager {
                 }
                 return inputCategory;
             }
-            sqlManager.closeConnection(conn);
         }
         return null;
     }
