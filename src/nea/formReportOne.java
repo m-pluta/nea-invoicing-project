@@ -205,7 +205,7 @@ public class formReportOne extends javax.swing.JFrame {
             }
             //</editor-fold>
 
-            System.out.println(dataArr_Invoice.toString());                     // Debug - the populated invoice hashmap
+            System.out.println(dataArr_Invoice.toString());                     // The populated invoice hashmap
 
             for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
                 dataset.addValue(i.getValue(), "Invoice", i.getKey());          // Adds it to the dataset
@@ -288,7 +288,7 @@ public class formReportOne extends javax.swing.JFrame {
             }
             //</editor-fold>
 
-            System.out.println(dataArr_Quotation.toString());                   // Debug - the populated quotation hashmap
+            System.out.println(dataArr_Quotation.toString());                   // The populated quotation hashmap
 
             for (Map.Entry<String, Double> i : dataArr_Quotation.entrySet()) {  // Goes through each Entry in the hashmap
                 dataset.addValue(i.getValue(), "Quotation", i.getKey());        // Adds it to the dataset

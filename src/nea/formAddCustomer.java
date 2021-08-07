@@ -141,7 +141,7 @@ public class formAddCustomer extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
-                System.out.println(rs.getString(1));                // For debugging
+                System.out.println(rs.getString(1));
                 cbCategory.addItem(rs.getString(1));                // Ads the category to the combo box
             }
         } catch (SQLException e) {

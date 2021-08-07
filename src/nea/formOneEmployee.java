@@ -62,7 +62,7 @@ public class formOneEmployee extends javax.swing.JFrame {
             if (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));                // For debugging, shows employee data
+                System.out.println(rs.getString(2));                // Shows employee data
                 System.out.println(rs.getString(3));
                 System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));
@@ -318,7 +318,6 @@ public class formOneEmployee extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         System.out.println(EmployeeID);
         if (sqlManager.isAdmin(conn, WHO_LOGGED_IN)) {
-            System.out.println("test");
             cbAdmin.setEnabled(true);
         }
         sqlManager.closeConnection(conn);

@@ -79,7 +79,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
-                System.out.println(rs.getString(1));                // For debugging
+                System.out.println(rs.getString(1));
                 cbCategory.addItem(rs.getString(1));                // Ads the category to the combo box
             }
         } catch (SQLException e) {
@@ -114,7 +114,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             if (rs.next()) {
                 System.out.println("-------------------------------");
                 System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));                // For debugging, shows customer data
+                System.out.println(rs.getString(2));                // Shows customer data
                 System.out.println(rs.getString(3));
                 System.out.println(rs.getString(4));
                 System.out.println(rs.getString(5));

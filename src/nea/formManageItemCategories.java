@@ -86,7 +86,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             int categoryCounter = 0;                                // variable for counting how many category are being shown in the table
             while (rs.next()) {
                 System.out.println("-------------------------------");
-                System.out.println(rs.getString(2));    // For debugging, shows each item category that is in the table
+                System.out.println(rs.getString(2));                // Shows each item category that is in the table
 
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});  // Adds the category data as a new row in the table
                 categoryCounter++;                                  // Increments category counter as a new category was added to the table
@@ -282,7 +282,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
                     if (YesNo == 0) {                               // If response is yes
                         System.out.println("-------------------------------");
-                        System.out.println("Removing category " + string_id + " - " + category + ".");  // For debugging
+                        System.out.println("Removing category " + string_id + " - " + category + ".");
 
                         sqlManager.removeRecord(conn, "tblItemCategories", "category_id", id);          // Removes the selected category
                         loadCategories();                           //Refreshes table since a record was removed

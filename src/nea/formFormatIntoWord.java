@@ -477,7 +477,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             document.write(out);                                    // Saves the document using the stream
             out.close();                                            // Closes the OutputStream
             System.out.println("-------------------------------");
-            System.out.println("Document successfully saved to: " + savingDestination); // Debug
+            System.out.println("Document successfully saved to: " + savingDestination);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -247,7 +247,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
-                System.out.println(rs.getString(1));                // For debugging
+                System.out.println(rs.getString(1));
                 cbCustomers.addItem(rs.getString(1));               // Adds the customer to the combo box
             }
         } catch (SQLException e) {
@@ -268,7 +268,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
-                System.out.println(rs.getString(1));                // For debugging
+                System.out.println(rs.getString(1));
                 cbCategory.addItem(rs.getString(1));                // Adds the category to the combo box
             }
         } catch (SQLException e) {
