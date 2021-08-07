@@ -44,7 +44,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     Connection conn = null;                                         // Stores the connection object
     boolean CurrentlyAddingCustomer = false;
     int selectedItem = 0;
-
+    
     private void goBack() {
         if (previousForm1 != null) {
             previousForm1.setVisible(true);
@@ -61,19 +61,19 @@ public class formNewInvoice extends javax.swing.JFrame {
             this.dispose();
         }
     }
-
+    
     public void selectCustomer(int customerID) {
         conn = sqlManager.openConnection();
         String customer = sqlManager.getCustomerFullName(conn, customerID);
         sqlManager.closeConnection(conn);
-
+        
         cbCustomers.setSelectedItem(customer);
     }
-
+    
     public formNewInvoice() {
         initComponents();
         this.setLocationRelativeTo(null);
-
+        
         model = (DefaultTableModel) jTable_InvoiceDetails.getModel();    // Fetches the table model of the table
         jTable_InvoiceDetails.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
 
@@ -94,7 +94,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
-
+            
             @Override
             public void mousePressed(MouseEvent e) {
                 if (!CurrentlyEditing) {
@@ -117,22 +117,22 @@ public class formNewInvoice extends javax.swing.JFrame {
                         btnRemoveItem.setEnabled(true);
                         btnEditItem.setEnabled(true);
                         btnAddItem.setEnabled(true);
-
+                        
                     } else {
                         System.out.println("-------------------------------");
                         System.out.println("No row selected");
                     }
                 }
             }
-
+            
             @Override
             public void mouseExited(MouseEvent e) {
             }
-
+            
             @Override
             public void mouseEntered(MouseEvent e) {
             }
-
+            
             @Override
             public void mouseClicked(MouseEvent e) {
             }
@@ -162,7 +162,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewItemCategory(conn);
                     sqlManager.closeConnection(conn);
-
+                    
                     if (addedCategory != null) {
                         loadItemCategoriesIntoCB();                     // Refreshes Combo box so the new category is visible
                         cbCategory.setSelectedItem(addedCategory);      // Set the selected item to whatever category the user just added
@@ -179,12 +179,12 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void insertUpdate(DocumentEvent e) {
                 updateItemTotals();
             }
-
+            
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateItemTotals();
             }
-
+            
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
@@ -198,17 +198,17 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void insertUpdate(DocumentEvent e) {
                 updateTableTotals();
             }
-
+            
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateTableTotals();
             }
-
+            
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
         });
-
+        
         updateTableTotals();                                        // Calculates the initial totals and puts them in the text fields - these should just be £0
         resetSideView();                                            // Resets the side view
 
@@ -229,7 +229,7 @@ public class formNewInvoice extends javax.swing.JFrame {
 
                 int quantity = Utility.StringToInt(sQuantity);
                 double unit_price = Double.valueOf(sUnitPrice);
-
+                
                 double item_subtotal = quantity * unit_price;       // The total value of the item
 
                 txtItemTotal.setText(Utility.formatCurrency(item_subtotal));    // Updates the Item Total text field
@@ -241,13 +241,13 @@ public class formNewInvoice extends javax.swing.JFrame {
     public void updateTableTotals() {
         double subtotal = calculateSubtotal();
         txtSubtotal.setText(Utility.formatCurrency(subtotal));
-
+        
         String sPayments = txtPayments.getText().replace("£", "").replace(",", "");
         double payments = 0;
         if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {    // If the payments value is a valid double
             payments = Double.valueOf(sPayments);
         }
-
+        
         double total = subtotal - payments;
         txtTotal.setText(Utility.formatCurrency(total));                //Updates the total field
     }
@@ -260,10 +260,10 @@ public class formNewInvoice extends javax.swing.JFrame {
             String value = model.getValueAt(i, 4).toString().replace("£", "").replace(",", "");  // Gets the value of the item(s) as a string
             subTotal += Double.valueOf(value);                      // Converts the value in string type into double type and add it to the running subtotal
         }
-
+        
         return subTotal;
     }
-
+    
     public formNewInvoice getFrame() {
         return this;
     }
@@ -272,10 +272,10 @@ public class formNewInvoice extends javax.swing.JFrame {
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
         conn = sqlManager.openConnection();
-        String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomers";
+        String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomers ORDER BY customerFullName";
         try {
             Statement stmt = conn.createStatement();
-
+            
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
@@ -296,7 +296,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         String query = "SELECT category_name FROM tblItemCategories";
         try {
             Statement stmt = conn.createStatement();
-
+            
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
@@ -626,16 +626,16 @@ public class formNewInvoice extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-
+            
         } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-
+            
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
-
+            
         } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-
+            
         } else {
             // Adds the item to the table
             model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
@@ -661,16 +661,16 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
         if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
             ErrorMsg.throwError(ErrorMsg.DEFAULT_ERROR, "The 'Add new customer' option is not a valid customer");
-
+            
         } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Date cannot be empty");
-
+            
         } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank invoice
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Invoice must have at least one item");
-
+            
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {    // Checks if the payments value  is a valid double
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "The entered payments value is not a valid decimal");
-
+            
         } else {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
@@ -682,16 +682,16 @@ public class formNewInvoice extends javax.swing.JFrame {
                 PreparedStatement pstmt = conn.prepareStatement(query);
                 int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoices", "invoice_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_invoiceID);
-                pstmt.setInt(2, cbCustomers.getSelectedIndex() + 1);
+                pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
                 pstmt.setDouble(4, txtPayments.getText().equals("") ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
                 pstmt.setInt(5, EmployeeID);
-
+                
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
                 System.out.println(rowsAffected + " row(s) inserted.");
-
+                
                 uploadInvoiceDetails(new_invoiceID);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -704,14 +704,14 @@ public class formNewInvoice extends javax.swing.JFrame {
     // Uploads each individual row of the table to tblInvoiceDetails
     public void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
-
+        
         conn = sqlManager.openConnection();
         for (int i = 0; i < NoRows; i++) {
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
-            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", "category_id", model.getValueAt(i, 1).toString());
-
+            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", model.getValueAt(i, 1).toString());
+            
             String query = "INSERT INTO tblInvoiceDetails (row_id,invoice_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
             try {
                 // Inserts data about each row into tblInvoiceDetails
@@ -723,7 +723,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 pstmt.setInt(4, quantity);
                 pstmt.setDouble(5, unit_price);
                 pstmt.setInt(6, category);
-
+                
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
@@ -749,7 +749,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnRemoveItemActionPerformed
-
+    
     boolean CurrentlyEditing = false;
     private void btnEditItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditItemActionPerformed
         if (!CurrentlyEditing) {                                    // If the user is not yet editing
@@ -764,23 +764,23 @@ public class formNewInvoice extends javax.swing.JFrame {
             conn = sqlManager.openConnection();
             if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
                 ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-
+                
             } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-
+                
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price not a double");
-
+                
             } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-
+                
             } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
                 model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
                 model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
-
+                
                 updateTableTotals();                                // Recalculates the invoice totals
 
                 CurrentlyEditing = false;                           // Flips the boolean
@@ -807,17 +807,17 @@ public class formNewInvoice extends javax.swing.JFrame {
     public void resetSideView() {
         txtItem.setText("");
         txtItem.setEditable(true);
-
+        
         txtQuantity.setText("");
         txtQuantity.setEditable(true);
-
+        
         txtUnitPrice.setText("");
         txtUnitPrice.setEditable(true);
-
+        
         txtItemTotal.setText("");
-
+        
         cbCategory.setSelectedIndex(0);
-
+        
         btnRemoveItem.setEnabled(false);
         btnEditItem.setEnabled(false);
         btnAddItem.setEnabled(true);

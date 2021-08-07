@@ -251,8 +251,8 @@ public class sqlManager {
     }
 
     // Returns the id of the item category given its name and table
-    public static int getIDofCategory(Connection conn, String tableName, String PK_name, String category) {
-        String query = "SELECT " + PK_name + " FROM " + tableName + " WHERE category_name = ?";
+    public static int getIDofCategory(Connection conn, String tableName, String category) {
+        String query = "SELECT category_id FROM " + tableName + " WHERE category_name = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, category);
@@ -263,6 +263,26 @@ public class sqlManager {
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error fetching category id of category with name: " + category);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    // Returns the id of the item category given its name and table
+    public static int getIDofCustomer(Connection conn, String name) {
+        String query = "SELECT customer_id FROM tblCustomers WHERE CONCAT(forename,' ',surname) = ?";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, name);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If an id is found
+                return rs.getInt(1);
+            } else {
+                System.out.println("-------------------------------");
+                System.out.println("Error fetching category id of customer with name: " + name);
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -461,7 +461,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategories", "category_id", cbCategory.getSelectedItem().toString()));  // Gets the index of the selected customer category #TODO
+                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategories", cbCategory.getSelectedItem().toString()));  // Gets the index of the selected customer category
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();
