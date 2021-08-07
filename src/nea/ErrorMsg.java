@@ -29,32 +29,33 @@ public class ErrorMsg {
     static int INVALID_CATEGORY_SELECTED_ERROR = 1;
 
     /**
-     * This must have an accompanying message Default Message:
-     * <code>customMessage</code> already exists
+     * This must have an accompanying message
+     * <p>
+     * Default Message: <code>customMessage</code> already exists
      */
     static int ALREADY_EXISTS_ERROR = 2;
 
     /**
-     * This must have an accompanying message Default Message: The entered
-     * <code>customMessage</code> is too short
+     * This must have an accompanying message 
+     * <p>
+     * Default Message: The entered <code>customMessage</code> is too short
      */
     static int INPUT_LENGTH_ERROR_SHORT = 3;
 
     /**
-     * This must have an accompanying message Default Message: The entered
-     * <code>customMessage</code> is too long
+     * This must have an accompanying message 
+     * <p>
+     * Default Message: The entered <code>customMessage</code> is too long
      */
     static int INPUT_LENGTH_ERROR_LONG = 4;
 
     /**
-     * Default Message: Login details do not match, check if you have entered
-     * them correctly
+     * Default Message: Login details do not match, check if you have entered them correctly
      */
     static int INPUT_DETAILS_MISMATCH_ERROR = 5;
 
     /**
-     * Default Message: Incorrect login details, check you have entered them
-     * correctly
+     * Default Message: Incorrect username or password
      */
     static int INVALID_LOGIN_DETAILS_ERROR = 6;
 
@@ -74,8 +75,9 @@ public class ErrorMsg {
     static int CANNOT_EDIT_ERROR = 9;
 
     /**
-     * This must have an accompanying message Default Message: You must enter
-     * something for the <code>customMessage</code>
+     * This must have an accompanying message 
+     * <p>
+     * Default Message: You must enter something for the <code>customMessage</code>
      */
     static int INVALID_INPUT_ERROR = 10;
 
@@ -85,7 +87,9 @@ public class ErrorMsg {
     static int DOES_NOT_EXIST_ERROR = 11;
 
     /**
-     * This must have an accompanying message Default Message: None
+     * This must have an accompanying message 
+     * <p>
+     * Default Message: None
      */
     static int NUMBER_FORMAT_ERROR = 12;
 
