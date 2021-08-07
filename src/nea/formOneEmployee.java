@@ -22,6 +22,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     /**
      * Creates new form formOneEmployee
      */
+    int WHO_LOGGED_IN = 0;
     int EmployeeID = 0;                                             // employee_id of currently loaded employee
     Connection conn = null;                                         // Stores the connection object
     formManageEmployees previousForm = null;                        // Stores the previous Form object
@@ -314,6 +315,13 @@ public class formOneEmployee extends javax.swing.JFrame {
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         setEditable(fields, true);                                  // Makes all the fields editable
+        conn = sqlManager.openConnection();
+        System.out.println(EmployeeID);
+        if (sqlManager.isAdmin(conn, WHO_LOGGED_IN)) {
+            System.out.println("test");
+            cbAdmin.setEnabled(true);
+        }
+        sqlManager.closeConnection(conn);
         btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
         txtForename.requestFocus();
         btnEdit.setEnabled(false);
@@ -359,8 +367,7 @@ public class formOneEmployee extends javax.swing.JFrame {
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
         // Checks if any of the input fields are empty
         if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
-            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR)
-                    ;
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
         } else if (!validInputs()) {                                            // Validates input lengths
         } else {
             // Asks user whether they really want to edit this employee's details
@@ -368,9 +375,8 @@ public class formOneEmployee extends javax.swing.JFrame {
             if (YesNo == 0) {                                       // If response is yes
                 conn = sqlManager.openConnection();
                 String query = "UPDATE tblEmployees SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ? WHERE employee_id = ?";
-                PreparedStatement pstmt = null;
                 try {
-                    pstmt = conn.prepareStatement(query);
+                    PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, txtForename.getText());
                     pstmt.setString(2, txtSurname.getText());
                     pstmt.setString(3, txtAddress1.getText());
@@ -381,10 +387,18 @@ public class formOneEmployee extends javax.swing.JFrame {
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
                     pstmt.setInt(10, EmployeeID);
-
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
                     System.out.println(rowsAffected + " row(s) updated.");
+
+                    query = "UPDATE tblLogins SET admin = ? WHERE employee_id = ?";
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, cbAdmin.isSelected() ? "Y" : "N");
+                    pstmt.setInt(2, EmployeeID);
+                    rowsAffected = pstmt.executeUpdate();
+                    System.out.println("-------------------------------");
+                    System.out.println(rowsAffected + " row(s) updated.");
+
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -392,6 +406,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                 setEditable(inputFields, false);                    // Makes all the fields no longer editable
                 txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
                 txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
+                cbAdmin.setEnabled(false);
                 btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
                 btnEdit.setEnabled(true);
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed

@@ -21,27 +21,28 @@ public class formMainMenu extends javax.swing.JFrame {
      * Creates new form formMainMenu
      */
     Connection conn = null;                                         // Stores the connection object
-    static int loggedIn_UserID = 0;                                 // id of whoever is currently logged in
+    static int WHO_LOGGED_IN = 0;                                   // id of whoever is currently logged in
 
     public formMainMenu() {
         initComponents();
         this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        btnManageCustomers.setEnabled(false);
-        btnManageEmployees.setEnabled(false);
-        btnManageItemCategories.setEnabled(false);
-        btnManageCustomerCategories.setEnabled(false);
+
+        btnReport1.setEnabled(false);
+        btnReport2.setEnabled(false);
+        btnReport3.setEnabled(false);
+        // btnManageEmployees.setEnabled(false);
     }
 
     // Fetches the full name of whoever is currently logged in and updates label
     public void whoLoggedIn() {
         conn = sqlManager.openConnection();
-        String employeeFullName = sqlManager.getEmployeeFullName(conn, loggedIn_UserID);
+        String employeeFullName = sqlManager.getEmployeeFullName(conn, WHO_LOGGED_IN);
         sqlManager.closeConnection(conn);
 
         if (employeeFullName != null) {
             System.out.println("-------------------------------");
-            System.out.println(loggedIn_UserID);                    // Debug code
+            System.out.println(WHO_LOGGED_IN);                    // Debug code
             System.out.println(employeeFullName);
             lblLoggedInAs.setText("Logged in as " + employeeFullName);    // Updates label to say who is currently logged in
         } else {
@@ -55,11 +56,11 @@ public class formMainMenu extends javax.swing.JFrame {
     // Checks whether the logged in user is an admin, if they are then they have access to the management section of the program.
     public void checkWhetherAdmin() {
         conn = sqlManager.openConnection();
-        if (sqlManager.isAdmin(conn, loggedIn_UserID)) {
-            btnManageCustomers.setEnabled(true);
+        if (sqlManager.isAdmin(conn, WHO_LOGGED_IN)) {
+            btnReport1.setEnabled(true);
+            btnReport2.setEnabled(true);
+            btnReport3.setEnabled(true);
             btnManageEmployees.setEnabled(true);
-            btnManageItemCategories.setEnabled(true);
-            btnManageCustomerCategories.setEnabled(true);
         }
         sqlManager.closeConnection(conn);
     }
@@ -317,7 +318,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageCustomers form = new formManageCustomers().getFrame();        // Opens new Customer Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         form.loadCustomers();                                       // Load all the customers into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -327,6 +328,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageEmployees form = new formManageEmployees().getFrame();                    // Opens new Employee Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         form.loadEmployees();                                       // Load all the employees into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -434,7 +436,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
         form.previousForm1 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
     }//GEN-LAST:event_btnNewInvoiceActionPerformed
@@ -442,7 +444,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnNewQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewQuotationActionPerformed
         formNewQuotation form = new formNewQuotation().getFrame();  // Opens new NewQuotation form
         form.previousForm1 = this;                                   // Makes this form the previousForm so the back buttons work
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
     }//GEN-LAST:event_btnNewQuotationActionPerformed
@@ -451,7 +453,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageInvoices form = new formManageInvoices().getFrame();      // Opens new Invoice Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         form.loadInvoices();                                        // Load all the invoices into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -461,7 +463,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formManageQuotations form = new formManageQuotations().getFrame();  // Opens new Quotations Management form
         form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
         form.sp = "";                                               // Empties search parameter in next form
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         form.loadQuotations();                                      // Load all the quotations into the table
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -470,7 +472,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnReport1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport1ActionPerformed
         formReportOne form = new formReportOne().getFrame();
         form.previousForm = this;
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport1ActionPerformed
@@ -478,7 +480,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnReport2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport2ActionPerformed
         formReportTwo form = new formReportTwo().getFrame();
         form.previousForm = this;
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport2ActionPerformed
@@ -486,7 +488,7 @@ public class formMainMenu extends javax.swing.JFrame {
     private void btnReport3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport3ActionPerformed
         formReportThree form = new formReportThree().getFrame();
         form.previousForm = this;
-        form.EmployeeID = loggedIn_UserID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport3ActionPerformed

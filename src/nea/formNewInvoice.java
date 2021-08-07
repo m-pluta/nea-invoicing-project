@@ -35,7 +35,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     /**
      * Creates new form formNewInvoice
      */
-    int EmployeeID = 1;
+    int WHO_LOGGED_IN = 1;
     int InvoiceID = 1;
     formMainMenu previousForm1 = null;                              // Stores the previously open form
     formManageInvoices previousForm2 = null;                        // Stores the previously open form
@@ -685,7 +685,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                 pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
                 pstmt.setDouble(4, txtPayments.getText().equals("") ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
-                pstmt.setInt(5, EmployeeID);
+                pstmt.setInt(5, WHO_LOGGED_IN);
                 
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();

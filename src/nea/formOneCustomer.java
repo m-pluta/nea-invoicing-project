@@ -25,7 +25,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     /**
      * Creates new form formOneCustomer
      */
-    int EmployeeID = 1;
+    int WHO_LOGGED_IN = 1;
     int CustomerID = 0;                                             // customer_id of currently loaded customer
     Connection conn = null;                                         // Stores the connection object
     formManageCustomers previousForm = null;                        // Stores the previous Form object
@@ -524,7 +524,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     private void btnSetInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
         form.previousForm3 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.EmployeeID = EmployeeID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         form.selectCustomer(CustomerID);
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
@@ -535,7 +535,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     private void btnSetQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetQuotationActionPerformed
         formNewQuotation form = new formNewQuotation().getFrame();
         form.previousForm3 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.EmployeeID = EmployeeID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         form.selectCustomer(CustomerID);
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible

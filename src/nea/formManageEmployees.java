@@ -27,6 +27,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     /**
      * Creates new form formAddNewEmployee
      */
+    int WHO_LOGGED_IN = 0;
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model;                                        // The table model
@@ -72,6 +73,7 @@ public class formManageEmployees extends javax.swing.JFrame {
                     formOneEmployee form = new formOneEmployee().getFrame();    // Opens a new instance of the formOneEmployee() form
                     form.setLocation(1630, 422);                    // Sets the location of the employee view to the right of the current employee management form
                     form.setVisible(true);                          // Makes the new employee view visible
+                    form.WHO_LOGGED_IN = WHO_LOGGED_IN;
                     form.EmployeeID = selectedID;                   // Tells the employee view form which employee to load
                     form.previousForm = formManageEmployees.this;   // Informs the employee view what the previous form is 
                     form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details

@@ -40,7 +40,7 @@ public class formReportThree extends javax.swing.JFrame {
      */
     Connection conn = null;                                         // Shows the connection object to the DB
     formMainMenu previousForm = null;                               // Stores the previousForm object to make the Back button work
-    int EmployeeID = 1;                                             // The employee id of the logged in employee
+    int WHO_LOGGED_IN = 1;                                             // The employee id of the logged in employee
 
     public formReportThree() {
         initComponents();

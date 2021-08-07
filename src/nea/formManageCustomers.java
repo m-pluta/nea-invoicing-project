@@ -27,7 +27,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     /**
      * Creates new form formAddNewCustomer
      */
-    int EmployeeID = 1;
+    int WHO_LOGGED_IN = 1;
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model;                                        // The table model
@@ -74,7 +74,7 @@ public class formManageCustomers extends javax.swing.JFrame {
                     form.setLocation(1630, 422);                    // Sets the location of the customer view to the right of the current customer management form
                     form.setVisible(true);                          // Makes the new customer view visible
                     form.CustomerID = selectedID;                   // Tells the customer view form which customer to load
-                    form.EmployeeID = EmployeeID;
+                    form.WHO_LOGGED_IN = WHO_LOGGED_IN;
                     form.previousForm = formManageCustomers.this;   // Informs the customer view what the previous form is 
                     form.loadCustomer();                            // Runs the loadCustomer() method which will load all of the specified customer's details
                     Customer_in_view = form;                        // Sets the customer in view to this

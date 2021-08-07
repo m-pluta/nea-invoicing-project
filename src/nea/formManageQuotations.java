@@ -27,7 +27,7 @@ public class formManageQuotations extends javax.swing.JFrame {
     /**
      * Creates new form formManageQuotations
      */
-    int EmployeeID = 1;
+    int WHO_LOGGED_IN = 1;
     formMainMenu previousForm = null;                               // Stores the previously open form
     Connection conn = null;                                         // Stores the connection object
     DefaultTableModel model;                                        // The table model
@@ -295,7 +295,7 @@ public class formManageQuotations extends javax.swing.JFrame {
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         formNewQuotation form = new formNewQuotation().getFrame();
         form.previousForm2 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.EmployeeID = EmployeeID;
+        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
         this.setVisible(false);                                     // Makes main menu invisible
         form.setVisible(true);                                      // makes the next form visible
     }//GEN-LAST:event_btnAddNewActionPerformed

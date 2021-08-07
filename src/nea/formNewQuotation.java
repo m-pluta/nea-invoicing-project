@@ -35,7 +35,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     /**
      * Creates new form formNewQuotation
      */
-    int EmployeeID = 1;
+    int WHO_LOGGED_IN = 1;
     int QuotationID = 1;
     formMainMenu previousForm1 = null;                              // Stores the previously open form
     formManageQuotations previousForm2 = null;                      // Stores the previously open form
@@ -624,7 +624,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                 pstmt.setInt(1, new_quotationID);
                 pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
-                pstmt.setInt(4, EmployeeID);
+                pstmt.setInt(4, WHO_LOGGED_IN);
                 
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
