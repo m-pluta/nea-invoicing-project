@@ -241,8 +241,9 @@ public class formOneQuotation extends javax.swing.JFrame {
 
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
         formFormatIntoWord form = new formFormatIntoWord().getFrame();          // Opens the Word Document generation form
-        form.documentID = QuotationID;                                          // Tells the invoice formatting form the invoiceID in question
+        form.documentID = QuotationID;                                          // Tells the document formatting form the quotationID in question
         form.DOCUMENT_TYPE = form.QUOTATION;
+        form.setDocument();
         form.setVisible(true);
     }//GEN-LAST:event_btnFormatActionPerformed
 

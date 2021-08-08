@@ -272,8 +272,9 @@ public class formOneInvoice extends javax.swing.JFrame {
     // This button is for converting the invoice into a word document given a template
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
         formFormatIntoWord form = new formFormatIntoWord().getFrame();          // Opens the Word Document generation form
-        form.documentID = InvoiceID;                                            // Tells the invoice formatting form the invoiceID in question
+        form.documentID = InvoiceID;                                            // Tells the document formatting form the invoiceID in question
         form.DOCUMENT_TYPE = form.INVOICE;
+        form.setDocument();
         form.setVisible(true);                                                  
     }//GEN-LAST:event_btnFormatActionPerformed
 
