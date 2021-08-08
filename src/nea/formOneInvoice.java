@@ -262,7 +262,7 @@ public class formOneInvoice extends javax.swing.JFrame {
                         .addContainerGap(12, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
 
@@ -272,7 +272,8 @@ public class formOneInvoice extends javax.swing.JFrame {
     // This button is for converting the invoice into a word document given a template
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
         formFormatIntoWord form = new formFormatIntoWord().getFrame();          // Opens the Word Document generation form
-        form.InvoiceID = InvoiceID;                                             // Tells the invoice formatting form the invoiceID in question
+        form.documentID = InvoiceID;                                            // Tells the invoice formatting form the invoiceID in question
+        form.DOCUMENT_TYPE = form.INVOICE;
         form.setVisible(true);                                                  
     }//GEN-LAST:event_btnFormatActionPerformed
 
