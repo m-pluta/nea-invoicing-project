@@ -385,7 +385,7 @@ public class formReportOne extends javax.swing.JFrame {
         lblDataToAnalyse = new javax.swing.JLabel();
         cbData = new javax.swing.JComboBox<>();
         cbTime = new javax.swing.JComboBox<>();
-        cbTimePeriod = new javax.swing.JLabel();
+        lblTime = new javax.swing.JLabel();
         lblStart = new javax.swing.JLabel();
         dcStart = new com.toedter.calendar.JDateChooser();
         dcEnd = new com.toedter.calendar.JDateChooser();
@@ -425,8 +425,8 @@ public class formReportOne extends javax.swing.JFrame {
 
         cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past year", "This month", "This quarter", "This year", "This financial year", "All Time", "Other" }));
 
-        cbTimePeriod.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        cbTimePeriod.setText("Time Period:");
+        lblTime.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblTime.setText("Time Period:");
 
         lblStart.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblStart.setText("Start Date: ");
@@ -444,7 +444,7 @@ public class formReportOne extends javax.swing.JFrame {
                     .addGroup(pParamLayout.createSequentialGroup()
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblDataToAnalyse)
-                            .addComponent(cbTimePeriod))
+                            .addComponent(lblTime))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cbData, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -471,7 +471,7 @@ public class formReportOne extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbTimePeriod))
+                    .addComponent(lblTime))
                 .addGap(10, 10, 10)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -715,13 +715,13 @@ public class formReportOne extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JComboBox<String> cbData;
     private javax.swing.JComboBox<String> cbTime;
-    private javax.swing.JLabel cbTimePeriod;
     private com.toedter.calendar.JDateChooser dcEnd;
     private com.toedter.calendar.JDateChooser dcStart;
     private javax.swing.JLabel lblDataToAnalyse;
     private javax.swing.JLabel lblEnd;
     private javax.swing.JLabel lblSalesAnalysis;
     private javax.swing.JLabel lblStart;
+    private javax.swing.JLabel lblTime;
     private javax.swing.JPanel pOutput;
     private javax.swing.JPanel pParam;
     // End of variables declaration//GEN-END:variables

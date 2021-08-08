@@ -160,9 +160,9 @@ public class formReportTwo extends javax.swing.JFrame {
         lblItemCategoryAnalysis = new javax.swing.JLabel();
         pParam = new javax.swing.JPanel();
         btnAnalyze = new javax.swing.JButton();
-        lblDataToAnalyse = new javax.swing.JLabel();
+        lblCategoriesToShow = new javax.swing.JLabel();
         cbTime = new javax.swing.JComboBox<>();
-        cbTimePeriod = new javax.swing.JLabel();
+        lblTime = new javax.swing.JLabel();
         lblStart = new javax.swing.JLabel();
         dcStart = new com.toedter.calendar.JDateChooser();
         dcEnd = new com.toedter.calendar.JDateChooser();
@@ -195,13 +195,13 @@ public class formReportTwo extends javax.swing.JFrame {
             }
         });
 
-        lblDataToAnalyse.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblDataToAnalyse.setText("Categories to show:");
+        lblCategoriesToShow.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCategoriesToShow.setText("Categories to show:");
 
         cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past year", "This month", "This quarter", "This year", "This financial year", "All Time", "Other" }));
 
-        cbTimePeriod.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        cbTimePeriod.setText("Time Period:");
+        lblTime.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblTime.setText("Time Period:");
 
         lblStart.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblStart.setText("Start Date: ");
@@ -220,8 +220,8 @@ public class formReportTwo extends javax.swing.JFrame {
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pParamLayout.createSequentialGroup()
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDataToAnalyse)
-                            .addComponent(cbTimePeriod))
+                            .addComponent(lblCategoriesToShow)
+                            .addComponent(lblTime))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cbTime, 0, 150, Short.MAX_VALUE)
@@ -243,12 +243,12 @@ public class formReportTwo extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pParamLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDataToAnalyse)
+                    .addComponent(lblCategoriesToShow)
                     .addComponent(spCategoryCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbTimePeriod))
+                    .addComponent(lblTime))
                 .addGap(10, 10, 10)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -431,13 +431,13 @@ public class formReportTwo extends javax.swing.JFrame {
     private javax.swing.JButton btnAnalyze;
     private javax.swing.JButton btnBack;
     private javax.swing.JComboBox<String> cbTime;
-    private javax.swing.JLabel cbTimePeriod;
     private com.toedter.calendar.JDateChooser dcEnd;
     private com.toedter.calendar.JDateChooser dcStart;
-    private javax.swing.JLabel lblDataToAnalyse;
+    private javax.swing.JLabel lblCategoriesToShow;
     private javax.swing.JLabel lblEnd;
     private javax.swing.JLabel lblItemCategoryAnalysis;
     private javax.swing.JLabel lblStart;
+    private javax.swing.JLabel lblTime;
     private javax.swing.JPanel pOutput;
     private javax.swing.JPanel pParam;
     private javax.swing.JSpinner spCategoryCount;

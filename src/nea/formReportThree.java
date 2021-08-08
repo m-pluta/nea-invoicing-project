@@ -138,10 +138,10 @@ public class formReportThree extends javax.swing.JFrame {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String category_name = rs.getString(1);
-                dataset.addValue(rs.getDouble(2), "Invoices", category_name);
-                dataset.addValue(rs.getDouble(3), "Quotations", category_name);
-                dataset.addValue(rs.getDouble(4), "Both", category_name);
+                String employee_name = rs.getString(1);
+                dataset.addValue(rs.getDouble(2), "Invoices", employee_name);
+                dataset.addValue(rs.getDouble(3), "Quotations", employee_name);
+                dataset.addValue(rs.getDouble(4), "Both", employee_name);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -160,12 +160,12 @@ public class formReportThree extends javax.swing.JFrame {
     private void initComponents() {
 
         btnBack = new javax.swing.JButton();
-        lblItemCategoryAnalysis = new javax.swing.JLabel();
+        lblEmployeeAnalysis = new javax.swing.JLabel();
         pParam = new javax.swing.JPanel();
         btnAnalyze = new javax.swing.JButton();
-        lblDataToAnalyse = new javax.swing.JLabel();
+        lblEmployeesToShow = new javax.swing.JLabel();
         cbTime = new javax.swing.JComboBox<>();
-        cbTimePeriod = new javax.swing.JLabel();
+        lblTime = new javax.swing.JLabel();
         lblStart = new javax.swing.JLabel();
         dcStart = new com.toedter.calendar.JDateChooser();
         dcEnd = new com.toedter.calendar.JDateChooser();
@@ -184,8 +184,8 @@ public class formReportThree extends javax.swing.JFrame {
             }
         });
 
-        lblItemCategoryAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblItemCategoryAnalysis.setText("Employee Analysis");
+        lblEmployeeAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblEmployeeAnalysis.setText("Employee Analysis");
 
         pParam.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         pParam.setMinimumSize(new java.awt.Dimension(0, 200));
@@ -198,13 +198,13 @@ public class formReportThree extends javax.swing.JFrame {
             }
         });
 
-        lblDataToAnalyse.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblDataToAnalyse.setText("Employees to show:");
+        lblEmployeesToShow.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblEmployeesToShow.setText("Employees to show:");
 
         cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past year", "This month", "This quarter", "This year", "This financial year", "All Time", "Other" }));
 
-        cbTimePeriod.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        cbTimePeriod.setText("Time Period:");
+        lblTime.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblTime.setText("Time Period:");
 
         lblStart.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblStart.setText("Start Date: ");
@@ -223,8 +223,8 @@ public class formReportThree extends javax.swing.JFrame {
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pParamLayout.createSequentialGroup()
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDataToAnalyse)
-                            .addComponent(cbTimePeriod))
+                            .addComponent(lblEmployeesToShow)
+                            .addComponent(lblTime))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cbTime, 0, 150, Short.MAX_VALUE)
@@ -246,12 +246,12 @@ public class formReportThree extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pParamLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDataToAnalyse)
+                    .addComponent(lblEmployeesToShow)
                     .addComponent(spEmployeeCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbTimePeriod))
+                    .addComponent(lblTime))
                 .addGap(10, 10, 10)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -279,7 +279,7 @@ public class formReportThree extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBack)
                         .addGap(222, 222, 222)
-                        .addComponent(lblItemCategoryAnalysis)
+                        .addComponent(lblEmployeeAnalysis)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pOutput, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -290,7 +290,7 @@ public class formReportThree extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblItemCategoryAnalysis)
+                    .addComponent(lblEmployeeAnalysis)
                     .addComponent(btnBack))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -364,10 +364,10 @@ public class formReportThree extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        int categoryCount = (int) spEmployeeCount.getValue();       // Gets the amount of employees the user wants to see
+        int employeeCount = (int) spEmployeeCount.getValue();       // Gets the amount of employees the user wants to see
 
         if (valid) {
-            data = getData(start, end, categoryCount);              // Gets the CategoryDataset with all the data
+            data = getData(start, end, employeeCount);              // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
                     "Value invoiced/quoted per employee",
                     "Employee name",
@@ -435,13 +435,13 @@ public class formReportThree extends javax.swing.JFrame {
     private javax.swing.JButton btnAnalyze;
     private javax.swing.JButton btnBack;
     private javax.swing.JComboBox<String> cbTime;
-    private javax.swing.JLabel cbTimePeriod;
     private com.toedter.calendar.JDateChooser dcEnd;
     private com.toedter.calendar.JDateChooser dcStart;
-    private javax.swing.JLabel lblDataToAnalyse;
+    private javax.swing.JLabel lblEmployeeAnalysis;
+    private javax.swing.JLabel lblEmployeesToShow;
     private javax.swing.JLabel lblEnd;
-    private javax.swing.JLabel lblItemCategoryAnalysis;
     private javax.swing.JLabel lblStart;
+    private javax.swing.JLabel lblTime;
     private javax.swing.JPanel pOutput;
     private javax.swing.JPanel pParam;
     private javax.swing.JSpinner spEmployeeCount;
