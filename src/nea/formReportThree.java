@@ -141,7 +141,9 @@ public class formReportThree extends javax.swing.JFrame {
                 String employee_name = rs.getString(1);
                 dataset.addValue(rs.getDouble(2), "Invoices", employee_name);
                 dataset.addValue(rs.getDouble(3), "Quotations", employee_name);
-                dataset.addValue(rs.getDouble(4), "Both", employee_name);
+                if (rs.getDouble(2) >= 0.005 && rs.getDouble(3) >= 0.005) {
+                    dataset.addValue(rs.getDouble(4), "Both", employee_name);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

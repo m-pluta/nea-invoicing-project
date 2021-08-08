@@ -33,16 +33,16 @@ import org.jfree.data.category.DefaultCategoryDataset;
  *
  * @author Michal
  */
-public class formReportTwo extends javax.swing.JFrame {
+public class formReportFour extends javax.swing.JFrame {
 
     /**
-     * Creates new form formReportTwo
+     * Creates new form formReportThree
      */
     Connection conn = null;                                         // Shows the connection object to the DB
     formMainMenu previousForm = null;                               // Stores the previousForm object to make the Back button work
     int WHO_LOGGED_IN = 1;                                          // The employee id of the logged in employee
 
-    public formReportTwo() {
+    public formReportFour() {
         initComponents();
         this.setLocationRelativeTo(null);                           // Positions the form in the middle of the screen
 
@@ -70,57 +70,60 @@ public class formReportTwo extends javax.swing.JFrame {
         });
 
         //<editor-fold defaultstate="collapsed" desc="Code for setting the min and max value for the JSpinner">
-        int NoCategories = 1;
+        int NoCustomers = 1;
         conn = sqlManager.openConnection();
         try {
-            String query = "SELECT COUNT(category_id) FROM tblItemCategories";
+            String query = "SELECT COUNT(customer_id) FROM tblCustomers";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query
-            NoCategories = rs.getInt(1);
+            NoCustomers = rs.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         sqlManager.closeConnection(conn);
 
         int preferredAmount = 5;                                    // The preferred amount of categories to display
-        SpinnerModel sm = new SpinnerNumberModel(NoCategories < preferredAmount ? NoCategories : preferredAmount, 1, NoCategories, 1); // Default, LB, UB, Increment
-        spCategoryCount.setModel(sm);
+        SpinnerModel sm = new SpinnerNumberModel(NoCustomers < preferredAmount ? NoCustomers : preferredAmount, 1, NoCustomers, 1); // Default, LB, UB, Increment
+        spCustomerCount.setModel(sm);
         //</editor-fold>
     }
 
     // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
-    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
+    private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CustomerCount) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();          // the final output dataset
 
-        // Raw SQL query: https://pastebin.com/5n2Pi2qn
-        String queryRawInvoiceCategoryCosts = "SELECT a.category_id, (b.quantity * b.unit_price) as itemCost"
-                + " FROM tblitemcategories as a"
-                + " INNER JOIN tblinvoicedetails as b ON a.category_id = b.category_id"
-                + " INNER JOIN tblinvoices as c ON b.invoice_id = c.invoice_id"
-                + " WHERE c.date_created BETWEEN ? AND ?";
+        // Raw SQL query: https://pastebin.com/RXQdWpH1
+        String queryInvoiceTotals = "SELECT i.customer_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
+                + " FROM tblInvoices AS i"
+                + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
+                + " WHERE i.date_created BETWEEN ? AND ?"
+                + " GROUP BY i.invoice_id";
 
-        String queryRawQuotationCategoryCosts = "SELECT a.category_id, (b.quantity * b.unit_price) as itemCost"
-                + " FROM tblitemcategories as a"
-                + " INNER JOIN tblquotationdetails as b ON a.category_id = b.category_id"
-                + " INNER JOIN tblquotations as c ON b.quotation_id = c.quotation_id"
-                + " WHERE c.date_created BETWEEN ? AND ?";
+        String queryQuotationTotals = "SELECT q.customer_id, SUM(qD.quantity * qD.unit_price) AS quotationSubtotal"
+                + " FROM tblQuotations AS q"
+                + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
+                + " WHERE q.date_created BETWEEN ? AND ?"
+                + " GROUP BY q.quotation_id";
 
-        String queryInvoiceCategoryTotals = "SELECT sq.category_id, SUM(sq.itemCost) as cT"
-                + " FROM (" + queryRawInvoiceCategoryCosts + ") as sq"
-                + " GROUP BY sq.category_id";
+        String queryCustomerInvoiceTotals = "SELECT c.customer_id, COALESCE(SUM(iT.invoiceSubtotal), 0) AS cInvoiceTotal"
+                + " FROM tblCustomers AS c"
+                + " INNER JOIN (" + queryInvoiceTotals + ") AS iT ON c.customer_id = iT.customer_id"
+                + " GROUP BY c.customer_id";
 
-        String queryQuotationCategoryTotals = "SELECT sq.category_id, SUM(sq.itemCost) as cT"
-                + " FROM (" + queryRawQuotationCategoryCosts + ") as sq"
-                + " GROUP BY sq.category_id";
+        String queryCustomerQuotationTotals = "SELECT c.customer_id, COALESCE(SUM(qT.quotationSubtotal), 0) AS cQuotationTotal"
+                + " FROM tblCustomers AS c"
+                + " INNER JOIN (" + queryQuotationTotals + ") AS qT ON c.customer_id = qT.customer_id"
+                + " GROUP BY c.customer_id";
 
-        String mainQuery = "SELECT a.category_name, COALESCE(sq1.cT, 0) AS invoiceTotal, COALESCE(sq2.cT, 0) AS quotationTotal, (COALESCE(sq1.cT, 0) + COALESCE(sq2.cT, 0)) as combinedTotal"
-                + " FROM tblitemcategories as a"
-                + " LEFT JOIN (" + queryInvoiceCategoryTotals + ") as sq1"
-                + " ON a.category_id = sq1.category_id"
-                + " LEFT JOIN (" + queryQuotationCategoryTotals + ") as sq2"
-                + " ON a.category_id = sq2.category_id"
-                + " ORDER BY combinedTotal DESC"
+        String mainQuery = "SELECT CONCAT(c.forename, ' ', c.surname) AS Fullname,"
+                + " COALESCE(cITs.cInvoiceTotal, 0) AS invoiceTotal,"
+                + " COALESCE(cQTs.cQuotationTotal, 0) AS quotationTotal,"
+                + " COALESCE(cITs.cInvoiceTotal, 0) + COALESCE(cQTs.cQuotationTotal, 0) AS overallTotal"
+                + " FROM tblCustomers AS c"
+                + " LEFT JOIN (" + queryCustomerInvoiceTotals + ") AS cITs ON c.customer_id = cITs.customer_id"
+                + " LEFT JOIN (" + queryCustomerQuotationTotals + ") AS cQTs ON c.customer_id = cQTs.customer_id"
+                + " ORDER BY overallTotal DESC"
                 + " LIMIT ?";
 
         conn = sqlManager.openConnection();
@@ -130,16 +133,16 @@ public class formReportTwo extends javax.swing.JFrame {
             pstmt.setObject(2, end);
             pstmt.setObject(3, start);
             pstmt.setObject(4, end);
-            pstmt.setInt(5, CategoryCount);
+            pstmt.setInt(5, CustomerCount);
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String category_name = rs.getString(1);
-                dataset.addValue(rs.getDouble(2), "Invoices", category_name);
-                dataset.addValue(rs.getDouble(3), "Quotations", category_name);
+                String customer_name = rs.getString(1);
+                dataset.addValue(rs.getDouble(2), "Invoices", customer_name);
+                dataset.addValue(rs.getDouble(3), "Quotations", customer_name);
                 if (rs.getDouble(2) >= 0.005 && rs.getDouble(3) >= 0.005) {
-                    dataset.addValue(rs.getDouble(4), "Both", category_name);
+                    dataset.addValue(rs.getDouble(4), "Both", customer_name);
                 }
             }
         } catch (SQLException e) {
@@ -159,21 +162,21 @@ public class formReportTwo extends javax.swing.JFrame {
     private void initComponents() {
 
         btnBack = new javax.swing.JButton();
-        lblItemCategoryAnalysis = new javax.swing.JLabel();
+        lblCustomerAnalysis = new javax.swing.JLabel();
         pParam = new javax.swing.JPanel();
         btnAnalyze = new javax.swing.JButton();
-        lblCategoriesToShow = new javax.swing.JLabel();
+        lblCustomersToShow = new javax.swing.JLabel();
         cbTime = new javax.swing.JComboBox<>();
         lblTime = new javax.swing.JLabel();
         lblStart = new javax.swing.JLabel();
         dcStart = new com.toedter.calendar.JDateChooser();
         dcEnd = new com.toedter.calendar.JDateChooser();
         lblEnd = new javax.swing.JLabel();
-        spCategoryCount = new javax.swing.JSpinner();
+        spCustomerCount = new javax.swing.JSpinner();
         pOutput = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Item Category Analysis");
+        setTitle("Customer Analysis");
 
         btnBack.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnBack.setText("Back");
@@ -183,8 +186,8 @@ public class formReportTwo extends javax.swing.JFrame {
             }
         });
 
-        lblItemCategoryAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        lblItemCategoryAnalysis.setText("Item Category Analysis");
+        lblCustomerAnalysis.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        lblCustomerAnalysis.setText("Customer Analysis");
 
         pParam.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         pParam.setMinimumSize(new java.awt.Dimension(0, 200));
@@ -197,8 +200,8 @@ public class formReportTwo extends javax.swing.JFrame {
             }
         });
 
-        lblCategoriesToShow.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCategoriesToShow.setText("Categories to show:");
+        lblCustomersToShow.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCustomersToShow.setText("Customers to show:");
 
         cbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Past month", "Past year", "This month", "This quarter", "This year", "This financial year", "All Time", "Other" }));
 
@@ -211,7 +214,7 @@ public class formReportTwo extends javax.swing.JFrame {
         lblEnd.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblEnd.setText("End Date: ");
 
-        spCategoryCount.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        spCustomerCount.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout pParamLayout = new javax.swing.GroupLayout(pParam);
         pParam.setLayout(pParamLayout);
@@ -222,12 +225,12 @@ public class formReportTwo extends javax.swing.JFrame {
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pParamLayout.createSequentialGroup()
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblCategoriesToShow)
+                            .addComponent(lblCustomersToShow)
                             .addComponent(lblTime))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cbTime, 0, 150, Short.MAX_VALUE)
-                            .addComponent(spCategoryCount)))
+                            .addComponent(spCustomerCount)))
                     .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(btnAnalyze)
                         .addGroup(pParamLayout.createSequentialGroup()
@@ -245,8 +248,8 @@ public class formReportTwo extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pParamLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCategoriesToShow)
-                    .addComponent(spCategoryCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblCustomersToShow)
+                    .addComponent(spCustomerCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(pParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -277,8 +280,8 @@ public class formReportTwo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBack)
-                        .addGap(200, 200, 200)
-                        .addComponent(lblItemCategoryAnalysis)
+                        .addGap(222, 222, 222)
+                        .addComponent(lblCustomerAnalysis)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pOutput, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -289,7 +292,7 @@ public class formReportTwo extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblItemCategoryAnalysis)
+                    .addComponent(lblCustomerAnalysis)
                     .addComponent(btnBack))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -363,14 +366,14 @@ public class formReportTwo extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        int categoryCount = (int) spCategoryCount.getValue();       // Gets the amount of categories the user wants to see
+        int customerCount = (int) spCustomerCount.getValue();       // Gets the amount of customers the user wants to see
 
         if (valid) {
-            data = getData(start, end, categoryCount);              // Gets the CategoryDataset with all the data
+            data = getData(start, end, customerCount);              // Gets the CategoryDataset with all the data
             JFreeChart barChart = ChartFactory.createBarChart(
-                    "Value per category in each type of document",
-                    "Category name",
-                    "Value in category",
+                    "Value invoiced/quoted per employee",
+                    "Employee name",
+                    "Value invoiced/quoted",
                     data,
                     PlotOrientation.VERTICAL,
                     true,
@@ -380,7 +383,7 @@ public class formReportTwo extends javax.swing.JFrame {
             CategoryPlot p = barChart.getCategoryPlot();
             p.setRangeGridlinePaint(Color.black);
             CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
-            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);       // Makes the x axis labels vertical to conserve space
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);   // Makes the x axis labels vertical to conserve space
 
             ChartPanel barPanel = new ChartPanel(barChart);         // chartPanel will hold the bar chart
             pOutput.removeAll();                                    // Clears the JPanel
@@ -390,7 +393,7 @@ public class formReportTwo extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAnalyzeActionPerformed
 
-    public formReportTwo getFrame() {
+    public formReportFour getFrame() {
         return this;
     }
 
@@ -411,20 +414,23 @@ public class formReportTwo extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(formReportTwo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formReportFour.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(formReportTwo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formReportFour.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(formReportTwo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formReportFour.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formReportTwo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(formReportFour.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new formReportTwo().setVisible(true);
+                new formReportFour().setVisible(true);
             }
         });
     }
@@ -435,13 +441,13 @@ public class formReportTwo extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbTime;
     private com.toedter.calendar.JDateChooser dcEnd;
     private com.toedter.calendar.JDateChooser dcStart;
-    private javax.swing.JLabel lblCategoriesToShow;
+    private javax.swing.JLabel lblCustomerAnalysis;
+    private javax.swing.JLabel lblCustomersToShow;
     private javax.swing.JLabel lblEnd;
-    private javax.swing.JLabel lblItemCategoryAnalysis;
     private javax.swing.JLabel lblStart;
     private javax.swing.JLabel lblTime;
     private javax.swing.JPanel pOutput;
     private javax.swing.JPanel pParam;
-    private javax.swing.JSpinner spCategoryCount;
+    private javax.swing.JSpinner spCustomerCount;
     // End of variables declaration//GEN-END:variables
 }
