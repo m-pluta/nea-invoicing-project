@@ -343,6 +343,28 @@ public class sqlManager {
         return -1;
     }
 
+    // Returns the quotation number in the current financial year given a date
+    public static int getQuotationNoThisFinancialYear(Connection conn, LocalDateTime datetime) {
+
+        LocalDate financialyear = Utility.getFinancialYear(datetime);           // Gets the start date of the financial year
+
+        String query = "SELECT COUNT(quotation_id) FROM tblQuotations WHERE date_created BETWEEN ? AND ?";  // Gets the amount of quotations between the financial 
+        try {                                                                                               // year start date and the date of the quotation
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setObject(1, financialyear.atTime(0, 0, 0));
+            pstmt.setObject(2, datetime.minusSeconds(1));           // Takes away a second from the enddate param to not include the invoice in question
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {                                        // If a result is found
+                return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current invoice
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
     public static int getMaxColumnLength(Connection conn, String tableName, String column) {
         String query = "SELECT character_maximum_length FROM information_schema.columns"
                 + " WHERE table_name = ? AND column_name = ?";
