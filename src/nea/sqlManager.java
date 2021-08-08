@@ -321,42 +321,19 @@ public class sqlManager {
         return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);            // If an error occurs or no result is found then the date is set to the unix base date
     }
 
-    // Returns the invoice number in the current financial year given a date
-    public static int getInvoiceNoThisFinancialYear(Connection conn, LocalDateTime datetime) {
-
+    // Returns the doucment number of a invoice or quotation in the current financial year given a date
+    public static int getDocumentNoThisFinancialYear(Connection conn, String tableName, String PK_name, LocalDateTime datetime) {
         LocalDate financialyear = Utility.getFinancialYear(datetime);           // Gets the start date of the financial year
 
-        String query = "SELECT COUNT(invoice_id) FROM tblInvoices WHERE date_created BETWEEN ? AND ?";  // Gets the amount of invoices between the financial 
-        try {                                                                                           // year start date and the date of the invoice
+        String query = "SELECT COUNT(" + PK_name + ") FROM " + tableName + " WHERE date_created BETWEEN ? AND ?";   // Gets the amount of documents between the financial 
+        try {                                                                                                       // year start date and the date of the invoice
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, financialyear.atTime(0, 0, 0));
-            pstmt.setObject(2, datetime.minusSeconds(1));           // Takes away a second from the enddate param to not include the invoice in question
+            pstmt.setObject(2, datetime.minusSeconds(1));           // Takes away a second from the enddate param to not include the document in question
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a result is found
-                return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current invoice
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return -1;
-    }
-
-    // Returns the quotation number in the current financial year given a date
-    public static int getQuotationNoThisFinancialYear(Connection conn, LocalDateTime datetime) {
-
-        LocalDate financialyear = Utility.getFinancialYear(datetime);           // Gets the start date of the financial year
-
-        String query = "SELECT COUNT(quotation_id) FROM tblQuotations WHERE date_created BETWEEN ? AND ?";  // Gets the amount of quotations between the financial 
-        try {                                                                                               // year start date and the date of the quotation
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setObject(1, financialyear.atTime(0, 0, 0));
-            pstmt.setObject(2, datetime.minusSeconds(1));           // Takes away a second from the enddate param to not include the invoice in question
-
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {                                        // If a result is found
-                return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current invoice
+                return rs.getInt(1) + 1;                            // Adds one to the fetched count to include the current document
             }
         } catch (SQLException e) {
             e.printStackTrace();

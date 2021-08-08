@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -113,7 +114,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         txtDocument.setText(((DOCUMENT_TYPE == INVOICE) ? "Invoice #" : "Quotation #") + documentID);
     }
 
-    
     public formFormatIntoWord getFrame() {
         return this;
     }
@@ -134,6 +134,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         btnGenerateDocument = new javax.swing.JButton();
         lblDocument = new javax.swing.JLabel();
         txtDocument = new javax.swing.JTextField();
+        txtFileName = new javax.swing.JTextField();
+        lblFileName = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Generate Word Document");
@@ -162,6 +164,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
         txtDocument.setEditable(false);
 
+        lblFileName.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        lblFileName.setText("File Name:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -171,23 +176,27 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblDocument)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblTemplate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblTemplate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(lblFileName))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btnGenerateDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtOutput, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtDocument)
-                                .addComponent(txtTemplate)))))
+                            .addComponent(txtOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                            .addComponent(txtDocument)
+                            .addComponent(txtTemplate)
+                            .addComponent(txtFileName))))
                 .addContainerGap(10, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(191, Short.MAX_VALUE)
+                .addComponent(btnGenerateDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
+                .addContainerGap(10, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDocument)
                     .addComponent(txtDocument, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -199,9 +208,13 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblOutput)
                     .addComponent(txtOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFileName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFileName))
+                .addGap(18, 18, 18)
                 .addComponent(btnGenerateDocument, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         pack();
@@ -263,7 +276,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                             documentMetaData.put("$total", Utility.formatCurrency(subtotal - rs.getDouble(1)));
                             documentMetaData.put("$date", rs.getDate(2).toLocalDate().format(full_short));
 
-                            int InvoiceNoThisFinYear = sqlManager.getInvoiceNoThisFinancialYear(conn, rs.getTimestamp(2).toLocalDateTime());    // The invoice number in the current financial year
+                            int InvoiceNoThisFinYear = sqlManager.getDocumentNoThisFinancialYear(conn, "tblInvoices", "invoice_id", rs.getTimestamp(2).toLocalDateTime());    // The invoice number in the current financial year
                             String currentYear = Utility.getFinancialYear(rs.getDate(2).toLocalDate()).format(year_short);                      // The current year in short format
                             documentMetaData.put("$No", InvoiceNoThisFinYear + "/" + currentYear);
                         }
@@ -281,9 +294,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         if (rs.next()) {
                             documentMetaData.put("$date", rs.getDate(1).toLocalDate().format(full_short));
 
-                            int DocumentNoThisFinYear = sqlManager.getQuotationNoThisFinancialYear(conn, rs.getTimestamp(1).toLocalDateTime()); // The quotation number in the current financial year
+                            int QuotationNoThisFinYear = sqlManager.getDocumentNoThisFinancialYear(conn, "tblQuotations", "quotation_id", rs.getTimestamp(1).toLocalDateTime()); // The quotation number in the current financial year
                             String currentYear = Utility.getFinancialYear(rs.getDate(1).toLocalDate()).format(year_short);                      // The current year in short format
-                            documentMetaData.put("$No", DocumentNoThisFinYear + "/" + currentYear);
+                            documentMetaData.put("$No", QuotationNoThisFinYear + "/" + currentYear);
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -349,8 +362,14 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     doc = new XWPFDocument(OPCPackage.open(outputFilePath + "\\Temp.docx"));    //
                     doc = insertCustomerData(doc, customerData, documentMetaData);              // Inserting the customer's data into the XWPFDocument
                     doc = insertDocumentData(doc, documentRows, documentMetaData);              // Inserting the document's details into the XWPFDocument
-                    saveDocument(doc, outputFilePath, "Output", true);                          //
 
+                    String outputFileName = "Output";
+                    if (!txtFileName.getText().isEmpty()) {                     // Checks if someone has entered a custom FileName
+                        if (Pattern.matches("^\\w+$", txtFileName.getText())) {
+                            outputFileName = txtFileName.getText();
+                        }
+                    }
+                    saveDocument(doc, outputFilePath, outputFileName, true);
                     removeFile(outputFilePath + "\\Temp.docx");                 // Removing the temporary file
                     this.dispose();
                 } catch (InvalidFormatException e) {
@@ -580,9 +599,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGenerateDocument;
     private javax.swing.JLabel lblDocument;
+    private javax.swing.JLabel lblFileName;
     private javax.swing.JLabel lblOutput;
     private javax.swing.JLabel lblTemplate;
     private javax.swing.JTextField txtDocument;
+    private javax.swing.JTextField txtFileName;
     private javax.swing.JTextField txtOutput;
     private javax.swing.JTextField txtTemplate;
     // End of variables declaration//GEN-END:variables
