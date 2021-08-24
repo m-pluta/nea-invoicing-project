@@ -44,7 +44,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     Connection conn = null;                                         // Stores the connection object
     boolean CurrentlyAddingCustomer = false;
     int selectedItem = 0;
-    
+
     private void goBack() {
         if (previousForm1 != null) {
             previousForm1.setVisible(true);
@@ -61,19 +61,19 @@ public class formNewQuotation extends javax.swing.JFrame {
             this.dispose();
         }
     }
-    
+
     public void selectCustomer(int customerID) {
         conn = sqlManager.openConnection();
         String customer = sqlManager.getCustomerFullName(conn, customerID);
         sqlManager.closeConnection(conn);
-        
+
         cbCustomers.setSelectedItem(customer);
     }
-    
+
     public formNewQuotation() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
+
         model = (DefaultTableModel) jTable_QuotationDetails.getModel();         // Fetches the table model of the table
         jTable_QuotationDetails.setDefaultEditor(Object.class, null);           // Makes it so the user cannot edit the table
 
@@ -94,7 +94,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
-            
+
             @Override
             public void mousePressed(MouseEvent e) {
                 if (!CurrentlyEditing) {
@@ -117,22 +117,22 @@ public class formNewQuotation extends javax.swing.JFrame {
                         btnRemoveItem.setEnabled(true);
                         btnEditItem.setEnabled(true);
                         btnAddItem.setEnabled(true);
-                        
+
                     } else {
                         System.out.println("-------------------------------");
                         System.out.println("No row is selected");
                     }
                 }
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
             }
@@ -162,7 +162,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewItemCategory(conn);
                     sqlManager.closeConnection(conn);
-                    
+
                     if (addedCategory != null) {
                         loadItemCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
                         cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
@@ -179,19 +179,19 @@ public class formNewQuotation extends javax.swing.JFrame {
             public void insertUpdate(DocumentEvent e) {
                 updateItemTotals();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateItemTotals();
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
         };
         txtQuantity.getDocument().addDocumentListener(listener);
         txtUnitPrice.getDocument().addDocumentListener(listener);
-        
+
         updateTableTotal();                                         // Calculates the initial totals and puts them in the text fields - these should just be £0
         resetSideView();                                            // Resets the side view
 
@@ -212,7 +212,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
                 int quantity = Utility.StringToInt(sQuantity);
                 double unit_price = Double.valueOf(sUnitPrice);
-                
+
                 double item_subtotal = quantity * unit_price;       // The total value of the item
 
                 txtItemTotal.setText(Utility.formatCurrency(item_subtotal));    // Updates the Item Total text field
@@ -228,10 +228,10 @@ public class formNewQuotation extends javax.swing.JFrame {
             String value = model.getValueAt(i, 4).toString().replace("£", "").replace(",", "");  // Gets the value of the item(s) as a string
             total += Double.valueOf(value);                         // Converts the value in string type into double type and add it to the running total
         }
-        
+
         txtTotal.setText(Utility.formatCurrency(total));            //Updates the total field
     }
-    
+
     public formNewQuotation getFrame() {
         return this;
     }
@@ -243,7 +243,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomers ORDER BY customerFullName";
         try {
             Statement stmt = conn.createStatement();
-            
+
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
@@ -264,7 +264,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         String query = "SELECT category_name FROM tblItemCategories";
         try {
             Statement stmt = conn.createStatement();
-            
+
             ResultSet rs = stmt.executeQuery(query);
             System.out.println("-------------------------------");
             while (rs.next()) {
@@ -305,16 +305,17 @@ public class formNewQuotation extends javax.swing.JFrame {
         jTable_QuotationDetails = new javax.swing.JTable();
         lblTotal = new javax.swing.JLabel();
         txtTotal = new javax.swing.JTextField();
+        jSeparator = new javax.swing.JSeparator();
         jSeparator1 = new javax.swing.JSeparator();
-        jSeparator3 = new javax.swing.JSeparator();
         lblSideView = new javax.swing.JLabel();
+        btnClear = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtItem = new javax.swing.JTextArea();
         lblQuantity = new javax.swing.JLabel();
-        lblUnitPrice = new javax.swing.JLabel();
-        lblItemTotal = new javax.swing.JLabel();
         txtQuantity = new javax.swing.JTextField();
+        lblUnitPrice = new javax.swing.JLabel();
         txtUnitPrice = new javax.swing.JTextField();
+        lblItemTotal = new javax.swing.JLabel();
         txtItemTotal = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
         lblCategory = new javax.swing.JLabel();
@@ -322,9 +323,8 @@ public class formNewQuotation extends javax.swing.JFrame {
         btnRemoveItem = new javax.swing.JButton();
         btnEditItem = new javax.swing.JButton();
         btnAddItem = new javax.swing.JButton();
-        jSeparator4 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
         btnFinish = new javax.swing.JButton();
-        btnClear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("New Quotation");
@@ -365,6 +365,13 @@ public class formNewQuotation extends javax.swing.JFrame {
 
         lblSideView.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblSideView.setText("Side View");
+
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         txtItem.setColumns(20);
         txtItem.setRows(5);
@@ -415,13 +422,6 @@ public class formNewQuotation extends javax.swing.JFrame {
             }
         });
 
-        btnClear.setText("Clear");
-        btnClear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnClearActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -454,7 +454,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnBack)
                         .addGap(823, 823, 823)))
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -485,14 +485,14 @@ public class formNewQuotation extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jSeparator2)))
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(33, 33, 33)
                             .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(33, 33, 33)
                             .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -521,10 +521,10 @@ public class formNewQuotation extends javax.swing.JFrame {
                             .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblTotal))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE))
-                    .addComponent(jSeparator1)
+                    .addComponent(jSeparator)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 99, Short.MAX_VALUE)
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblSideView)
@@ -554,7 +554,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                                 .addComponent(btnAddItem)
                                 .addComponent(btnEditItem)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(57, 57, 57)
                         .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(20, 20, 20)))
@@ -569,16 +569,16 @@ public class formNewQuotation extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
         if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-            
+
         } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-            
+
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
-            
+
         } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-            
+
         } else {
             // Adds the item to the table
             model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
@@ -604,13 +604,13 @@ public class formNewQuotation extends javax.swing.JFrame {
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
         if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
             ErrorMsg.throwError(ErrorMsg.DEFAULT_ERROR, "The 'Add new customer' option is not a valid customer");
-            
+
         } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Date cannot be empty");
-            
+
         } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank quotation
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Quotation must have at least one item");
-            
+
         } else {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
@@ -625,12 +625,12 @@ public class formNewQuotation extends javax.swing.JFrame {
                 pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
                 pstmt.setInt(4, WHO_LOGGED_IN);
-                
+
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
                 System.out.println(rowsAffected + " row(s) inserted.");
-                
+
                 uploadQuotationDetails(new_quotationID);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -643,14 +643,14 @@ public class formNewQuotation extends javax.swing.JFrame {
     // Uploads each individual row of the table to tblQuotationDetails
     public void uploadQuotationDetails(int quotationID) {
         int NoRows = model.getRowCount();
-        
+
         conn = sqlManager.openConnection();
         for (int i = 0; i < NoRows; i++) {
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
             int category = sqlManager.getIDofCategory(conn, "tblItemCategories", model.getValueAt(i, 1).toString());
-            
+
             String query = "INSERT INTO tblQuotationDetails (row_id,quotation_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
             try {
                 // Inserts data about each row into tblQuotationDetails
@@ -662,7 +662,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                 pstmt.setInt(4, quantity);
                 pstmt.setDouble(5, unit_price);
                 pstmt.setInt(6, category);
-                
+
                 System.out.println(pstmt);
                 int rowsAffected = pstmt.executeUpdate();
                 System.out.println("-------------------------------");
@@ -688,7 +688,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnRemoveItemActionPerformed
-    
+
     boolean CurrentlyEditing = false;
     private void btnEditItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditItemActionPerformed
         if (!CurrentlyEditing) {                                    // If the user is not yet editing
@@ -703,23 +703,23 @@ public class formNewQuotation extends javax.swing.JFrame {
             conn = sqlManager.openConnection();
             if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
                 ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-                
+
             } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-                
+
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
-                
+
             } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-                
+
             } else {
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
                 model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
                 model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
                 model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
-                
+
                 updateTableTotal();                                 // Recalculates the quotation total
 
                 CurrentlyEditing = false;                           // Flips the boolean
@@ -749,17 +749,17 @@ public class formNewQuotation extends javax.swing.JFrame {
     public void resetSideView() {
         txtItem.setText("");
         txtItem.setEditable(true);
-        
+
         txtQuantity.setText("");
         txtQuantity.setEditable(true);
-        
+
         txtUnitPrice.setText("");
         txtUnitPrice.setEditable(true);
-        
+
         txtItemTotal.setText("");
-        
+
         cbCategory.setSelectedIndex(0);
-        
+
         btnRemoveItem.setEnabled(false);
         btnEditItem.setEnabled(false);
         btnAddItem.setEnabled(true);
@@ -819,10 +819,10 @@ public class formNewQuotation extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser dcDateCreated;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTable jTable_QuotationDetails;
     private javax.swing.JLabel lblCategory;
     private javax.swing.JLabel lblCustomer;

@@ -61,6 +61,11 @@ public class formLogin extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
+        System.out.println(lblMainLogo.getWidth());
+        System.out.println(lblMainLogo.getHeight());
+        System.out.println(lblLogos.getWidth());
+        System.out.println(lblLogos.getHeight());
+        
         Image scaledMainLogo = imgMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(),
                 Image.SCALE_SMOOTH);
         Image scaledLogos = imgLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(),
@@ -82,54 +87,20 @@ public class formLogin extends javax.swing.JFrame {
     private void initComponents() {
 
         pContainer = new javax.swing.JPanel();
-        cbPassword = new javax.swing.JCheckBox();
-        lblCapsLock = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JPasswordField();
-        lblPassword = new javax.swing.JLabel();
-        txtUsername = new javax.swing.JTextField();
-        lblUsername = new javax.swing.JLabel();
         lblMainLogo = new javax.swing.JLabel();
         lblLogos = new javax.swing.JLabel();
-        btnLogin = new javax.swing.JButton();
         pTextBackground = new javax.swing.JPanel();
         lblCompanyName = new javax.swing.JLabel();
+        lblUsername = new javax.swing.JLabel();
+        txtUsername = new javax.swing.JTextField();
+        lblPassword = new javax.swing.JLabel();
+        txtPassword = new javax.swing.JPasswordField();
+        lblCapsLock = new javax.swing.JLabel();
+        cbPassword = new javax.swing.JCheckBox();
+        btnLogin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
-
-        cbPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        cbPassword.setText("Show Password");
-        cbPassword.setNextFocusableComponent(btnLogin);
-        cbPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbPasswordActionPerformed(evt);
-            }
-        });
-
-        lblCapsLock.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblCapsLock.setForeground(new java.awt.Color(255, 39, 93));
-        lblCapsLock.setText("Caps Lock is on");
-
-        txtPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        txtPassword.setNextFocusableComponent(cbPassword);
-
-        lblPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblPassword.setText("Password:");
-
-        txtUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        txtUsername.setNextFocusableComponent(txtPassword);
-
-        lblUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        lblUsername.setText("Username:");
-
-        btnLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        btnLogin.setText("Login");
-        btnLogin.setNextFocusableComponent(txtUsername);
-        btnLogin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLoginActionPerformed(evt);
-            }
-        });
 
         pTextBackground.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -151,6 +122,40 @@ public class formLogin extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(lblCompanyName))
         );
+
+        lblUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblUsername.setText("Username:");
+
+        txtUsername.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        txtUsername.setNextFocusableComponent(txtPassword);
+
+        lblPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblPassword.setText("Password:");
+
+        txtPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        txtPassword.setNextFocusableComponent(cbPassword);
+
+        lblCapsLock.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblCapsLock.setForeground(new java.awt.Color(255, 39, 93));
+        lblCapsLock.setText("Caps Lock is on");
+
+        cbPassword.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        cbPassword.setText("Show Password");
+        cbPassword.setNextFocusableComponent(btnLogin);
+        cbPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPasswordActionPerformed(evt);
+            }
+        });
+
+        btnLogin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnLogin.setText("Login");
+        btnLogin.setNextFocusableComponent(txtUsername);
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pContainerLayout = new javax.swing.GroupLayout(pContainer);
         pContainer.setLayout(pContainerLayout);

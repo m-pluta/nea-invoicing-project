@@ -127,24 +127,32 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblDocument = new javax.swing.JLabel();
         lblTemplate = new javax.swing.JLabel();
         lblOutput = new javax.swing.JLabel();
+        lblFileName = new javax.swing.JLabel();
+        txtDocument = new javax.swing.JTextField();
         txtTemplate = new javax.swing.JTextField();
         txtOutput = new javax.swing.JTextField();
-        btnGenerateDocument = new javax.swing.JButton();
-        lblDocument = new javax.swing.JLabel();
-        txtDocument = new javax.swing.JTextField();
         txtFileName = new javax.swing.JTextField();
-        lblFileName = new javax.swing.JLabel();
+        btnGenerateDocument = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Generate Word Document");
+
+        lblDocument.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        lblDocument.setText("Document:");
 
         lblTemplate.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblTemplate.setText("Template Location:");
 
         lblOutput.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblOutput.setText("Output Location:");
+
+        lblFileName.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        lblFileName.setText("File Name:");
+
+        txtDocument.setEditable(false);
 
         txtTemplate.setEditable(false);
 
@@ -158,14 +166,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 btnGenerateDocumentActionPerformed(evt);
             }
         });
-
-        lblDocument.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        lblDocument.setText("Document:");
-
-        txtDocument.setEditable(false);
-
-        lblFileName.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        lblFileName.setText("File Name:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
