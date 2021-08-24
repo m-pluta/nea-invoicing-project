@@ -740,6 +740,8 @@ public class formNewQuotation extends javax.swing.JFrame {
         int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the side view?", "Clear side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
         if (YesNo == 0) {
             resetSideView();
+            selectedItem = 0;
+            jTable_QuotationDetails.clearSelection();
         }
     }//GEN-LAST:event_btnClearActionPerformed
 
