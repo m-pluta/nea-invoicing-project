@@ -72,7 +72,7 @@
                       <EmptySpace min="-2" pref="823" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
+              <Component id="jSeparator" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="btnFinish" min="-2" pref="176" max="-2" attributes="0"/>
@@ -111,7 +111,7 @@
                               <Component id="jSeparator2" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <Component id="jSeparator3" min="-2" pref="518" max="-2" attributes="0"/>
+                      <Component id="jSeparator1" min="-2" pref="518" max="-2" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="btnRemoveItem" min="-2" pref="150" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
@@ -119,7 +119,7 @@
                           <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="btnAddItem" min="-2" pref="150" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jSeparator4" min="-2" pref="518" max="-2" attributes="0"/>
+                      <Component id="jSeparator3" min="-2" pref="518" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace pref="19" max="32767" attributes="0"/>
@@ -167,10 +167,10 @@
                       </Group>
                       <EmptySpace pref="18" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="jSeparator1" max="32767" attributes="0"/>
+                  <Component id="jSeparator" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="jSeparator3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblSideView" min="-2" max="-2" attributes="0"/>
@@ -206,7 +206,7 @@
                           </Group>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jSeparator4" min="-2" pref="2" max="-2" attributes="0"/>
+                      <Component id="jSeparator3" min="-2" pref="2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
                       <Component id="btnFinish" min="-2" pref="64" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -325,9 +325,9 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtTotal">
     </Component>
-    <Component class="javax.swing.JSeparator" name="jSeparator1">
+    <Component class="javax.swing.JSeparator" name="jSeparator">
     </Component>
-    <Component class="javax.swing.JSeparator" name="jSeparator3">
+    <Component class="javax.swing.JSeparator" name="jSeparator1">
     </Component>
     <Component class="javax.swing.JLabel" name="lblSideView">
       <Properties>
@@ -336,6 +336,14 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Side View"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnClear">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Clear"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClearActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane2">
       <AuxValues>
@@ -361,6 +369,8 @@
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
+    <Component class="javax.swing.JTextField" name="txtQuantity">
+    </Component>
     <Component class="javax.swing.JLabel" name="lblUnitPrice">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -369,6 +379,8 @@
         <Property name="text" type="java.lang.String" value="Unit Price:"/>
       </Properties>
     </Component>
+    <Component class="javax.swing.JTextField" name="txtUnitPrice">
+    </Component>
     <Component class="javax.swing.JLabel" name="lblItemTotal">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -376,10 +388,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Item Total:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtQuantity">
-    </Component>
-    <Component class="javax.swing.JTextField" name="txtUnitPrice">
     </Component>
     <Component class="javax.swing.JTextField" name="txtItemTotal">
     </Component>
@@ -436,7 +444,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddItemActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JSeparator" name="jSeparator4">
+    <Component class="javax.swing.JSeparator" name="jSeparator3">
     </Component>
     <Component class="javax.swing.JButton" name="btnFinish">
       <Properties>
@@ -447,14 +455,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnFinishActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btnClear">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Clear"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClearActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

@@ -341,16 +341,17 @@ public class formNewInvoice extends javax.swing.JFrame {
         txtSubtotal = new javax.swing.JTextField();
         txtPayments = new javax.swing.JTextField();
         txtTotal = new javax.swing.JTextField();
+        jSeparator = new javax.swing.JSeparator();
         jSeparator1 = new javax.swing.JSeparator();
-        jSeparator3 = new javax.swing.JSeparator();
         lblSideView = new javax.swing.JLabel();
+        btnClear = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtItem = new javax.swing.JTextArea();
         lblQuantity = new javax.swing.JLabel();
-        lblUnitPrice = new javax.swing.JLabel();
-        lblItemTotal = new javax.swing.JLabel();
         txtQuantity = new javax.swing.JTextField();
+        lblUnitPrice = new javax.swing.JLabel();
         txtUnitPrice = new javax.swing.JTextField();
+        lblItemTotal = new javax.swing.JLabel();
         txtItemTotal = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
         lblCategory = new javax.swing.JLabel();
@@ -358,9 +359,8 @@ public class formNewInvoice extends javax.swing.JFrame {
         btnRemoveItem = new javax.swing.JButton();
         btnEditItem = new javax.swing.JButton();
         btnAddItem = new javax.swing.JButton();
-        jSeparator4 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
         btnFinish = new javax.swing.JButton();
-        btnClear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("New Invoice");
@@ -407,6 +407,13 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         lblSideView.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblSideView.setText("Side View");
+
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         txtItem.setColumns(20);
         txtItem.setRows(5);
@@ -457,13 +464,6 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
-        btnClear.setText("Clear");
-        btnClear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnClearActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -503,7 +503,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnBack)
                         .addGap(823, 823, 823)))
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -534,14 +534,14 @@ public class formNewInvoice extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jSeparator2)))
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(btnRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(33, 33, 33)
                             .addComponent(btnEditItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(33, 33, 33)
                             .addComponent(btnAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -578,10 +578,10 @@ public class formNewInvoice extends javax.swing.JFrame {
                             .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblTotal))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE))
-                    .addComponent(jSeparator1)
+                    .addComponent(jSeparator)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblSideView)
@@ -611,7 +611,7 @@ public class formNewInvoice extends javax.swing.JFrame {
                                 .addComponent(btnAddItem)
                                 .addComponent(btnEditItem)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(57, 57, 57)
                         .addComponent(btnFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(20, 20, 20)))
@@ -875,10 +875,10 @@ public class formNewInvoice extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser dcDateCreated;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTable jTable_InvoiceDetails;
     private javax.swing.JLabel lblCategory;
     private javax.swing.JLabel lblCustomer;
