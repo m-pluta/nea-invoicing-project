@@ -222,33 +222,29 @@ public class formManageQuotations extends javax.swing.JFrame {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
 
-        String queryQuotationTotals = "SELECT q.quotation_id,"
-                + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) AS quotationTotal"
-                + " FROM tblQuotations AS q"
-                + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
-                + " GROUP BY q.quotation_id";
-
         String mainQuery = "SELECT q.quotation_id AS id,"
                 + " CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
                 + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
                 + " q.date_created,"
-                + " qT.quotationTotal"
-                + " FROM tblQuotations AS q"
-                + " INNER JOIN tblCustomers AS c ON q.customer_id = c.customer_id"
-                + " INNER JOIN tblEmployees AS e ON q.employee_id = e.employee_id"
-                + " LEFT JOIN (" + queryQuotationTotals + ") AS qT ON q.quotation_id = qT.quotation_id";
+                + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) AS quotationTotal"
+                + " FROM tblQuotations q"
+                + " LEFT JOIN tblCustomers c ON q.customer_id = c.customer_id"
+                + " LEFT JOIN tblEmployees e ON q.employee_id = e.employee_id"
+                + " JOIN tblQuotationDetails qD ON q.quotation_id = qD.quotation_id"
+                + " GROUP BY q.quotation_id";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
-            mainQuery += " WHERE";
-            mainQuery += " q.quotation_id LIKE '%" + sp + "%'";                           // \
-            mainQuery += " OR CONCAT(c.forename, ' ', c.surname) LIKE '%" + sp + "%'";    //  |
-            mainQuery += " OR CONCAT(e.forename, ' ', e.surname) LIKE '%" + sp + "%'";    //  |-- Check whether a column value contains the searchParameter
-            mainQuery += " OR q.date_created LIKE '%" + sp + "%'";                        //  |
-            mainQuery += " OR qT.quotationTotal LIKE '%" + sp + "%'";                     // /
-        }
 
-        mainQuery += " GROUP BY q.quotation_id"
-                + " ORDER BY q.quotation_id";
+            // Check whether a column value contains the searchParameter
+            mainQuery += " HAVING"
+                    + " q.quotation_id LIKE '%" + sp + "%'"
+                    + " OR customerFullName LIKE '%" + sp + "%'"
+                    + " OR employeeFullName LIKE '%" + sp + "%'"
+                    + " OR q.date_created LIKE '%" + sp + "%'"
+                    + " OR quotationTotal LIKE '%" + sp + "%'";
+        }
+        
+        mainQuery += " ORDER BY q.quotation_id";
 
         try {
             Statement stmt = conn.createStatement();

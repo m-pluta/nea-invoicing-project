@@ -221,33 +221,29 @@ public class formManageInvoices extends javax.swing.JFrame {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
 
-        String queryInvoiceTotals = "SELECT i.invoice_id, "
-                + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
-                + " FROM tblInvoices AS i"
-                + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
-                + " GROUP BY i.invoice_id";
-
-        String mainQuery = "SELECT i.invoice_id AS id,"
+        String mainQuery = "SELECT i.invoice_id AS id, "
                 + " CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
                 + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
                 + " i.date_created,"
-                + " iT.invoiceTotal"
-                + " FROM tblInvoices AS i"
-                + " INNER JOIN tblCustomers AS c ON i.customer_id = c.customer_id"
-                + " INNER JOIN tblEmployees AS e ON i.employee_id = e.employee_id"
-                + " LEFT JOIN (" + queryInvoiceTotals + ") AS iT ON i.invoice_id = iT.invoice_id";
+                + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
+                + " FROM tblInvoices i"
+                + " LEFT JOIN tblCustomers c ON i.customer_id = c.customer_id"
+                + " LEFT JOIN tblEmployees e ON i.employee_id = e.employee_id"
+                + " JOIN tblInvoiceDetails iD ON i.invoice_id = iD.invoice_id"
+                + " GROUP BY i.invoice_id";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
-            mainQuery += " WHERE";
-            mainQuery += " i.invoice_id LIKE '%" + sp + "%'";                           // \
-            mainQuery += " OR CONCAT(c.forename, ' ', c.surname) LIKE '%" + sp + "%'";  //  |
-            mainQuery += " OR CONCAT(e.forename, ' ', e.surname) LIKE '%" + sp + "%'";  //  |-- Check whether a column value contains the searchParameter
-            mainQuery += " OR i.date_created LIKE '%" + sp + "%'";                      //  |
-            mainQuery += " OR iT.invoiceTotal LIKE '%" + sp + "%'";                     // /
-        }
 
-        mainQuery += " GROUP BY i.invoice_id"
-                + " ORDER BY i.invoice_id";
+            // Check whether a column value contains the searchParameter
+            mainQuery += " HAVING"
+                    + " i.invoice_id LIKE '%" + sp + "%'"
+                    + " OR customerFullName LIKE '%" + sp + "%'"
+                    + " OR employeeFullName LIKE '%" + sp + "%'"
+                    + " OR i.date_created LIKE '%" + sp + "%'"
+                    + " OR invoiceTotal LIKE '%" + sp + "%'";
+        }
+        
+        mainQuery += " ORDER BY i.invoice_id";
 
         try {
             Statement stmt = conn.createStatement();
