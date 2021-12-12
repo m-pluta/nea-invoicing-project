@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 public class formLogin extends javax.swing.JFrame {
 
     static Connection conn = null;
+    private static int attemptsRemaining = 3;
 
     public formLogin() {
         initComponents();
@@ -65,7 +66,7 @@ public class formLogin extends javax.swing.JFrame {
         System.out.println(lblMainLogo.getHeight());
         System.out.println(lblLogos.getWidth());
         System.out.println(lblLogos.getHeight());
-        
+
         Image scaledMainLogo = imgMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(),
                 Image.SCALE_SMOOTH);
         Image scaledLogos = imgLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(),
@@ -242,9 +243,7 @@ public class formLogin extends javax.swing.JFrame {
             inputPassword += chr;                                   // Concatenates char to string
         }
         return inputPassword;
-
     }
-
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         String inputUsername = txtUsername.getText();
@@ -273,7 +272,13 @@ public class formLogin extends javax.swing.JFrame {
         }
 
         if (!found) {                                               // If a user was not found
-            ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
+            attemptsRemaining--;
+            if (attemptsRemaining == 0) {
+                ErrorMsg.throwCustomError("You have run out of login attempts", "No login attempts remaining");
+                incorrectPasswordLock();
+            } else {
+                ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
+            }
         } else {                                                    // If a user was found with those login details
             sqlManager.updateLastLogin(conn, fetchedID);
 
@@ -294,6 +299,12 @@ public class formLogin extends javax.swing.JFrame {
             txtPassword.setEchoChar('•');
         }
     }//GEN-LAST:event_cbPasswordActionPerformed
+
+    private void incorrectPasswordLock() {
+        txtUsername.setEditable(false);
+        txtPassword.setEditable(false);
+        btnLogin.setEnabled(false);
+    }
 
     /**
      * @param args the command line arguments
