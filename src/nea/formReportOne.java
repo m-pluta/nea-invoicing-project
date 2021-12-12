@@ -134,9 +134,10 @@ public class formReportOne extends javax.swing.JFrame {
             try {
                 // Raw SQL query: https://pastebin.com/RJ5B4hpc
 
-                String query = "SELECT i.date_created, COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal FROM tblInvoices AS i"
-                        + " INNER JOIN tblinvoicedetails as iD"
-                        + " ON i.invoice_id = iD.invoice_id"
+                String query = "SELECT i.date_created,"
+                        + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
+                        + " FROM tblInvoices i"
+                        + " INNER JOIN tblinvoicedetails iD ON i.invoice_id = iD.invoice_id"
                         + " WHERE i.date_created BETWEEN ? AND ?"
                         + " GROUP BY i.invoice_id"
                         + " ORDER BY i.date_created";
@@ -217,9 +218,10 @@ public class formReportOne extends javax.swing.JFrame {
             try {
                 // Raw SQL query: https://pastebin.com/uA3ifThF
 
-                String query = "SELECT q.date_created, COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
-                        + " FROM tblQuotations AS q"
-                        + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
+                String query = "SELECT q.date_created,"
+                        + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
+                        + " FROM tblQuotations q"
+                        + " INNER JOIN tblQuotationDetails qD ON q.quotation_id = qD.quotation_id"
                         + " WHERE q.date_created BETWEEN ? AND ?"
                         + " GROUP BY q.quotation_id"
                         + " ORDER BY q.quotation_id";
