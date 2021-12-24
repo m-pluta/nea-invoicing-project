@@ -397,18 +397,17 @@ public class formMainMenu extends javax.swing.JFrame {
 
                 conn = sqlManager.openConnection();
                 try {
-                    String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
+                    String query = "SELECT employee_id FROM tblEmployees WHERE username = ? AND password_hash = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, inputDetails[0]);
-                    pstmt.setString(2, inputDetails[1]);
+                    pstmt.setBytes(2, Utility.hash(inputDetails[1]));
 
                     ResultSet rs = pstmt.executeQuery();
                     if (rs.next()) {                                // If any results were fetched from the DB
-                        if (inputDetails[0].equals(rs.getString(2)) && inputDetails[1].equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
 
-                            fetchedID = rs.getInt(1);               // Gets the id of whoever logged in
-                            found = true;
-                        }
+                        fetchedID = rs.getInt(1);               // Gets the id of whoever logged in
+                        found = true;
+
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -427,13 +426,13 @@ public class formMainMenu extends javax.swing.JFrame {
                     } else if (inputDetails[4].length() < 4) {                  // Checks if the new password is of minimum length (4)
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
-                    } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) { // Checks if the new username does not exceed the maximum length in the DB
+                    } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "username")) { // Checks if the new username does not exceed the maximum length in the DB
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
-                    } else if (inputDetails[4].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) { // Checks if the new password does not exceed the maximum length in the DB
+                    } else if (inputDetails[4].length() > 128) { // Checks if the new password does not exceed 128 characters
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
 
-                    } else if (sqlManager.RecordExists(conn, "tblLogins", "username", inputDetails[2])) {  // Checks if a login with that username already exists
+                    } else if (sqlManager.RecordExists(conn, "tblEmployees", "username", inputDetails[2])) {  // Checks if a login with that username already exists
                         ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "User with these details");
 
                     } else {
@@ -449,11 +448,11 @@ public class formMainMenu extends javax.swing.JFrame {
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();
-        String query = "UPDATE tblLogins SET username = ?, password = ? WHERE employee_id = ?";
+        String query = "UPDATE tblEmployees SET username = ?, password_hash = ? WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, newUsername);
-            pstmt.setString(2, newPassword);
+            pstmt.setBytes(2, Utility.hash(newPassword));
             pstmt.setInt(3, id);
 
             int rowsAffected = pstmt.executeUpdate();

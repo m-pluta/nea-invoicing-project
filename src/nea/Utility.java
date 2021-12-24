@@ -5,6 +5,9 @@
  */
 package nea;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -25,6 +28,22 @@ import javax.swing.JTextField;
  * @author Michal
  */
 public class Utility {
+
+    public static byte[] hash(String input) {
+
+        MessageDigest digest;
+        byte[] outputHash = null;
+
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+
+            outputHash = digest.digest(String.valueOf(input).getBytes(StandardCharsets.UTF_8));
+
+        } catch (NoSuchAlgorithmException ex) {
+        }
+
+        return outputHash;
+    }
 
     // Given a date, this method returns the year property of the financial year the given date is in
     public static LocalDate getFinancialYear(LocalDate input) {

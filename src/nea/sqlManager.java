@@ -152,7 +152,7 @@ public class sqlManager {
 
     // Returns the last time a given employee (id) was logged in
     public static String getLastLogin(Connection conn, int employee_id) {
-        String query = "SELECT date_last_logged_in FROM tblLogins WHERE employee_id = ?";
+        String query = "SELECT date_last_logged_in FROM tblEmployees WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
@@ -172,16 +172,15 @@ public class sqlManager {
 
     // Returns true/false whether an employee has admin permissions
     public static boolean isAdmin(Connection conn, int employee_id) {
-        String query = "SELECT admin FROM tblLogins WHERE employee_id = ?";
+        String query = "SELECT admin FROM tblEmployees WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If a employee with the given id was found
-                if (rs.getString(1).equals("Y")) {
-                    return true;
-                }
+                return rs.getBoolean(1);
+                
             } else {
                 System.out.println("-------------------------------");
                 System.out.println("Error fetching admin status");
@@ -292,7 +291,7 @@ public class sqlManager {
 
     // Updates the date when the user last logged in given the employee_id
     public static void updateLastLogin(Connection conn, int employee_id) {
-        String query = "UPDATE tblLogins SET date_last_logged_in = ? WHERE employee_id = ?";
+        String query = "UPDATE tblEmployees SET date_last_logged_in = ? WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, Utility.getCurrentDate());

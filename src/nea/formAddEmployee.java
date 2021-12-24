@@ -379,13 +379,13 @@ public class formAddEmployee extends javax.swing.JFrame {
             } else if (responses[2].length() < 4) {                  // Checks if the password is of minimum length (4)
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
-            } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "username")) {
+            } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "username")) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
-            } else if (responses[2].length() > sqlManager.getMaxColumnLength(conn, "tblLogins", "password")) {
+            } else if (responses[2].length() > 128) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
 
-            } else if (sqlManager.RecordExists(conn, "tblLogins", "username", responses[0])) {
+            } else if (sqlManager.RecordExists(conn, "tblEmployees", "username", responses[0])) {
                 ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Employee with this username");
 
             } else {

@@ -62,11 +62,6 @@ public class formLogin extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
-        System.out.println(lblMainLogo.getWidth());
-        System.out.println(lblMainLogo.getHeight());
-        System.out.println(lblLogos.getWidth());
-        System.out.println(lblLogos.getHeight());
-
         Image scaledMainLogo = imgMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(),
                 Image.SCALE_SMOOTH);
         Image scaledLogos = imgLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(),
@@ -248,24 +243,24 @@ public class formLogin extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         String inputUsername = txtUsername.getText();
         String inputPassword = getPassword();                       // User Input into variables
+        byte[] hashedInputPassword = Utility.hash(inputPassword);
 
         Boolean found = false;                                      // Whether a user exists under the given login details
         int fetchedID = -1;                                         // Init
 
         conn = sqlManager.openConnection();
-        String query = "SELECT employee_id, username, password FROM tblLogins WHERE username = ? AND password = ?";
+        String query = "SELECT employee_id FROM tblEmployees WHERE username = ? AND password_hash = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputUsername);
-            pstmt.setString(2, inputPassword);
+            pstmt.setBytes(2, hashedInputPassword);
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {                                        // If any results were fetched from the DB
-                if (inputUsername.equals(rs.getString(2)) && inputPassword.equals(rs.getString(3))) {   // Secondary check which ensures the username and password are of the same case (capitalisation)
 
-                    fetchedID = rs.getInt(1);                       // Gets the id of whoever logged in
-                    found = true;
-                }
+                fetchedID = rs.getInt(1);                           // Gets the id of whoever logged in
+                found = true;
+
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -371,7 +371,6 @@ public class formOneEmployee extends javax.swing.JFrame {
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?", "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 sqlManager.removeRecord(conn, "tblEmployees", "employee_id", EmployeeID);   // Removes the employee
-                sqlManager.removeRecord(conn, "tblLogins", "employee_id", EmployeeID);      // Removes the employee's login access
                 this.dispose();                                     // Closes this form since the employee no longer exists
                 previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee was removed
 
@@ -419,10 +418,11 @@ public class formOneEmployee extends javax.swing.JFrame {
                     System.out.println("-------------------------------");
                     System.out.println(rowsAffected + " row(s) updated.");
 
-                    query = "UPDATE tblLogins SET admin = ? WHERE employee_id = ?";
+                    query = "UPDATE tblEmployees SET admin = ? WHERE employee_id = ?";
                     pstmt = conn.prepareStatement(query);
-                    pstmt.setString(1, cbAdmin.isSelected() ? "Y" : "N");
+                    pstmt.setBoolean(1, cbAdmin.isSelected());
                     pstmt.setInt(2, EmployeeID);
+                    
                     rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
                     System.out.println(rowsAffected + " row(s) updated.");
