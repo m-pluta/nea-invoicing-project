@@ -296,10 +296,11 @@ public class formAddEmployee extends javax.swing.JFrame {
             // Asks user whether they really want to add this employee
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?", "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
-                addLogin();
+                String[] loginDetails = getLoginDetails();
+
                 conn = sqlManager.openConnection();
 
-                String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, username, password_hash, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, EmployeeID);
@@ -312,6 +313,10 @@ public class formAddEmployee extends javax.swing.JFrame {
                     pstmt.setString(8, txtPostcode.getText());
                     pstmt.setString(9, txtPhoneNumber.getText());
                     pstmt.setString(10, txtEmailAddress.getText());
+                    pstmt.setString(11, loginDetails[0]);
+                    pstmt.setBytes(12, Utility.hash(loginDetails[1]));
+                    pstmt.setBoolean(13, cbAdmin.isSelected());
+                    pstmt.setString(14, "0000-00-00 00:00:00");
 
                     int rowsAffected = pstmt.executeUpdate();
                     System.out.println("-------------------------------");
@@ -326,9 +331,8 @@ public class formAddEmployee extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAddEmployeeActionPerformed
 
-    public void addLogin() {
-        boolean validDetails = false;
-        while (!validDetails) {
+    public String[] getLoginDetails() {
+        while (true) {
             String[] responses = Utility.JOptionPaneMultiInput("What login details should this employee have?", new String[]{"Username", "Confirm username", "Password", "Confirm password"});
             conn = sqlManager.openConnection();
 
@@ -349,25 +353,9 @@ public class formAddEmployee extends javax.swing.JFrame {
 
             } else if (sqlManager.RecordExists(conn, "tblEmployees", "username", responses[0])) {
                 ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Employee with this username");
-
             } else {
-                String query = "INSERT into tblLogins (employee_id, username, password, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?)";
-                try {
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    pstmt.setInt(1, EmployeeID);
-                    pstmt.setString(2, responses[0]);
-                    pstmt.setString(3, responses[2]);
-                    pstmt.setString(4, (cbAdmin.isSelected() ? "Y" : "N"));
-                    pstmt.setString(5, Utility.getCurrentDate());
-
-                    int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) inserted.");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-                validDetails = true;
+                sqlManager.closeConnection(conn);
+                return new String[]{responses[0], responses[2]};
             }
             sqlManager.closeConnection(conn);
         }
