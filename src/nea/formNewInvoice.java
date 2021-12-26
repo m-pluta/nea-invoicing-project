@@ -83,7 +83,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal, txtItemTotal};  // Makes some of the fields which are automatically filled uneditable
         setEditable(fields, false);
         conn = sqlManager.openConnection();
-        InvoiceID = sqlManager.getNextPKValue(conn, "tblInvoices", "invoice_id"); // Gets the next available invoice id
+        InvoiceID = sqlManager.getNextPKValue(conn, "tblInvoice", "invoice_id"); // Gets the next available invoice id
         sqlManager.closeConnection(conn);
         txtInvoiceID.setText(String.valueOf(InvoiceID));
         loadCustomersIntoCB();
@@ -272,7 +272,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
         conn = sqlManager.openConnection();
-        String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomers ORDER BY customerFullName";
+        String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomer ORDER BY customerFullName";
         try {
             Statement stmt = conn.createStatement();
             
@@ -293,7 +293,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     public void loadItemCategoriesIntoCB() {
         cbCategory.removeAllItems();
         conn = sqlManager.openConnection();
-        String query = "SELECT category_name FROM tblItemCategories";
+        String query = "SELECT category_name FROM tblItemCategory";
         try {
             Statement stmt = conn.createStatement();
             
@@ -633,7 +633,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
             
-        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetail", "description")) {  // If the entered item description is longer than what the DB can store
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
             
         } else {
@@ -676,11 +676,11 @@ public class formNewInvoice extends javax.swing.JFrame {
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
 
             conn = sqlManager.openConnection();
-            String query = "INSERT INTO tblInvoices (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
+            String query = "INSERT INTO tblInvoice (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
             try {
-                // Makes a new record in tblInvoices with the invoice metadata
+                // Makes a new record in tblInvoice with the invoice metadata
                 PreparedStatement pstmt = conn.prepareStatement(query);
-                int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoices", "invoice_id");   // Gets the next available value of the primary key
+                int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoice", "invoice_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_invoiceID);
                 pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
@@ -701,7 +701,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
-    // Uploads each individual row of the table to tblInvoiceDetails
+    // Uploads each individual row of the table to tblInvoiceDetail
     public void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
         
@@ -710,13 +710,13 @@ public class formNewInvoice extends javax.swing.JFrame {
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
-            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", model.getValueAt(i, 1).toString());
+            int category = sqlManager.getIDofCategory(conn, "tblItemCategory", model.getValueAt(i, 1).toString());
             
-            String query = "INSERT INTO tblInvoiceDetails (row_id,invoice_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
+            String query = "INSERT INTO tblInvoiceDetail (row_id,invoice_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
             try {
-                // Inserts data about each row into tblInvoiceDetails
+                // Inserts data about each row into tblInvoiceDetail
                 PreparedStatement pstmt = conn.prepareStatement(query);
-                int new_rowID = sqlManager.getNextPKValue(conn, "tblInvoiceDetails", "row_id");   // Gets the next available value of the primary key
+                int new_rowID = sqlManager.getNextPKValue(conn, "tblInvoiceDetail", "row_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_rowID);
                 pstmt.setInt(2, invoiceID);
                 pstmt.setString(3, Item);
@@ -771,7 +771,7 @@ public class formNewInvoice extends javax.swing.JFrame {
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price not a double");
                 
-            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetails", "description")) {  // If the entered item description is longer than what the DB can store
+            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetail", "description")) {  // If the entered item description is longer than what the DB can store
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
                 
             } else {

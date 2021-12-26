@@ -241,9 +241,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 //<editor-fold defaultstate="collapsed" desc="Gets the table rows of the document and calculates the subtotal of the document">
                 String query = null;
                 if (DOCUMENT_TYPE == INVOICE) {
-                    query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblInvoiceDetails WHERE invoice_id = ?";
+                    query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblInvoiceDetail WHERE invoice_id = ?";
                 } else if (DOCUMENT_TYPE == QUOTATION) {
-                    query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblQuotationDetails WHERE quotation_id = ?";
+                    query = "SELECT description, quantity, unit_price, unit_price * quantity as itemCost FROM tblQuotationDetail WHERE quotation_id = ?";
                 }
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
@@ -265,7 +265,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 query = null;
                 if (DOCUMENT_TYPE == INVOICE) {
                     try {
-                        query = "SELECT payments, date_created FROM tblInvoices WHERE invoice_id = ?";
+                        query = "SELECT payments, date_created FROM tblInvoice WHERE invoice_id = ?";
                         PreparedStatement pstmt = conn.prepareStatement(query);
                         pstmt.setInt(1, documentID);
                         ResultSet rs = pstmt.executeQuery();
@@ -276,7 +276,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                             documentMetaData.put("$total", Utility.formatCurrency(subtotal - rs.getDouble(1)));
                             documentMetaData.put("$date", rs.getDate(2).toLocalDate().format(full_short));
 
-                            int InvoiceNoThisFinYear = sqlManager.getDocumentNoThisFinancialYear(conn, "tblInvoices", "invoice_id", rs.getTimestamp(2).toLocalDateTime());    // The invoice number in the current financial year
+                            int InvoiceNoThisFinYear = sqlManager.getDocumentNoThisFinancialYear(conn, "tblInvoice", "invoice_id", rs.getTimestamp(2).toLocalDateTime());    // The invoice number in the current financial year
                             String currentYear = Utility.getFinancialYear(rs.getDate(2).toLocalDate()).format(year_short);                      // The current year in short format
                             documentMetaData.put("$No", InvoiceNoThisFinYear + "/" + currentYear);
                         }
@@ -285,7 +285,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                     }
                 } else if (DOCUMENT_TYPE == QUOTATION) {
                     try {
-                        query = "SELECT date_created FROM tblQuotations WHERE quotation_id = ?";
+                        query = "SELECT date_created FROM tblQuotation WHERE quotation_id = ?";
                         PreparedStatement pstmt = conn.prepareStatement(query);
                         pstmt.setInt(1, documentID);
                         ResultSet rs = pstmt.executeQuery();
@@ -294,7 +294,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                         if (rs.next()) {
                             documentMetaData.put("$date", rs.getDate(1).toLocalDate().format(full_short));
 
-                            int QuotationNoThisFinYear = sqlManager.getDocumentNoThisFinancialYear(conn, "tblQuotations", "quotation_id", rs.getTimestamp(1).toLocalDateTime()); // The quotation number in the current financial year
+                            int QuotationNoThisFinYear = sqlManager.getDocumentNoThisFinancialYear(conn, "tblQuotation", "quotation_id", rs.getTimestamp(1).toLocalDateTime()); // The quotation number in the current financial year
                             String currentYear = Utility.getFinancialYear(rs.getDate(1).toLocalDate()).format(year_short);                      // The current year in short format
                             documentMetaData.put("$No", QuotationNoThisFinYear + "/" + currentYear);
                         }
@@ -307,8 +307,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 LinkedHashMap<String, String> customerData = new LinkedHashMap<>();
                 //<editor-fold defaultstate="collapsed" desc="Gets data about the customer and puts it in the hashmap">
                 try {
-                    String FROM = (DOCUMENT_TYPE == INVOICE) ? " FROM tblInvoices AS i" : " FROM tblQuotations AS q";
-                    String JOIN = (DOCUMENT_TYPE == INVOICE) ? " INNER JOIN tblCustomers AS c ON i.customer_id = c.customer_id" : " INNER JOIN tblCustomers AS c ON q.customer_id = c.customer_id";
+                    String FROM = (DOCUMENT_TYPE == INVOICE) ? " FROM tblInvoice AS i" : " FROM tblQuotation AS q";
+                    String JOIN = (DOCUMENT_TYPE == INVOICE) ? " INNER JOIN tblCustomer AS c ON i.customer_id = c.customer_id" : " INNER JOIN tblCustomer AS c ON q.customer_id = c.customer_id";
                     String WHERE = (DOCUMENT_TYPE == INVOICE) ? " WHERE invoice_id = ?" : " WHERE quotation_id = ?";
 
                     query = "SELECT CONCAT(c.forename, ' ', c.surname) AS customerFullName,"

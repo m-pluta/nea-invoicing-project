@@ -83,7 +83,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         JTextField[] fields = {txtQuotationID, txtTotal, txtItemTotal};         // Makes some of the fields which are automatically filled uneditable
         setEditable(fields, false);
         conn = sqlManager.openConnection();
-        QuotationID = sqlManager.getNextPKValue(conn, "tblQuotations", "quotation_id"); // Gets the next available quotation id
+        QuotationID = sqlManager.getNextPKValue(conn, "tblQuotation", "quotation_id"); // Gets the next available quotation id
         sqlManager.closeConnection(conn);
         txtQuotationID.setText(String.valueOf(QuotationID));
         loadCustomersIntoCB();
@@ -240,7 +240,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     public void loadCustomersIntoCB() {
         cbCustomers.removeAllItems();
         conn = sqlManager.openConnection();
-        String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomers ORDER BY customerFullName";
+        String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomer ORDER BY customerFullName";
         try {
             Statement stmt = conn.createStatement();
 
@@ -261,7 +261,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     public void loadItemCategoriesIntoCB() {
         cbCategory.removeAllItems();
         conn = sqlManager.openConnection();
-        String query = "SELECT category_name FROM tblItemCategories";
+        String query = "SELECT category_name FROM tblItemCategory";
         try {
             Statement stmt = conn.createStatement();
 
@@ -576,7 +576,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
 
-        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetail", "description")) {  // If the entered item description is longer than what the DB can store
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
 
         } else {
@@ -616,11 +616,11 @@ public class formNewQuotation extends javax.swing.JFrame {
             String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
 
             conn = sqlManager.openConnection();
-            String query = "INSERT INTO tblQuotations (quotation_id,customer_id,date_created,employee_id) VALUES (?,?,?,?)";
+            String query = "INSERT INTO tblQuotation (quotation_id,customer_id,date_created,employee_id) VALUES (?,?,?,?)";
             try {
-                // Makes a new record in tblQuotations with the quotation metadata
+                // Makes a new record in tblQuotation with the quotation metadata
                 PreparedStatement pstmt = conn.prepareStatement(query);
-                int new_quotationID = sqlManager.getNextPKValue(conn, "tblQuotations", "quotation_id");   // Gets the next available value of the primary key
+                int new_quotationID = sqlManager.getNextPKValue(conn, "tblQuotation", "quotation_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_quotationID);
                 pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
@@ -640,7 +640,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
-    // Uploads each individual row of the table to tblQuotationDetails
+    // Uploads each individual row of the table to tblQuotationDetail
     public void uploadQuotationDetails(int quotationID) {
         int NoRows = model.getRowCount();
 
@@ -649,13 +649,13 @@ public class formNewQuotation extends javax.swing.JFrame {
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
-            int category = sqlManager.getIDofCategory(conn, "tblItemCategories", model.getValueAt(i, 1).toString());
+            int category = sqlManager.getIDofCategory(conn, "tblItemCategory", model.getValueAt(i, 1).toString());
 
-            String query = "INSERT INTO tblQuotationDetails (row_id,quotation_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
+            String query = "INSERT INTO tblQuotationDetail (row_id,quotation_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
             try {
-                // Inserts data about each row into tblQuotationDetails
+                // Inserts data about each row into tblQuotationDetail
                 PreparedStatement pstmt = conn.prepareStatement(query);
-                int new_rowID = sqlManager.getNextPKValue(conn, "tblQuotationDetails", "row_id");   // Gets the next available value of the primary key
+                int new_rowID = sqlManager.getNextPKValue(conn, "tblQuotationDetail", "row_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_rowID);
                 pstmt.setInt(2, quotationID);
                 pstmt.setString(3, Item);
@@ -710,7 +710,7 @@ public class formNewQuotation extends javax.swing.JFrame {
             } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
 
-            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetails", "description")) {  // If the entered item description is longer than what the DB can store
+            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetail", "description")) {  // If the entered item description is longer than what the DB can store
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
 
             } else {

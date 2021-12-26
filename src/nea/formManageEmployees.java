@@ -116,7 +116,7 @@ public class formManageEmployees extends javax.swing.JFrame {
         model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
 
-        String query = "SELECT employee_id, CONCAT(forename,' ', surname) AS FullName, phone_number, email_address FROM tblEmployees";
+        String query = "SELECT employee_id, CONCAT(forename,' ', surname) AS FullName, phone_number, email_address FROM tblEmployee";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";

@@ -226,10 +226,10 @@ public class formManageInvoices extends javax.swing.JFrame {
                 + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
                 + " i.date_created,"
                 + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
-                + " FROM tblInvoices i"
-                + " LEFT JOIN tblCustomers c ON i.customer_id = c.customer_id"
-                + " LEFT JOIN tblEmployees e ON i.employee_id = e.employee_id"
-                + " JOIN tblInvoiceDetails iD ON i.invoice_id = iD.invoice_id"
+                + " FROM tblInvoice i"
+                + " LEFT JOIN tblCustomer c ON i.customer_id = c.customer_id"
+                + " LEFT JOIN tblEmployee e ON i.employee_id = e.employee_id"
+                + " JOIN tblInvoiceDetail iD ON i.invoice_id = iD.invoice_id"
                 + " GROUP BY i.invoice_id";
 
         if (!sp.equals("")) {                                       // When searchParameter is something

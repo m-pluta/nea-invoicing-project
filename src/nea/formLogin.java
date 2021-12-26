@@ -249,7 +249,7 @@ public class formLogin extends javax.swing.JFrame {
         int fetchedID = -1;                                         // Init
 
         conn = sqlManager.openConnection();
-        String query = "SELECT employee_id FROM tblEmployees WHERE username = ? AND password_hash = ?";
+        String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputUsername);

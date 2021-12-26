@@ -73,7 +73,7 @@ public class formReportThree extends javax.swing.JFrame {
         int NoEmployees = 1;
         conn = sqlManager.openConnection();
         try {
-            String query = "SELECT COUNT(employee_id) FROM tblEmployees";
+            String query = "SELECT COUNT(employee_id) FROM tblEmployee";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query
@@ -95,24 +95,24 @@ public class formReportThree extends javax.swing.JFrame {
 
         // Raw SQL query: https://pastebin.com/RXQdWpH1
         String queryInvoiceTotals = "SELECT i.employee_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
-                + " FROM tblInvoices AS i"
-                + " INNER JOIN tblInvoiceDetails AS iD ON i.invoice_id = iD.invoice_id"
+                + " FROM tblInvoice AS i"
+                + " INNER JOIN tblInvoiceDetail AS iD ON i.invoice_id = iD.invoice_id"
                 + " WHERE i.date_created BETWEEN ? AND ?"
                 + " GROUP BY i.invoice_id";
 
         String queryQuotationTotals = "SELECT q.employee_id, SUM(qD.quantity * qD.unit_price) AS quotationSubtotal"
-                + " FROM tblQuotations AS q"
-                + " INNER JOIN tblQuotationDetails AS qD ON q.quotation_id = qD.quotation_id"
+                + " FROM tblQuotation AS q"
+                + " INNER JOIN tblQuotationDetail AS qD ON q.quotation_id = qD.quotation_id"
                 + " WHERE q.date_created BETWEEN ? AND ?"
                 + " GROUP BY q.quotation_id";
 
         String queryEmployeeInvoiceTotals = "SELECT e.employee_id, COALESCE(SUM(iT.invoiceSubtotal), 0) AS eInvoiceTotal"
-                + " FROM tblEmployees AS e"
+                + " FROM tblEmployee AS e"
                 + " INNER JOIN (" + queryInvoiceTotals + ") AS iT ON e.employee_id = iT.employee_id"
                 + " GROUP BY e.employee_id";
 
         String queryEmployeeQuotationTotals = "SELECT e.employee_id, COALESCE(SUM(qT.quotationSubtotal), 0) AS eQuotationTotal"
-                + " FROM tblEmployees AS e"
+                + " FROM tblEmployee AS e"
                 + " INNER JOIN (" + queryQuotationTotals + ") AS qT ON e.employee_id = qT.employee_id"
                 + " GROUP BY e.employee_id";
 
@@ -120,7 +120,7 @@ public class formReportThree extends javax.swing.JFrame {
                 + " COALESCE(eITs.eInvoiceTotal, 0) AS invoiceTotal,"
                 + " COALESCE(eQTs.eQuotationTotal, 0) AS quotationTotal,"
                 + " COALESCE(eITs.eInvoiceTotal, 0) + COALESCE(eQTs.eQuotationTotal, 0) AS overallTotal"
-                + " FROM tblEmployees AS e"
+                + " FROM tblEmployee AS e"
                 + " LEFT JOIN (" + queryEmployeeInvoiceTotals + ") AS eITs ON e.employee_id = eITs.employee_id"
                 + " LEFT JOIN (" + queryEmployeeQuotationTotals + ") AS eQTs ON e.employee_id = eQTs.employee_id"
                 + " ORDER BY overallTotal DESC"
@@ -335,8 +335,8 @@ public class formReportThree extends javax.swing.JFrame {
 
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
-            inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");      // Gets the earliest dates
-            quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");   //                                            // Otherwise
+            inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");      // Gets the earliest dates
+            quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");   //                                            // Otherwise
             if (inv.isAfter(quot)) {                            // if inv is the later date
                 start = quot;                                   // sets quot as the earliest
             } else {

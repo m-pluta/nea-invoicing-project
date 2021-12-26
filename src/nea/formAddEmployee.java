@@ -34,7 +34,7 @@ public class formAddEmployee extends javax.swing.JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         conn = sqlManager.openConnection();
-        EmployeeID = sqlManager.getNextPKValue(conn, "tblEmployees", "employee_id");
+        EmployeeID = sqlManager.getNextPKValue(conn, "tblEmployee", "employee_id");
         sqlManager.closeConnection(conn);
         txtEmployeeID.setText(String.valueOf(EmployeeID));
         txtEmployeeID.setEditable(false);
@@ -300,7 +300,7 @@ public class formAddEmployee extends javax.swing.JFrame {
 
                 conn = sqlManager.openConnection();
 
-                String query = "INSERT into tblEmployees (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, username, password_hash, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String query = "INSERT into tblEmployee (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, username, password_hash, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, EmployeeID);
@@ -345,13 +345,13 @@ public class formAddEmployee extends javax.swing.JFrame {
             } else if (responses[2].length() < 4) {                  // Checks if the password is of minimum length (4)
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
-            } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "username")) {
+            } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
             } else if (responses[2].length() > 128) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
 
-            } else if (sqlManager.RecordExists(conn, "tblEmployees", "username", responses[0])) {
+            } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", responses[0])) {
                 ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Employee with this username");
             } else {
                 sqlManager.closeConnection(conn);
@@ -365,31 +365,31 @@ public class formAddEmployee extends javax.swing.JFrame {
     private boolean validInputs() {
         conn = sqlManager.openConnection();
         boolean output = false;
-        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "forename")) {
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
-        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "surname")) {
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "surname")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
-        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address1")) {
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address1")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
-        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address2")) {
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address2")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
-        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "address3")) {
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address3")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
-        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "county")) {
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "county")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
-        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "postcode")) {
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "postcode")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
-        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "phone_number")) {
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
-        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployees", "email_address")) {
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "email_address")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {

@@ -136,8 +136,8 @@ public class formReportOne extends javax.swing.JFrame {
 
                 String query = "SELECT i.date_created,"
                         + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
-                        + " FROM tblInvoices i"
-                        + " INNER JOIN tblinvoicedetails iD ON i.invoice_id = iD.invoice_id"
+                        + " FROM tblInvoice i"
+                        + " INNER JOIN tblInvoiceDetail iD ON i.invoice_id = iD.invoice_id"
                         + " WHERE i.date_created BETWEEN ? AND ?"
                         + " GROUP BY i.invoice_id"
                         + " ORDER BY i.date_created";
@@ -220,8 +220,8 @@ public class formReportOne extends javax.swing.JFrame {
 
                 String query = "SELECT q.date_created,"
                         + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
-                        + " FROM tblQuotations q"
-                        + " INNER JOIN tblQuotationDetails qD ON q.quotation_id = qD.quotation_id"
+                        + " FROM tblQuotation q"
+                        + " INNER JOIN tblQuotationDetail qD ON q.quotation_id = qD.quotation_id"
                         + " WHERE q.date_created BETWEEN ? AND ?"
                         + " GROUP BY q.quotation_id"
                         + " ORDER BY q.quotation_id";
@@ -580,10 +580,10 @@ public class formReportOne extends javax.swing.JFrame {
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
             if (getInvoices) {
-                inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");      //
+                inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");      //
             }                                                                                   // Gets the earliest dates
             if (getQuotations) {                                                                //
-                quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");   //
+                quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");   //
             }
             if (getInvoices && !getQuotations) {                    // Just invoices
                 start = inv;

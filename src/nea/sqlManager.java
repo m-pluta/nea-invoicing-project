@@ -152,7 +152,7 @@ public class sqlManager {
 
     // Returns the last time a given employee (id) was logged in
     public static String getLastLogin(Connection conn, int employee_id) {
-        String query = "SELECT date_last_logged_in FROM tblEmployees WHERE employee_id = ?";
+        String query = "SELECT date_last_logged_in FROM tblEmployee WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
@@ -172,7 +172,7 @@ public class sqlManager {
 
     // Returns true/false whether an employee has admin permissions
     public static boolean isAdmin(Connection conn, int employee_id) {
-        String query = "SELECT admin FROM tblEmployees WHERE employee_id = ?";
+        String query = "SELECT admin FROM tblEmployee WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
@@ -193,7 +193,7 @@ public class sqlManager {
 
     // Returns the full name of the employee with the given employee_id
     public static String getEmployeeFullName(Connection conn, int employee_id) {
-        String query = "SELECT CONCAT(forename,' ', surname) FROM tblEmployees WHERE employee_id = ?";
+        String query = "SELECT CONCAT(forename,' ', surname) FROM tblEmployee WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
@@ -213,7 +213,7 @@ public class sqlManager {
 
     // Returns the full name of the customer with the given customer_id
     public static String getCustomerFullName(Connection conn, int customer_id) {
-        String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomers WHERE customer_id = ?";
+        String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomer WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, customer_id);
@@ -271,7 +271,7 @@ public class sqlManager {
 
     // Returns the id of the item category given its name and table
     public static int getIDofCustomer(Connection conn, String name) {
-        String query = "SELECT customer_id FROM tblCustomers WHERE CONCAT(forename,' ',surname) = ?";
+        String query = "SELECT customer_id FROM tblCustomer WHERE CONCAT(forename,' ',surname) = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, name);
@@ -291,7 +291,7 @@ public class sqlManager {
 
     // Updates the date when the user last logged in given the employee_id
     public static void updateLastLogin(Connection conn, int employee_id) {
-        String query = "UPDATE tblEmployees SET date_last_logged_in = ? WHERE employee_id = ?";
+        String query = "UPDATE tblEmployee SET date_last_logged_in = ? WHERE employee_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, Utility.getCurrentDate());
@@ -362,12 +362,12 @@ public class sqlManager {
 
     // Allows the user to add a new customer category
     public static String addNewCustomerCategory(Connection conn) {
-        return addNewCategory(conn, "tblCustomerCategories");
+        return addNewCategory(conn, "tblCustomerCategory");
     }
 
     // Allows the user to add a new item category
     public static String addNewItemCategory(Connection conn) {
-        return addNewCategory(conn, "tblItemCategories");
+        return addNewCategory(conn, "tblItemCategory");
     }
 
     // Allows the user to add a new category

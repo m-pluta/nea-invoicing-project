@@ -55,10 +55,10 @@ public class formOneInvoice extends javax.swing.JFrame {
 
     public void loadInvoice() {
         conn = sqlManager.openConnection();
-        String query = "SELECT CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
-                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created, payments FROM tblInvoices"
-                + " INNER JOIN tblCustomers ON tblInvoices.customer_id=tblCustomers.customer_id"
-                + " INNER JOIN tblEmployees ON tblInvoices.employee_id=tblEmployees.employee_id"
+        String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
+                + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created, payments FROM tblInvoice"
+                + " INNER JOIN tblCustomer ON tblInvoice.customer_id=tblCustomer.customer_id"
+                + " INNER JOIN tblEmployee ON tblInvoice.employee_id=tblEmployee.employee_id"
                 + " WHERE invoice_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -90,7 +90,7 @@ public class formOneInvoice extends javax.swing.JFrame {
     public double loadInvoiceDetails(int invoiceID) {
         double InvoiceTotal = 0;
         conn = sqlManager.openConnection();
-        String query = "SELECT description, category_id, quantity, unit_price FROM tblInvoiceDetails WHERE invoice_id = ?";
+        String query = "SELECT description, category_id, quantity, unit_price FROM tblInvoiceDetail WHERE invoice_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, InvoiceID);
@@ -100,7 +100,7 @@ public class formOneInvoice extends javax.swing.JFrame {
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 InvoiceTotal += itemTotal;
 
-                String itemCategory = sqlManager.getCategory(conn, "tblItemCategories", "category_id", rs.getInt(2));
+                String itemCategory = sqlManager.getCategory(conn, "tblItemCategory", "category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
                 model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the invoice to the table

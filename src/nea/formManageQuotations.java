@@ -227,10 +227,10 @@ public class formManageQuotations extends javax.swing.JFrame {
                 + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
                 + " q.date_created,"
                 + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) AS quotationTotal"
-                + " FROM tblQuotations q"
-                + " LEFT JOIN tblCustomers c ON q.customer_id = c.customer_id"
-                + " LEFT JOIN tblEmployees e ON q.employee_id = e.employee_id"
-                + " JOIN tblQuotationDetails qD ON q.quotation_id = qD.quotation_id"
+                + " FROM tblQuotation q"
+                + " LEFT JOIN tblCustomer c ON q.customer_id = c.customer_id"
+                + " LEFT JOIN tblEmployee e ON q.employee_id = e.employee_id"
+                + " JOIN tblQuotationDetail qD ON q.quotation_id = qD.quotation_id"
                 + " GROUP BY q.quotation_id";
 
         if (!sp.equals("")) {                                       // When searchParameter is something

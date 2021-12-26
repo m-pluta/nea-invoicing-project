@@ -70,7 +70,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     public void loadCategories() {
         conn = sqlManager.openConnection();
         model.setRowCount(0);                                       // Empties the table
-        String query = "SELECT category_id, category_name, date_created FROM tblItemCategories";
+        String query = "SELECT category_id, category_name, date_created FROM tblItemCategory";
 
         if (!sp.equals("")) {                                       // When searchParameter is something
             query += " WHERE";
@@ -269,8 +269,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
             } else {                                                // If it is any other row other than row 1
                 conn = sqlManager.openConnection();
-                int invoiceRowsWithCategory = sqlManager.countRecords(conn, "tblInvoiceDetails", "category_id", id);
-                int quotationRowsWithCategory = sqlManager.countRecords(conn, "tblQuotationDetails", "category_id", id);
+                int invoiceRowsWithCategory = sqlManager.countRecords(conn, "tblInvoiceDetail", "category_id", id);
+                int quotationRowsWithCategory = sqlManager.countRecords(conn, "tblQuotationDetail", "category_id", id);
                 if (invoiceRowsWithCategory == -1 || quotationRowsWithCategory == -1) {
                     System.out.println("-------------------------------");
                     System.out.println("Error fetching document rows with this category");
@@ -284,7 +284,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         System.out.println("-------------------------------");
                         System.out.println("Removing category " + string_id + " - " + category + ".");
 
-                        sqlManager.removeRecord(conn, "tblItemCategories", "category_id", id);          // Removes the selected category
+                        sqlManager.removeRecord(conn, "tblItemCategory", "category_id", id);          // Removes the selected category
                         loadCategories();                           //Refreshes table since a record was removed
                     }
                 }
@@ -321,15 +321,15 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     } else {
                         inputCategory = inputCategory.trim();       // Removes all leading and trailing whitespace characters
 
-                        if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategories", "category_name")) {   // Checks if the entered category name is longer than max length in DB
+                        if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategory", "category_name")) {   // Checks if the entered category name is longer than max length in DB
                             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "category name");
 
-                        } else if (sqlManager.RecordExists(conn, "tblItemCategories", "category_name", inputCategory)) { // Checks if category already exists in DB
+                        } else if (sqlManager.RecordExists(conn, "tblItemCategory", "category_name", inputCategory)) { // Checks if category already exists in DB
                             ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Category");
                             // # TODO Allow the user to merge the two categories together under the wanted name
 
                         } else {
-                            String query = "UPDATE tblItemCategories SET category_name = ? WHERE category_id = ?";
+                            String query = "UPDATE tblItemCategory SET category_name = ? WHERE category_id = ?";
                             try {
                                 PreparedStatement pstmt = conn.prepareStatement(query);
                                 pstmt.setString(1, inputCategory);

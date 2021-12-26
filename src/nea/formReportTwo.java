@@ -73,7 +73,7 @@ public class formReportTwo extends javax.swing.JFrame {
         int NoCategories = 1;
         conn = sqlManager.openConnection();
         try {
-            String query = "SELECT COUNT(category_id) FROM tblItemCategories";
+            String query = "SELECT COUNT(category_id) FROM tblItemCategory";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rs.next();                                              // Gets the next result from query
@@ -95,15 +95,15 @@ public class formReportTwo extends javax.swing.JFrame {
 
         // Raw SQL query: https://pastebin.com/5n2Pi2qn
         String queryRawInvoiceCategoryCosts = "SELECT a.category_id, (b.quantity * b.unit_price) as itemCost"
-                + " FROM tblitemcategories as a"
-                + " INNER JOIN tblinvoicedetails as b ON a.category_id = b.category_id"
-                + " INNER JOIN tblinvoices as c ON b.invoice_id = c.invoice_id"
+                + " FROM tblItemCategory as a"
+                + " INNER JOIN tblInvoiceDetail as b ON a.category_id = b.category_id"
+                + " INNER JOIN tblInvoice as c ON b.invoice_id = c.invoice_id"
                 + " WHERE c.date_created BETWEEN ? AND ?";
 
         String queryRawQuotationCategoryCosts = "SELECT a.category_id, (b.quantity * b.unit_price) as itemCost"
-                + " FROM tblitemcategories as a"
-                + " INNER JOIN tblquotationdetails as b ON a.category_id = b.category_id"
-                + " INNER JOIN tblquotations as c ON b.quotation_id = c.quotation_id"
+                + " FROM tblItemCategory as a"
+                + " INNER JOIN tblQuotationDetail as b ON a.category_id = b.category_id"
+                + " INNER JOIN tblQuotation as c ON b.quotation_id = c.quotation_id"
                 + " WHERE c.date_created BETWEEN ? AND ?";
 
         String queryInvoiceCategoryTotals = "SELECT sq.category_id, SUM(sq.itemCost) as cT"
@@ -115,7 +115,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 + " GROUP BY sq.category_id";
 
         String mainQuery = "SELECT a.category_name, COALESCE(sq1.cT, 0) AS invoiceTotal, COALESCE(sq2.cT, 0) AS quotationTotal, (COALESCE(sq1.cT, 0) + COALESCE(sq2.cT, 0)) as combinedTotal"
-                + " FROM tblitemcategories as a"
+                + " FROM tblItemCategory as a"
                 + " LEFT JOIN (" + queryInvoiceCategoryTotals + ") as sq1"
                 + " ON a.category_id = sq1.category_id"
                 + " LEFT JOIN (" + queryQuotationCategoryTotals + ") as sq2"
@@ -332,8 +332,8 @@ public class formReportTwo extends javax.swing.JFrame {
 
             LocalDateTime inv = null;                               // Stores the date of the earliest invoice
             LocalDateTime quot = null;                              // and quotation
-            inv = sqlManager.getEarliestDateTime(conn, "tblInvoices", "date_created");      // Gets the earliest dates
-            quot = sqlManager.getEarliestDateTime(conn, "tblQuotations", "date_created");   //                                            // Otherwise
+            inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");      // Gets the earliest dates
+            quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");   //                                            // Otherwise
             if (inv.isAfter(quot)) {                            // if inv is the later date
                 start = quot;                                   // sets quot as the earliest
             } else {

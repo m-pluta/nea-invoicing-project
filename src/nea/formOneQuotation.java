@@ -54,10 +54,10 @@ public class formOneQuotation extends javax.swing.JFrame {
 
     public void loadQuotation() {
         conn = sqlManager.openConnection();
-        String query = "SELECT CONCAT(tblCustomers.forename,' ',tblCustomers.surname) AS customerFullName,"
-                + " CONCAT(tblEmployees.forename,' ',tblEmployees.surname) AS employeeFullName, date_created FROM tblQuotations"
-                + " INNER JOIN tblCustomers ON tblQuotations.customer_id=tblCustomers.customer_id"
-                + " INNER JOIN tblEmployees ON tblQuotations.employee_id=tblEmployees.employee_id"
+        String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
+                + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created FROM tblQuotation"
+                + " INNER JOIN tblCustomer ON tblQuotation.customer_id=tblCustomer.customer_id"
+                + " INNER JOIN tblEmployee ON tblQuotation.employee_id=tblEmployee.employee_id"
                 + " WHERE quotation_id = ?";
 
         try {
@@ -89,7 +89,7 @@ public class formOneQuotation extends javax.swing.JFrame {
     public double loadQuotationDetails(int quotationID) {
         double QuotationTotal = 0;
         conn = sqlManager.openConnection();
-        String query = "SELECT description, category_id, quantity, unit_price FROM tblQuotationDetails WHERE quotation_id = ?";
+        String query = "SELECT description, category_id, quantity, unit_price FROM tblQuotationDetail WHERE quotation_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, quotationID);
@@ -99,7 +99,7 @@ public class formOneQuotation extends javax.swing.JFrame {
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 QuotationTotal += itemTotal;
 
-                String itemCategory = sqlManager.getCategory(conn, "tblItemCategories", "category_id", rs.getInt(2));
+                String itemCategory = sqlManager.getCategory(conn, "tblItemCategory", "category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
                 model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the quotation to the table
