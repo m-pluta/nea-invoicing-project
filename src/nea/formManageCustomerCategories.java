@@ -266,7 +266,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
             } else {
                 conn = sqlManager.openConnection();
-                int usersWithCategory = sqlManager.countRecords(conn, "tblCustomer", "type_id", id);
+                int usersWithCategory = sqlManager.countRecords(conn, "tblCustomer", "category_id", id);
                 if (usersWithCategory == -1) {
                     System.out.println("-------------------------------");
                     System.out.println("Error fetching customers with this category");

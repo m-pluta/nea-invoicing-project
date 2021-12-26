@@ -358,7 +358,7 @@ public class formAddCustomer extends javax.swing.JFrame {
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?", "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 conn = sqlManager.openConnection();
-                String query = "INSERT into tblCustomer (customer_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, type_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String query = "INSERT into tblCustomer (customer_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, CustomerID);

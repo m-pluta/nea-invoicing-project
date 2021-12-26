@@ -104,7 +104,7 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         String query = "SELECT CONCAT(forename,' ', surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, cc.category_name FROM tblCustomer as c"
                 + " INNER JOIN tblCustomerCategory as cc"
-                + " ON c.type_id = cc.category_id"
+                + " ON c.category_id = cc.category_id"
                 + " WHERE customer_id = ?";
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -449,7 +449,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
             if (YesNo == 0) {                                       // If response is yes
                 conn = sqlManager.openConnection();
-                String query = "UPDATE tblCustomer SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, type_id = ? WHERE customer_id = ?";
+                String query = "UPDATE tblCustomer SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, category_id = ? WHERE customer_id = ?";
                 try {
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, txtForename.getText());
