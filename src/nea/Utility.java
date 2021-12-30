@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
@@ -29,23 +31,29 @@ import javax.swing.JTextField;
  */
 public class Utility {
 
+    private static final Logger logger = java.util.logging.Logger.getLogger(formLogin.class.getName());
+
+    // Hashes any string input using SHA256
     public static byte[] hash(String input) {
 
         MessageDigest digest;
         byte[] outputHash = null;
 
         try {
+            // Initialises the MessageDigest instance
             digest = MessageDigest.getInstance("SHA-256");
 
+            // Hashes the input using SHA256
             outputHash = digest.digest(String.valueOf(input).getBytes(StandardCharsets.UTF_8));
 
         } catch (NoSuchAlgorithmException ex) {
+            logger.log(Level.SEVERE, "No such algorithm exception: SHA256");
         }
 
         return outputHash;
     }
 
-    // Given a date, this method returns the year property of the financial year the given date is in
+    // Returns the date of the financial year for a given date
     public static LocalDate getFinancialYear(LocalDate input) {
         if (input.isAfter(LocalDate.of(input.getYear(), Month.APRIL, 5))) {
             return LocalDate.of(input.getYear(), Month.APRIL, 6);
@@ -54,14 +62,16 @@ public class Utility {
         }
     }
 
-    // Param is LocalDateTime - overloaded method
+    // Overloaded method for LocalDateTime param
     public static LocalDate getFinancialYear(LocalDateTime input) {
         return getFinancialYear(input.toLocalDate());
     }
 
     // Returns the quarter of the year a given date is in
     public static String getQuarter(LocalDate input) {
+        // Gets the month as an int between 1-12
         int month = input.getMonthValue();
+
         if (month > 9) {
             return "Q4";
         } else if (month > 6) {
@@ -75,141 +85,163 @@ public class Utility {
 
     // Given a date, this method returns the start date date of the quarter the date is in
     public static LocalDate getQuarterStart(LocalDate input) {
+        // Gets the month as an int between 1-12
         int month = input.getMonthValue();
-        if (month <= 3) {
-            return LocalDate.now().withMonth(1).withDayOfMonth(1);
-        } else if (month <= 6) {
-            return LocalDate.now().withMonth(4).withDayOfMonth(1);
-        } else if (month <= 9) {
-            return LocalDate.now().withMonth(7).withDayOfMonth(1);
-        } else {
+
+        if (month > 9) {
             return LocalDate.now().withMonth(10).withDayOfMonth(1);
+        } else if (month > 6) {
+            return LocalDate.now().withMonth(7).withDayOfMonth(1);
+        } else if (month > 3) {
+            return LocalDate.now().withMonth(4).withDayOfMonth(1);
+        } else {
+            return LocalDate.now().withMonth(1).withDayOfMonth(1);
         }
     }
 
     // Returns the current system date as a string in the format yyyy-MM-dd HH:mm:ss
     public static String getCurrentDate() {
+        // Initialises the Date Formatter
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
+
+        // Converts the Date into a String
         String date_string = formatter.format(date);
         return date_string;
     }
 
-    // Opens a default Input Dialog that has one jTextField component in it 
+    // Opens an Input Dialog that has one JTextField component in it and returns the input
     public static String StringInputDialog(String message, String title) {
+        // Init
         String input = null;
         input = JOptionPane.showInputDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
-        if (input == null) {                                        // If the dialog window was closed    
-            System.out.println("-------------------------------");
-            System.out.println("Input window closed.");
-        } else {                                                    // If the input dialog wasn't closed
-            if (input.replaceAll(" ", "").equals("")) {             // Removes all whitespace characters and checks if the string is left as ""
-                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Category name cannot be empty");
-                return Utility.StringInputDialog(message, title);
-            } else {                                                // If the user input is valid then the input string is returned
+
+        // If the window was not closed.
+        if (input != null) {
+
+            // If the string is not all whitespace or empty
+            if (!input.chars().allMatch(Character::isWhitespace)) {
                 return input;
+            } else {
+                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Category name cannot be empty");
+                // Reopens the input dialog
+                return Utility.StringInputDialog(message, title);
             }
+        } else {
+            logger.log(Level.INFO, "Input window closed.");
         }
         return null;
     }
 
-    // Converts a String to an integer
-    // This was implemented as the try catch statement block was repeated many times throughout the program.
+    // Converts a String to an Integer
     public static int StringToInt(String input) {
         int output = 0;
         try {
-            output = Integer.parseInt(input);                       // String is converted to an integer
-        } catch (NumberFormatException e) {                         // If there was an exception
-            e.printStackTrace();
+            // String is converted to an integer
+            output = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            logger.log(Level.SEVERE, "NumberFormatException");
         }
-        return output;                                              // Return the converted integer
+        return output;
     }
 
     // Takes the Title of the dialog box and all the field names as parameters
-    // Creates a dialog box with all the field names as the label and a corresponding JTextField for each field#
+    // Creates a dialog box with all the field names as the label and a corresponding JTextField for each field
     // Returns the String[] of all the user inputs
     public static String[] JOptionPaneMultiInput(String windowTitle, String[] Fieldnames) {
-        int NoInputs = Fieldnames.length;                           // Number of inputs the user must enter
+        // Number of inputs the user must enter
+        int NoInputs = Fieldnames.length;
+        // JPanel to hold all of the TextFields and Labels
+        JPanel myPanel = new JPanel();
 
-        JPanel myPanel = new JPanel();                              // JPanel to hold all of the TextFields and Labels
-
-        JTextField[] inputBoxes = new JTextField[NoInputs];         // Array of JTextFields. One Field for each input
-        JLabel[] labels = new JLabel[NoInputs];                     // Array of JLabels. Each describes what the corresponding textbox wants from the user
-
-        for (int i = 0; i < NoInputs; i++) {                        // Goes through each input
-            inputBoxes[i] = new JTextField(20);                     // Creates new TextField
-            labels[i] = new JLabel(Fieldnames[i] + ": ");           // Creates new JLabel
-        }
-
-        GroupLayout layout = new GroupLayout(myPanel);              // New instance of the GridLayout layout manager 
-        myPanel.setLayout(layout);                                  // sets it as the layout of the JPanel
-
-        layout.setAutoCreateGaps(true);                             // Gaps between components
-        layout.setAutoCreateContainerGaps(true);                    //
-
-        // Explanation of code https://docs.oracle.com/javase/tutorial/uiswing/layout/group.html
-        // Both the horizontal and vertical layout need to be specified otherwise there is an exception
-        //Horizontal Layout     
-        SequentialGroup H_sg = layout.createSequentialGroup();                              // Group which goes LEFT -> RIGHT
-
-        ParallelGroup H_pg1 = layout.createParallelGroup(GroupLayout.Alignment.LEADING);    // 
-        ParallelGroup H_pg2 = layout.createParallelGroup(GroupLayout.Alignment.LEADING);    // These groups are 'parallel' so they go TOP -> BOTTOM
+        JTextField[] inputBoxes = new JTextField[NoInputs];
+        JLabel[] labels = new JLabel[NoInputs];
 
         for (int i = 0; i < NoInputs; i++) {
-            H_pg1.addComponent(labels[i]);                          // Adds each JLabel to the group going TOP -> BOTTOM
-            H_pg2.addComponent(inputBoxes[i]);                      // Adds each JTextField
+            // New JTextField: One Field for each input
+            inputBoxes[i] = new JTextField(20);
+            // New JLabel: Each describes what the corresponding textbox wants from the user
+            labels[i] = new JLabel(Fieldnames[i] + ": ");
         }
-        H_sg.addGroup(H_pg1);                                       //
-        H_sg.addGroup(H_pg2);                                       // Adds each group that goes TOP -> BOTTOM to the group that goes LEFT -> RIGHT
 
-        layout.setHorizontalGroup(H_sg);                            // Adds the horizontal layout to the overall layout
+        // Sets the layout of the JPanel
+        GroupLayout layout = new GroupLayout(myPanel);
+        myPanel.setLayout(layout);
+
+        // Gaps between components
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        // Full Explanation of code https://docs.oracle.com/javase/tutorial/uiswing/layout/group.html
+        // Both the horizontal and vertical layout need to be specified
+        // Horizontal Layout     
+        SequentialGroup H_sg = layout.createSequentialGroup();
+
+        ParallelGroup H_pg1 = layout.createParallelGroup(GroupLayout.Alignment.LEADING);
+        ParallelGroup H_pg2 = layout.createParallelGroup(GroupLayout.Alignment.LEADING);
+
+        for (int i = 0; i < NoInputs; i++) {
+            // Adds each JLabel and JTextField to the group
+            H_pg1.addComponent(labels[i]);
+            H_pg2.addComponent(inputBoxes[i]);
+        }
+        // Adds the two parallel group to the main sequential group
+        H_sg.addGroup(H_pg1);
+        H_sg.addGroup(H_pg2);
+
+        layout.setHorizontalGroup(H_sg);
 
         // Vertical Layout
-        SequentialGroup V_sg = layout.createSequentialGroup();      // Group which goes TOP -> BOTTOM
+        SequentialGroup V_sg = layout.createSequentialGroup();
 
-        ParallelGroup temp = null;                                  // There will be NoInputs amount of rows in the dialog box so it is easier to use a temporary Parallel Group that goes LEFT -> RIGHT
+        ParallelGroup temp = null;
         for (int i = 0; i < NoInputs; i++) {
-            temp = layout.createParallelGroup(GroupLayout.Alignment.BASELINE);  // Creates a new parallel group that goes LEFT -> RIGHT
-            temp.addComponent(labels[i]);                           // Adds the JLabel
-            temp.addComponent(inputBoxes[i]);                       // Adds the JTextField
-            V_sg.addGroup(temp);                                    // Adds the parallel group (the row) to the group that goes TOP -> BOTTOM
+            // Temporary parallel group
+            temp = layout.createParallelGroup(GroupLayout.Alignment.BASELINE);
+            // Adds the JLabels and JTextFields to the temp parallel group
+            temp.addComponent(labels[i]);
+            temp.addComponent(inputBoxes[i]);
+            // Adds the temporary group to the main sequential group
+            V_sg.addGroup(temp);
         }
 
-        layout.setVerticalGroup(V_sg);                              // Adds the vertical layout to the overall layout
+        layout.setVerticalGroup(V_sg);
 
-        // Creates a new instance of the Dialog
+        // Creates a new Dialog with the custom layout
         int result = JOptionPane.showConfirmDialog(null, myPanel, windowTitle, JOptionPane.OK_CANCEL_OPTION);
-        if (result == 0) {                                          // If the user selected OK
-            String[] output = new String[NoInputs];                 // Array holds all of the user's inputs
-            for (int i = 0; i < NoInputs; i++) {                    //
-                output[i] = inputBoxes[i].getText();                // Grabs whatever the user put in the TextField and adds it to the array
-
+        // If the user selected OK
+        if (result == 0) {
+            String[] output = new String[NoInputs];
+            for (int i = 0; i < NoInputs; i++) {
+                // Puts whatever the user entered into the textbox, into the array
+                output[i] = inputBoxes[i].getText();
             }
-            return output;                                          // Returns the array of all the inputs
+            // Returns the array of all the inputs
+            return output;
         }
         return null;
     }
 
-    // Formats a double to a string with the user's default currency and does some rounding as well
+    // Formats a double to a string with the user's default currency (with rounding)
     public static String formatCurrency(double cost) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String costString = formatter.format(cost);
         return costString;
     }
 
-    // This method adjusts the column widths of a given table in tandem with an array of integers which store the new column widths
+    // This method adjusts the column widths of a given table based on an input integer array
     public static JTable setColumnWidths(JTable table, int[] widths) {
         int NoCols = table.getModel().getColumnCount();
         if (NoCols == 0 || widths == null) {
             return null;
         }
 
-        //current width of the table:
-        int totalWidth = table.getWidth();
+        // Current width of the table:
+        int currentWidth = table.getWidth();
 
         int totalWidthRequested = 0;
         int nrRequestedWidths = widths.length;
-        int defaultWidth = (int) Math.floor((double) totalWidth / (double) NoCols);
+        int defaultWidth = (int) Math.floor((double) currentWidth / (double) NoCols);
 
         for (int col = 0; col < NoCols; col++) {
             int width = 0;
@@ -218,17 +250,18 @@ public class Utility {
             }
             totalWidthRequested += width;
         }
-        //Note: for the not defined columns: use the defaultWidth
+        // defaultWidth used for columns with undefined new width
         if (nrRequestedWidths < NoCols) {
             totalWidthRequested += ((NoCols - nrRequestedWidths) * defaultWidth);
         }
-        //calculate the scale for the column width
-        double factor = (double) totalWidth / (double) totalWidthRequested;
+
+        // Calculate the scale factor for the column width
+        double factor = (double) currentWidth / (double) totalWidthRequested;
 
         for (int col = 0; col < NoCols; col++) {
             int width = defaultWidth;
-            if (widths.length > col) {
-                //scale the requested width to the current table width
+            if (col < widths.length) {
+                // Scale the requested width
                 width = (int) Math.floor(factor * (double) widths[col]);
             }
             table.getColumnModel().getColumn(col).setPreferredWidth(width);
