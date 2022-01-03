@@ -10,6 +10,8 @@ import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -22,23 +24,29 @@ import javax.swing.event.DocumentListener;
  */
 public class formAddEmployee extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formOneEmployee
-     */
-    int EmployeeID = 0;                                             // employee_id of currently loaded employee
-    Connection conn = null;                                         // Stores the connection object
-    formManageEmployees previousForm = null;                        // Stores the previous Form object
+    private static final Logger logger = Logger.getLogger(formAddEmployee.class.getName());
+    Connection conn = null;
+
+    // Employee ID for the new employee being added
+    int EmployeeID = 0;
+
+    // Previous form the user came from
+    formManageEmployees previousForm = null;
 
     public formAddEmployee() {
         initComponents();
+        // Don't close the entire program if the AddEmployee window is closed
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
+        // Gets the ID for the new employee
         conn = sqlManager.openConnection();
         EmployeeID = sqlManager.getNextPKValue(conn, "tblEmployee", "employee_id");
         sqlManager.closeConnection(conn);
-        txtEmployeeID.setText(String.valueOf(EmployeeID));
-        txtEmployeeID.setEditable(false);
 
+        txtEmployeeID.setText(String.valueOf(EmployeeID));
+
+        // Notifies the previous form that the user is no longer adding a new customer.
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -70,6 +78,7 @@ public class formAddEmployee extends javax.swing.JFrame {
             }
         });
 
+        // Updates the fullName JTextField each time the input forename and surname changes
         DocumentListener dListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -90,6 +99,7 @@ public class formAddEmployee extends javax.swing.JFrame {
 
     }
 
+    // Used when the form is opened from within another form
     public formAddEmployee getFrame() {
         return this;
     }
@@ -159,6 +169,8 @@ public class formAddEmployee extends javax.swing.JFrame {
 
         lblAdmin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblAdmin.setText("Admin:");
+
+        txtEmployeeID.setEditable(false);
 
         txtAddress1.setToolTipText("");
 
@@ -273,76 +285,88 @@ public class formAddEmployee extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Counts how many of the input fields is empty and returns the integer value
-    public int countEmptyFields(JTextField[] fields) {
-        int emptyFields = 0;
-        for (JTextField field : fields) {
-            if (field.getText().equals("")) {
-                emptyFields++;
-            }
-        }
-        return emptyFields;
-    }
-
     private void btnAddEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEmployeeActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
-        if (countEmptyFields(inputFields) != 0) {                   // Checks if any of the input fields are empty
+        // Checks if any of the input fields are empty
+        if (Utility.countEmptyFields(inputFields) != 0) {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
-
-        } else if (!validInputs()) {                                // Validates input lengths
-
-        } else {
+        } else if (validInputs()) {
             // Asks user whether they really want to add this employee
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?", "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) {                                       // If response is yes
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this employee?",
+                    "Add new employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            // If response is yes
+            if (YesNo == 0) {
                 String[] loginDetails = getLoginDetails();
+                String query = "INSERT into tblEmployee"
+                        + " (employee_id, forename, surname, address1, address2,"
+                        + " address3, county, postcode, phone_number, email_address,"
+                        + " username, password_hash, admin, date_last_logged_in)"
+                        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 conn = sqlManager.openConnection();
-
-                String query = "INSERT into tblEmployee (employee_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, username, password_hash, admin, date_last_logged_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try {
+                    // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, EmployeeID);
                     pstmt.setString(2, txtForename.getText());
                     pstmt.setString(3, txtSurname.getText());
                     pstmt.setString(4, txtAddress1.getText());
-                    pstmt.setString(5, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
-                    pstmt.setString(6, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
+                    // If address2 or address3 are empty then they are replaced by null instead of ""
+                    pstmt.setString(5, (txtAddress2.getText().isEmpty() ? null : txtAddress2.getText()));
+                    pstmt.setString(6, (txtAddress3.getText().isEmpty() ? null : txtAddress3.getText()));
                     pstmt.setString(7, txtCounty.getText());
                     pstmt.setString(8, txtPostcode.getText());
                     pstmt.setString(9, txtPhoneNumber.getText());
                     pstmt.setString(10, txtEmailAddress.getText());
+
                     pstmt.setString(11, loginDetails[0]);
                     pstmt.setBytes(12, Utility.hash(loginDetails[1]));
                     pstmt.setBoolean(13, cbAdmin.isSelected());
                     pstmt.setString(14, "0000-00-00 00:00:00");
 
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) inserted.");
+                    logger.log(Level.INFO, rowsAffected + " rows inserted.");
+
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "SQLException");
                 }
                 sqlManager.closeConnection(conn);
-                previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee details were changed
-                this.dispose();                                     // Closes the add new employee form (current form)
+
+                // Refreshes the employee table in the previous form since a new employee was added
+                previousForm.loadEmployees();
+                // Closes the addEmployee form (current form)
+                this.dispose();
             }
         }
     }//GEN-LAST:event_btnAddEmployeeActionPerformed
 
+    // Asks user for the new employee's login details
     public String[] getLoginDetails() {
-        while (true) {
-            String[] responses = Utility.JOptionPaneMultiInput("What login details should this employee have?", new String[]{"Username", "Confirm username", "Password", "Confirm password"});
-            conn = sqlManager.openConnection();
+        // Init
+        String[] responses = null;
+        boolean validInputs = false;
+        conn = sqlManager.openConnection();
 
-            if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
+        while (!validInputs) {
+            // Gets the user's responses
+            responses = Utility.JOptionPaneMultiInput("What login details should this employee have?",
+                    new String[]{"Username", "Confirm username", "Password", "Confirm password"});
+
+            // If the user closed the input window
+            if (responses == null) {
+                logger.log(Level.INFO, "Login Details Input Dialog closed");
+
+            } else if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
 
-            } else if (responses[0].length() < 4) {                  // Checks if the username is of minimum length (4)
+            } else if (responses[0].length() < 4) {
+                // Checks if the username is of minimum length (4)
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "username");
 
-            } else if (responses[2].length() < 4) {                  // Checks if the password is of minimum length (4)
+            } else if (responses[2].length() < 4) {
+                // Checks if the password is of minimum length (4)
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
             } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
@@ -353,18 +377,21 @@ public class formAddEmployee extends javax.swing.JFrame {
 
             } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", responses[0])) {
                 ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Employee with this username");
+
             } else {
-                sqlManager.closeConnection(conn);
-                return new String[]{responses[0], responses[2]};
+                // If the inputs pass all the above validity checks then boolean set to true
+                validInputs = true;
             }
-            sqlManager.closeConnection(conn);
         }
+        // Returns all valid user responses
+        return new String[]{responses[0], responses[2]};
     }
 
-    // Validating input length against the max lengths in the DB
+    // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
         conn = sqlManager.openConnection();
-        boolean output = false;
+        boolean valid = false;
+
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
@@ -393,10 +420,12 @@ public class formAddEmployee extends javax.swing.JFrame {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
-            output = true;
+            // If all inputs passed the validity checks then boolean set to true
+            valid = true;
         }
+
         sqlManager.closeConnection(conn);
-        return output;
+        return valid;
     }
 
     /**

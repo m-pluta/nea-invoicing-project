@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -24,27 +26,32 @@ import javax.swing.table.JTableHeader;
  */
 public class formManageInvoices extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formManageInvoices
-     */
-    int WHO_LOGGED_IN = 1;
-    formMainMenu previousForm = null;                               // Stores the previously open form
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model;                                        // The table model
-    formOneInvoice Invoice_in_view = null;                          // could be null or could store whichever invoice the user is currently viewing
-    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    private static final Logger logger = Logger.getLogger(formManageInvoices.class.getName());
+    formMainMenu previousForm = null;
+    Connection conn = null;
+
+    // Init
+    DefaultTableModel model;
+    public static String sp = "";
+
+    // Whether the user is currently viewing an invoice in another form
+    formOneInvoice Invoice_in_view = null;
 
     public formManageInvoices() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_Invoices.getModel();     // Fetches the table model of the table
-        jTable_Invoices.setDefaultEditor(Object.class, null);       // Makes it so the user cannot edit the table
 
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_Invoices.getModel();
+        jTable_Invoices.setDefaultEditor(Object.class, null);
+
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_Invoices.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        jTable_Invoices.addMouseListener(new MouseListener() {      // Mouse listener for when the user clicks on a row in the invoice table
+        // When the user clicks on a row in the table
+        jTable_Invoices.addMouseListener(new MouseListener() {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -63,33 +70,43 @@ public class formManageInvoices extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedID = getSelectedInvoice();              // Gets the id of the invoice which is currently selected in the table
-                if (selectedID != -1) {                             // id of the invoice is not '-1', this is the default return value from getSelectedInvoice()
+                // Gets the id of the invoice which is currently selected in the table
+                int selectedID = getSelectedInvoice();
+                if (selectedID != -1) {
                     if (Invoice_in_view != null) {
+                        // If the user is viewing another invoice then that form is closed
                         Invoice_in_view.dispose();
                     }
-                    formOneInvoice form = new formOneInvoice().getFrame();      // Opens a new instance of the formOneInvoice() form
-                    form.setLocation(1630, 422);                    // Sets the location of the invoice view to the right of the current invoice management form
-                    form.setVisible(true);                          // Makes the new invoice view visible
-                    form.InvoiceID = selectedID;                    // Tells the invoice view form which invoice to load
-                    form.previousForm = formManageInvoices.this;    // Informs the invoice view what the previous form is 
-                    form.loadInvoice();                             // Runs the loadInvoice() method which will load all of the specified invoice's details
-                    Invoice_in_view = form;                         // Sets the invoice in view to this
+
+                    formOneInvoice form = new formOneInvoice().getFrame();
+                    form.setLocation(1630, 422);
+                    form.setVisible(true);
+
+                    // Loads invoice into the other form and sets up previousForm variable
+                    form.InvoiceID = selectedID;
+                    form.previousForm = formManageInvoices.this;
+                    form.loadInvoice();
+
+                    // Sets invoice in view variable to the invoice which is being viewed
+                    Invoice_in_view = form;
                 }
             }
         });
 
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+        // When the user changes their search in the search box
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadInvoices();                                     // Refreshes the invoice table as the search term has changed
+            public void insertUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadInvoices();
             }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadInvoices();                                     // Refreshes the invoice table as the search term has changed
+            public void removeUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadInvoices();
             }
 
             @Override
@@ -98,9 +115,11 @@ public class formManageInvoices extends javax.swing.JFrame {
 
         });
 
+        // Adjusting the header widths
         jTable_Invoices = Utility.setColumnWidths(jTable_Invoices, new int[]{40, 120, 120, 120, 80});
     }
 
+    // Used when the form is opened from within another form
     public formManageInvoices getFrame() {
         return this;
     }
@@ -217,11 +236,15 @@ public class formManageInvoices extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void loadInvoices() {    // Raw SQL query: https://pastebin.com/xQ9xpUYT
-        model.setRowCount(0);                                       // Empties the table
+    // Loads all the invoices into the table, the results are filtered using the searchParameter (sp)
+    public void loadInvoices() {
         conn = sqlManager.openConnection();
 
-        String mainQuery = "SELECT i.invoice_id AS id, "
+        // Empties the table
+        model.setRowCount(0);
+
+        // Raw SQL query: https://pastebin.com/xQ9xpUYT
+        String query = "SELECT i.invoice_id AS id, "
                 + " CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
                 + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
                 + " i.date_created,"
@@ -231,68 +254,75 @@ public class formManageInvoices extends javax.swing.JFrame {
                 + " LEFT JOIN tblEmployee e ON i.employee_id = e.employee_id"
                 + " JOIN tblInvoiceDetail iD ON i.invoice_id = iD.invoice_id"
                 + " GROUP BY i.invoice_id";
-
-        if (!sp.equals("")) {                                       // When searchParameter is something
-
-            // Check whether a column value contains the searchParameter
-            mainQuery += " HAVING"
-                    + " i.invoice_id LIKE '%" + sp + "%'"
-                    + " OR customerFullName LIKE '%" + sp + "%'"
-                    + " OR employeeFullName LIKE '%" + sp + "%'"
-                    + " OR i.date_created LIKE '%" + sp + "%'"
-                    + " OR invoiceTotal LIKE '%" + sp + "%'";
+        // If the user entered a search into the search box, the WHERE clause is adjusted
+        if (!sp.isEmpty()) {
+            query += " HAVING";
+            query += " i.invoice_id LIKE '%" + sp + "%'";
+            query += " OR customerFullName LIKE '%" + sp + "%'";
+            query += " OR employeeFullName LIKE '%" + sp + "%'";
+            query += " OR i.date_created LIKE '%" + sp + "%'";
+            query += " OR invoiceTotal LIKE '%" + sp + "%'";
         }
-        
-        mainQuery += " ORDER BY i.invoice_id";
+        query += " ORDER BY i.invoice_id";
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(mainQuery);
+            ResultSet rs = stmt.executeQuery(query);
 
-            int invoiceCounter = 0;                                 // variable for counting how many invoices are being shown in the table
+            // Counts the amount of invoices which are being shown
+            int invoiceCounter = 0;
             while (rs.next()) {
                 String invoiceTotal = Utility.formatCurrency(rs.getDouble(5));
 
-                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), invoiceTotal}); // Adds the invoice to the table
-
-                invoiceCounter++;                                   // Increments invoice counter as a new invoice was added to the table
+                // Adds the invoice from the DB to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), invoiceTotal});
+                invoiceCounter++;
             }
-            lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter)); // Updates invoice counter label
+
+            // Updates invoice counter label
+            lblInvoiceCount.setText("Number of invoices: " + String.valueOf(invoiceCounter));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
     }
 
-    // Returns the invoice_id of the selected invoice in the invoice table
+    // Returns the invoice_id of the selected invoice in the table
     public int getSelectedInvoice() {
-        int selectedRow = jTable_Invoices.getSelectedRow();         // Gets the selected row in the table
+        int selectedRow = jTable_Invoices.getSelectedRow();
 
-        if (selectedRow == -1) {                                    // If no row is selected in the table
+        if (selectedRow == -1) {
+            // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
         } else {
-            String string_id = model.getValueAt(selectedRow, 0).toString();     // Gets the id of the selected in string form
-            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
+            // Returns id of selected invoice
+            String string_id = model.getValueAt(selectedRow, 0).toString();
+            int id = Utility.StringToInt(string_id);
             return id;
         }
-        return -1;                                                  //  Returns -1 if there were to be an error somewhere
+
+        // Returns -1 if there were to be an error somewhere
+        return -1;
     }
 
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (Invoice_in_view != null) {                              // Checks whether there is another form opened showing the selected invoice
-            Invoice_in_view.dispose();                              // If there is another form then it gets rid of it
+        // Checks if the user is viewing an invoice in another form
+        if (Invoice_in_view != null) {
+            Invoice_in_view.dispose();
         }
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the document management form (current form)
+
+        // Makes previous form visible and closes current form
+        previousForm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
-        form.previousForm2 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
-
+        form.previousForm2 = this;
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     /**

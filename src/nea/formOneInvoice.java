@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -21,51 +23,51 @@ import javax.swing.table.JTableHeader;
  */
 public class formOneInvoice extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formOneinvoice
-     */
-    int InvoiceID = 0;                                              // invoice_id of currently loaded invoice
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model;                                        // The table model
-    formManageInvoices previousForm = null;                         // Stores the previous Form object
+    private static final Logger logger = Logger.getLogger(formNewInvoice.class.getName());
+    int InvoiceID = 0;
+    Connection conn = null;
+
+    // Init
+    DefaultTableModel model;
+    formManageInvoices previousForm = null;
 
     public formOneInvoice() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();           // Fetches the table model of the table
-        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);             // Makes it so the user cannot edit the table
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();
+        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);
 
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_InvoiceDetails.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        JTextField[] fields = {txtInvoiceID, txtCustomer, txtEmployee, txtDateCreated, txtSubtotal, txtPayments, txtTotal};
-        setEditable(fields, false);
+        // Makes some of the input fields uneditable
+        JTextField[] fields = {txtCustomer, txtEmployee, txtDateCreated, txtSubtotal, txtPayments, txtTotal};
+        Utility.setEditable(fields, false);
 
+        // Adjusting the header widths
         jTable_InvoiceDetails = Utility.setColumnWidths(jTable_InvoiceDetails, new int[]{300, 100, 60, 90, 90});
 
     }
 
-    // Sets these components to either visible or invisible depending on the boolean state
-    public void setEditable(JTextField[] fields, boolean state) {
-        for (JTextField field : fields) {
-            field.setEditable(state);
-        }
-    }
-
     public void loadInvoice() {
         conn = sqlManager.openConnection();
+
         String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
                 + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created, payments FROM tblInvoice"
                 + " INNER JOIN tblCustomer ON tblInvoice.customer_id=tblCustomer.customer_id"
                 + " INNER JOIN tblEmployee ON tblInvoice.employee_id=tblEmployee.employee_id"
                 + " WHERE invoice_id = ?";
         try {
+            // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, InvoiceID);
-
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
+                // Loads all the data from the DB into the JTextFields
                 txtInvoiceID.setText(String.valueOf(InvoiceID));
                 txtCustomer.setText(rs.getString(1));
                 txtEmployee.setText(rs.getString(2));
@@ -73,45 +75,51 @@ public class formOneInvoice extends javax.swing.JFrame {
                 txtPayments.setText(Utility.formatCurrency(rs.getDouble(4)));
 
                 double subTotal = loadInvoiceDetails(InvoiceID);
-
                 txtSubtotal.setText(Utility.formatCurrency(subTotal));
                 txtTotal.setText(Utility.formatCurrency(subTotal - rs.getDouble(4)));
 
             } else {
-                System.out.println("-------------------------------");
-                System.out.println("No invoice with this invoice_id was found");
+                logger.log(Level.WARNING, "No invoice with this invoice_id was found");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
     }
 
     public double loadInvoiceDetails(int invoiceID) {
-        double InvoiceTotal = 0;
         conn = sqlManager.openConnection();
-        String query = "SELECT description, category_id, quantity, unit_price FROM tblInvoiceDetail WHERE invoice_id = ?";
+
+        // Init
+        double InvoiceTotal = 0;
         try {
+            // Query Setup & Execution
+            String query = "SELECT description, category_id, quantity, unit_price FROM tblInvoiceDetail WHERE invoice_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, InvoiceID);
-
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
+                // Pre-processing
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 InvoiceTotal += itemTotal;
-
                 String itemCategory = sqlManager.getCategory(conn, "tblItemCategory", "category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
-                model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the invoice to the table
+
+                // Adds the invoice item to the table
+                model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal});
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
         return InvoiceTotal;
     }
 
+    // Used when the form is opened from within another form
     public formOneInvoice getFrame() {
         return this;
     }
@@ -166,6 +174,8 @@ public class formOneInvoice extends javax.swing.JFrame {
 
         lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblTotal.setText("Total:");
+
+        txtInvoiceID.setEditable(false);
 
         jTable_InvoiceDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -269,25 +279,14 @@ public class formOneInvoice extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // This button is for converting the invoice into a word document given a template
+    // This button is for converting the invoice into a Word document
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
-        formFormatIntoWord form = new formFormatIntoWord().getFrame();          // Opens the Word Document generation form
-        form.documentID = InvoiceID;                                            // Tells the document formatting form the invoiceID in question
-        form.DOCUMENT_TYPE = form.INVOICE;
+        formFormatIntoWord form = new formFormatIntoWord().getFrame();
+        form.receiptID = InvoiceID;
+        form.RECEIPT_TYPE = formFormatIntoWord.INVOICE;
         form.setDocument();
-        form.setVisible(true);                                                  
+        form.setVisible(true);
     }//GEN-LAST:event_btnFormatActionPerformed
-
-    // Counts how many of the input fields is empty and returns the integer value
-    public int countEmptyFields(JTextField[] fields) {
-        int emptyFields = 0;
-        for (JTextField field : fields) {
-            if (field.getText().equals("")) {
-                emptyFields++;
-            }
-        }
-        return emptyFields;
-    }
 
     /**
      * @param args the command line arguments

@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -22,129 +24,129 @@ import javax.swing.JTextField;
  */
 public class formOneCustomer extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formOneCustomer
-     */
-    int WHO_LOGGED_IN = 1;
-    int CustomerID = 0;                                             // customer_id of currently loaded customer
-    Connection conn = null;                                         // Stores the connection object
-    formManageCustomers previousForm = null;                        // Stores the previous Form object
+    private static final Logger logger = Logger.getLogger(formOneCustomer.class.getName());
+    formManageCustomers previousForm = null;
+    Connection conn = null;
+
+    // customer_id of the customer which is currently loaded into the form
+    int CustomerID = 0;
+
+    // Stores all the editable/uneditable JTextFields in the form so it's easy to access them throughout the code
+    JTextField[] fields;
 
     public formOneCustomer() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
+        // Loads all the possible customer categories into ComboBox
+        loadCustomerCategoriesIntoCB();
 
-        btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
-        JTextField[] fields = {txtCustomerID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        setEditable(fields, false);                                 // Makes all the fields uneditable
+        // Confirm Edit button is made invisible since it only appears after editing has begun
+        btnConfirmEdit.setVisible(false);
 
-        cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
+        // Initialises global array which stores all the textfields in the form
+        fields = new JTextField[]{txtForename, txtSurname, txtAddress1, txtAddress2,
+            txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+
+        // Makes all the fields uneditable
+        Utility.setEditable(fields, false);
+
+        // When the user changes the selectedIndex in the ComboBox
+        cbCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isAddNewCategorySelected()) {                   // If the user selected the last item ('Add a new category...')
+                if (isAddNewCategorySelected()) {
+                    //Prompts the user to add a new category
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewCustomerCategory(conn);
                     sqlManager.closeConnection(conn);
 
                     if (addedCategory != null) {
-                        loadCustomerCategoriesIntoCB();             // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
+                        // If the user entered a name for the new category
+                        // Refreshes ComboBox and selects the newly added category
+                        loadCustomerCategoriesIntoCB();
+                        cbCategory.setSelectedItem(addedCategory);
                     } else {
+                        // If the user exited out of the new category dialog
+                        // Selects the default category
                         cbCategory.setSelectedIndex(0);
                     }
                 }
             }
         });
-
     }
 
-    // Returns true if the 'Add new category' option in the combo box is selected
+    // Returns true if the 'Add new category' option in the ComboBox is selected
     private boolean isAddNewCategorySelected() {
         return cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1;
     }
 
+    // Used when the form is opened from within another form
     public formOneCustomer getFrame() {
         return this;
     }
 
+    // Loads all the customer categories from the DB into the ComboBox
     public void loadCustomerCategoriesIntoCB() {
+        // Clears ComboBox
         cbCategory.removeAllItems();
-        conn = sqlManager.openConnection();
-        String query = "SELECT category_name FROM tblCustomerCategory";
-        try {
-            Statement stmt = conn.createStatement();
 
+        conn = sqlManager.openConnection();
+        try {
+            // Query Setup & Execution
+            String query = "SELECT category_name FROM tblCustomerCategory";
+            Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            System.out.println("-------------------------------");
+
             while (rs.next()) {
-                System.out.println(rs.getString(1));
-                cbCategory.addItem(rs.getString(1));                // Ads the category to the combo box
+                // Adds category to the ComboBox
+                cbCategory.addItem(rs.getString(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
-        cbCategory.addItem("Add a new category...");                // Set one of the option to a custom category
+        cbCategory.addItem("Add a new category...");
     }
 
-    // Sets these components to either visible or invisible depending on the boolean state
-    public void setEditable(JTextField[] fields, boolean state) {
-        for (JTextField field : fields) {
-            field.setEditable(state);
-        }
-    }
-
-    // Loads the customer data into the form
+    // Loads the customer details into the form
     public void loadCustomer() {
-        txtCustomerID.setText(String.valueOf(CustomerID));
-
         conn = sqlManager.openConnection();
 
-        String query = "SELECT CONCAT(forename,' ', surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, cc.category_name FROM tblCustomer as c"
+        txtCustomerID.setText(String.valueOf(CustomerID));
+
+        String query = "SELECT CONCAT(forename,' ', surname), forename, surname,"
+                + " address1, address2, address3, county, postcode, phone_number,"
+                + " email_address, cc.category_name"
+                + " FROM tblCustomer as c"
                 + " INNER JOIN tblCustomerCategory as cc"
                 + " ON c.category_id = cc.category_id"
                 + " WHERE customer_id = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
 
+        try {
+            // Query Setup & Execution
+            PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, CustomerID);
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                System.out.println("-------------------------------");
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));                // Shows customer data
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
-                System.out.println(rs.getString(6));
-                System.out.println(rs.getString(7));
-                System.out.println(rs.getString(8));
-                System.out.println(rs.getString(9));
-                System.out.println(rs.getString(10));
-                System.out.println(rs.getString(11));
 
+            if (rs.next()) {
+
+                // Loads all the data from the DB into the JTextFields
                 lblFullName.setText(rs.getString(1));
-                txtForename.setText(rs.getString(2));
-                txtSurname.setText(rs.getString(3));
-                txtAddress1.setText(rs.getString(4));
-                txtAddress2.setText(rs.getString(5));
-                txtAddress3.setText(rs.getString(6));
-                txtCounty.setText(rs.getString(7));
-                txtPostcode.setText(rs.getString(8));
-                txtPhoneNumber.setText(rs.getString(9));
-                txtEmailAddress.setText(rs.getString(10));
+                for (int i = 0; i < 9; i++) {
+                    fields[i].setText(rs.getString(i + 2));
+                }
                 cbCategory.setSelectedItem(rs.getString(11));
+
             } else {
-                System.out.println("-------------------------------");
-                System.out.println("Error occurred fetching customer data");
+                logger.log(Level.WARNING, "Error occured fetching customer data");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
 
+        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -216,6 +218,8 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCategory.setText("Category:");
+
+        txtCustomerID.setEditable(false);
 
         txtAddress1.setToolTipText("");
 
@@ -389,103 +393,113 @@ public class formOneCustomer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        setEditable(fields, true);                                  // Makes all the fields editable
-        btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
-        txtForename.requestFocus();
+        // Makes all the fields editable, disables the edit button and makes the confirm button visible
+        Utility.setEditable(fields, true);
         btnEdit.setEnabled(false);
+        btnConfirmEdit.setVisible(true);
 
+        // Moves the insertion pointer to the forename field for convenience
+        txtForename.requestFocus();
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         conn = sqlManager.openConnection();
-        int NoInvoices = sqlManager.countRecords(conn, "tblInvoice", "customer_id", CustomerID);        // Counts how many invoices the customer has
-        int NoQuotations = sqlManager.countRecords(conn, "tblQuotation", "customer_id", CustomerID);    // Counts how many quotations the customer has    
-        System.out.println("-------------------------------");
-        System.out.println("Customer ID: " + CustomerID);
-        System.out.println("No. of invoices: " + NoInvoices);
-        System.out.println("No. of quotations: " + NoQuotations);
 
-        if (NoInvoices > 0 || NoQuotations > 0) {                   // If the customer has any invoices or quotations associated with them then the user is informed
-            ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, "This customer has " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "") + " associated with them and therefore cannot be removed.");
+        // Counts how many invoices and quotations the customer has
+        int NoInvoices = sqlManager.countRecords(conn, "tblInvoice", "customer_id", CustomerID);
+        int NoQuotations = sqlManager.countRecords(conn, "tblQuotation", "customer_id", CustomerID);
 
+        if (NoInvoices > 0 || NoQuotations > 0) {
+            // If the customer has any invoices or quotations associated with them then the user is informed
+            String sInvoice = (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "");
+            String conjunction = (NoInvoices > 0 && NoQuotations > 0 ? " and " : "");
+            String sQuotation = (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "");
+
+            String msg = "This customer has " + sInvoice + conjunction + sQuotation + " associated with them and therefore cannot be removed.";
+            ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, msg);
         } else {
             // Asks user whether they really want to remove this customer
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?", "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) {                                       // If response is yes
-                sqlManager.removeRecord(conn, "tblCustomer", "customer_id", CustomerID);   // Removes the customer
-                this.dispose();                                     // Closes this form since the customer no longer exists
-                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer was removed
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this customer?",
+                    "Remove Customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 
+            // If response is yes
+            if (YesNo == 0) {
+                // Removes customer and closes the form since the customer no longer exists
+                sqlManager.removeRecord(conn, "tblCustomer", "customer_id", CustomerID);
+                this.dispose();
+
+                // Refreshes the customer table in the previous form since a customer was removed
+                previousForm.loadCustomers();
             }
         }
+
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
-    // Counts how many of the input fields is empty and returns the integer value
-    public int countEmptyFields(JTextField[] fields) {
-        int emptyFields = 0;
-        for (JTextField field : fields) {
-            if (field.getText().equals("")) {
-                emptyFields++;
-            }
-        }
-        return emptyFields;
-    }
-
-
+    // When the user has finished making edits to the customer's details
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
-        JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+        JTextField[] requiredFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
-        if (countEmptyFields(inputFields) != 0) {                               // Checks if any of the input fields are empty
+        if (Utility.countEmptyFields(requiredFields) != 0) {
+            // Checks if any of the required input fields are empty
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
 
-        } else if (isAddNewCategorySelected()) {                                // Checks if the user has the 'Add category' option selected
-            ErrorMsg.throwError(ErrorMsg.INVALID_CATEGORY_SELECTED_ERROR);
+        } else if (validInputs()) {
 
-        } else if (!validInputs()) {                                            // Validates input lengths
-        } else {
             // Asks user whether they really want to edit this customer's details
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?", "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) {                                       // If response is yes
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this customer's details?",
+                    "Update customer details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            // If response is yes
+            if (YesNo == 0) {
                 conn = sqlManager.openConnection();
-                String query = "UPDATE tblCustomer SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ?, category_id = ? WHERE customer_id = ?";
+
+                String query = "UPDATE tblCustomer SET forename = ?, surname = ?, address1 = ?,"
+                        + " address2 = ?, address3 = ?, county = ?, postcode = ?,"
+                        + " phone_number = ?, email_address = ?, category_id = ?"
+                        + " WHERE customer_id = ?";
+
                 try {
+                    // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
+
                     pstmt.setString(1, txtForename.getText());
                     pstmt.setString(2, txtSurname.getText());
                     pstmt.setString(3, txtAddress1.getText());
-                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
-                    pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
+                    // If the address2 or address3 is empty then it is replaced by null instead of ""
+                    pstmt.setString(4, (txtAddress2.getText().isEmpty() ? null : txtAddress2.getText()));
+                    pstmt.setString(5, (txtAddress3.getText().isEmpty() ? null : txtAddress3.getText()));
                     pstmt.setString(6, txtCounty.getText());
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategory", cbCategory.getSelectedItem().toString()));  // Gets the index of the selected customer category
+                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategory", cbCategory.getSelectedItem().toString()));
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) updated.");
+                    logger.log(Level.INFO, rowsAffected + " row(s) updated.");
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "SQLException");
                 }
                 sqlManager.closeConnection(conn);
-                setEditable(inputFields, false);                    // Makes all the fields no longer editable
-                txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
-                txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
-                btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
+
+                // Resets JTextFields and buttons to their default (non-editing) state
+                Utility.setEditable(fields, false);
+                btnConfirmEdit.setVisible(false);
                 btnEdit.setEnabled(true);
-                previousForm.loadCustomers();                       // Refreshes the customer table in the previous form since a customer details were changed
+
+                // Refreshes the customer table in the previous form since a customer's details were changed
+                previousForm.loadCustomers();
             }
         }
         txtCustomerID.requestFocus();
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
-    // Validating input length against the max lengths in the DB
+    // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
         conn = sqlManager.openConnection();
         boolean output = false;
+
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
@@ -514,31 +528,36 @@ public class formOneCustomer extends javax.swing.JFrame {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
+            // If all inputs passed the validity checks then boolean set to true
             output = true;
         }
+
         sqlManager.closeConnection(conn);
         return output;
     }
 
-
     private void btnSetInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
-        form.previousForm3 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm3 = this;
+        this.setVisible(false);
+        form.setVisible(true);
+
+        // For convenience, the customer the user was looking at is automatically selected
         form.selectCustomer(CustomerID);
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
 
         previousForm.setVisible(false);
     }//GEN-LAST:event_btnSetInvoiceActionPerformed
 
     private void btnSetQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetQuotationActionPerformed
         formNewQuotation form = new formNewQuotation().getFrame();
-        form.previousForm3 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm3 = this;
+        this.setVisible(false);
+        form.setVisible(true);
+
+        // For convenience, the customer the user was looking at is automatically selected
         form.selectCustomer(CustomerID);
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
 
         previousForm.setVisible(false);
     }//GEN-LAST:event_btnSetQuotationActionPerformed

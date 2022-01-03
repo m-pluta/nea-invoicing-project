@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
@@ -24,34 +26,38 @@ import javax.swing.table.JTableHeader;
  */
 public class formManageCustomerCategories extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formManageCustomerCategories
-     */
-    formMainMenu previousForm = null;                               // Stores the previous Form object
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model = null;                                 // The table model
-    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    private static final Logger logger = Logger.getLogger(formManageCustomerCategories.class.getName());
+    formMainMenu previousForm = null;
+    Connection conn = null;
+
+    // Init 
+    DefaultTableModel model = null;
+    public static String sp = "";
 
     public formManageCustomerCategories() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_CustomerCategories.getModel();       // Fetches the table model of the table
+        model = (DefaultTableModel) jTable_CustomerCategories.getModel();
 
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_CustomerCategories.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+        // When the user changes their search in the search box
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadCategories();                                   // Refreshes the category table as the search term has changed
+            public void insertUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadCategories();
             }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadCategories();                                   // Refreshes the category table as the search term has changed
+            public void removeUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadCategories();
             }
 
             @Override
@@ -60,41 +66,49 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
         });
 
+        // Adjusting the header widths
         jTable_CustomerCategories = Utility.setColumnWidths(jTable_CustomerCategories, new int[]{40, 120, 120});
     }
 
+    // Used when the form is opened from within another form
     public formManageCustomerCategories getFrame() {
         return this;
     }
 
     public void loadCategories() {
         conn = sqlManager.openConnection();
-        model.setRowCount(0);                                       // Empties the table
-        String query = "SELECT category_id, category_name, date_created FROM tblCustomerCategory";
 
-        if (!sp.equals("")) {                                       // When searchParameter is something
+        // Empties the table
+        model.setRowCount(0);
+
+        String query = "SELECT category_id, category_name, date_created FROM tblCustomerCategory";
+        // If the user entered a search into the search box, the WHERE clause is adjusted
+        if (!sp.isEmpty()) {
             query += " WHERE";
-            query += " category_id LIKE '%" + sp + "%'";            // \
-            query += " OR category_name LIKE '%" + sp + "%'";       //  |-- Check whether a column value contains the searchParameter
-            query += " OR date_created LIKE '%" + sp + "%'";        // /
+            query += " category_id LIKE '%" + sp + "%'";
+            query += " OR category_name LIKE '%" + sp + "%'";
+            query += " OR date_created LIKE '%" + sp + "%'";
         }
 
         try {
             Statement stmt = conn.createStatement();
-
             ResultSet rs = stmt.executeQuery(query);
-            int categoryCounter = 0;                                // variable for counting how many category are being shown in the table
-            while (rs.next()) {
-                System.out.println("-------------------------------");
-                System.out.println(rs.getString(2));                // Shows each customer category that is in the table
 
-                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});  // Adds the category data as a new row in the table
-                categoryCounter++;                                  // Increments category counter as a new category was added to the table
+            // Counts the amount of categories which are being shown
+            int categoryCounter = 0;
+            while (rs.next()) {
+
+                // Adds the category from the DB to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3)});
+                categoryCounter++;
             }
-            lblCategoryCount.setText("Number of categories: " + String.valueOf(categoryCounter)); // Updates category counter label
+
+            // Updates category counter label
+            lblCategoryCount.setText("Number of categories: " + String.valueOf(categoryCounter));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
     }
 
@@ -246,62 +260,79 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);
 
         if (addedCategory != null) {
-            loadCategories();                                       // Refreshes Combo box so the new category is visible
+            // Refreshes Combo box so the new category is visible
+            loadCategories();
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        int row = jTable_CustomerCategories.getSelectedRow();       // Gets the currently selected row in the table
+        // Gets the currently selected row in the table
+        int row = jTable_CustomerCategories.getSelectedRow();
 
-        if (row == -1) {                                            // If no row is selected
+        if (row == -1) {
+            // If no row is selected
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
 
         } else {
-            String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
+            // Gets the values from the selected row in the table
+            String string_id = model.getValueAt(row, 0).toString();
             String category = model.getValueAt(row, 1).toString();
-            int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
+            int id = Utility.StringToInt(string_id);
 
-            if (id == 1) {                                          // Checks if the user is trying to remove the first row - this is the default row and cannot be removed
+            if (id == 1) {
+                // Checks if the user is trying to remove the first row which is the default row
                 ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR);
 
             } else {
                 conn = sqlManager.openConnection();
+
+                // Counts how many customers are under this category
                 int usersWithCategory = sqlManager.countRecords(conn, "tblCustomer", "category_id", id);
+
                 if (usersWithCategory == -1) {
-                    System.out.println("-------------------------------");
-                    System.out.println("Error fetching customers with this category");
+                    logger.log(Level.WARNING, "Error fetching customers with this category");
+
                 } else if (usersWithCategory > 0) {
-                    ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, "Cannot remove category since " + usersWithCategory + " customer" + (usersWithCategory > 1 ? "s are" : " is") + " under this category");
+                    // Ensures the user can't remove a category that is being used by certain customers.
+                    ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, "Cannot remove category since " + usersWithCategory
+                            + " customer" + (usersWithCategory > 1 ? "s are" : " is") + " under this category");
 
                 } else {
-
                     // Asks user whether they really want to remove the category
-                    int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '" + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-                    if (YesNo == 0) {                               // If response is yes
-                        System.out.println("-------------------------------");
-                        System.out.println("Removing category " + string_id + " - " + category + ".");
+                    int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the category - '"
+                            + category + "'?", "Remove Category", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-                        sqlManager.removeRecord(conn, "tblCustomerCategory", "category_id", id);      // Removes the selected category
-                        loadCategories();                           //Refreshes table since a record was removed
+                    // If the response is yes
+                    if (YesNo == 0) {
+                        logger.log(Level.INFO, "Removing category " + string_id + " - " + category);
+
+                        // Removes the selected category and refreshes the table
+                        sqlManager.removeRecord(conn, "tblCustomerCategory", "category_id", id);
+                        loadCategories();
                     }
                 }
+
                 sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        int row = jTable_CustomerCategories.getSelectedRow();       // Gets the currently selected row in the table
+        // Gets the currently selected row in the table
+        int row = jTable_CustomerCategories.getSelectedRow();
 
-        if (row == -1) {                                            // If no row is selected
+        if (row == -1) {
+            // If no row is selected
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
 
         } else {
-            String string_id = model.getValueAt(row, 0).toString(); // Gets the values from the selected row in the table as strings
+            // Gets the values from the selected row in the table
+            String string_id = model.getValueAt(row, 0).toString();
             String category = model.getValueAt(row, 1).toString();
-            int id = Utility.StringToInt(string_id);                // Converts the id in string type to integer type
+            int id = Utility.StringToInt(string_id);
 
-            if (id == 1) {                                          // Checks if the user is trying to edit the first row - this is the default row and therefore cannot be edited
+            if (id == 1) {
+                // Checks if the user is trying to edit the first row which is the default row
                 ErrorMsg.throwError(ErrorMsg.CANNOT_EDIT_ERROR);
 
             } else {
@@ -310,47 +341,54 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
                 while (!picked) {
                     // Asks user what the new name of the category should be
-                    String inputCategory = Utility.StringInputDialog("Current name:  '" + category + "'", "Edit category name");
+                    String inputCategory = Utility.StringInputDialog("Current name: '" + category + "'", "Edit category name");
 
-                    if (inputCategory == null) {                    // If the dialog window was closed
-                        break;
-                    } else {
-                        inputCategory = inputCategory.trim();       // Removes all leading and trailing whitespace characters
+                    if (inputCategory != null) {
 
-                        if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblCustomerCategory", "category_name")) {   // Checks if the entered category name is longer than max length in DB
+                        // Removes all leading and trailing whitespace characters
+                        inputCategory = inputCategory.trim();
+
+                        if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblCustomerCategory", "category_name")) {
+                            // Checks if the entered category name is valid
                             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "category name");
 
-                        } else if (sqlManager.RecordExists(conn, "tblCustomerCategory", "category_name", inputCategory)) { // Checks if category already exists in DB
+                        } else if (sqlManager.RecordExists(conn, "tblCustomerCategory", "category_name", inputCategory)) {
+                            // Checks if category already exists in DB
                             ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Category");
-                            // #TODO Allow the user to merge the two categories together under the wanted name
+                            // #TODO Allow the user to merge the two categories together under the requested name
 
                         } else {
-                            String query = "UPDATE tblCustomerCategory SET category_name = ? WHERE category_id = ?";
                             try {
+                                // Query Setup & Execution
+                                String query = "UPDATE tblCustomerCategory SET category_name = ? WHERE category_id = ?";
                                 PreparedStatement pstmt = conn.prepareStatement(query);
                                 pstmt.setString(1, inputCategory);
                                 pstmt.setInt(2, id);
 
-                                int rowsAffected = pstmt.executeUpdate();
-                                System.out.println("-------------------------------");
-                                System.out.println(rowsAffected + " row(s) updated.");
+                                pstmt.executeUpdate();
+                                logger.log(Level.INFO, "Category name updated to " + inputCategory);
 
-                                loadCategories();                   //Refreshes table since a record was updated
+                                // Refreshes table since category name was updated
+                                loadCategories();
                             } catch (SQLException e) {
-                                e.printStackTrace();
+                                logger.log(Level.SEVERE, "SQLException");
                             }
+
+                            // Exits while loop
                             picked = true;
                         }
                     }
                 }
+
                 sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the customer category management form (current form)
+        // Makes previous form visible and closes current form
+        previousForm.setVisible(true);
+        this.dispose();
 
     }//GEN-LAST:event_btnBackActionPerformed
 

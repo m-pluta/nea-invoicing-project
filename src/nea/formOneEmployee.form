@@ -244,6 +244,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtEmployeeID">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtForename">
     </Component>
@@ -267,6 +270,9 @@
     <Component class="javax.swing.JTextField" name="txtEmailAddress">
     </Component>
     <Component class="javax.swing.JTextField" name="txtLastLogin">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbAdmin">
     </Component>

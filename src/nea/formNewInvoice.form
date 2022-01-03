@@ -254,6 +254,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtInvoiceID">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbCustomers">
       <Properties>
@@ -320,10 +323,16 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtSubtotal">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtPayments">
     </Component>
     <Component class="javax.swing.JTextField" name="txtTotal">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator">
     </Component>
@@ -390,6 +399,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtItemTotal">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator2">
     </Component>

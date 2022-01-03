@@ -87,10 +87,12 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="300" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnFormat" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="txtTotal" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnFormat" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+                      <Component id="lblTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -139,6 +141,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtQuotationID">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtCustomer">
     </Component>

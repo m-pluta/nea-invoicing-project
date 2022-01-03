@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -24,28 +26,33 @@ import javax.swing.table.JTableHeader;
  */
 public class formManageEmployees extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formAddNewEmployee
-     */
-    int WHO_LOGGED_IN = 0;
-    formMainMenu previousForm = null;                               // Stores the previously open form
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model;                                        // The table model
-    formOneEmployee Employee_in_view = null;                        // could be null or could store whichever employee the user is currently viewing
-    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    private static final Logger logger = Logger.getLogger(formManageEmployees.class.getName());
+    formMainMenu previousForm = null;
+    Connection conn = null;
+
+    // Init
+    DefaultTableModel model;
+    public static String sp = "";
+
+    // Whether the user is currently viewing an employee in another form or adding a new employee 
+    formOneEmployee Employee_in_view = null;
     public boolean CurrentlyAddingEmployee = false;
 
     public formManageEmployees() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_Employees.getModel();    // Fetches the table model of the table
-        jTable_Employees.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
 
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_Employees.getModel();
+        jTable_Employees.setDefaultEditor(Object.class, null);
+
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_Employees.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        jTable_Employees.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the employee table
+        // When the user clicks on a row in the table
+        jTable_Employees.addMouseListener(new MouseListener() {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -64,38 +71,48 @@ public class formManageEmployees extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedID = getSelectedEmployee();             // Gets the id of the employee which is currently selected in the table
-                if (selectedID != -1) {                             // id of the employee is not '-1', this is the default return value from getSelectedEmployee()
-                    if (Employee_in_view != null) {                 // If there is another employee in view then it closes it
+                // Gets the id of the employee which is currently selected in the table
+                int selectedID = getSelectedEmployee();
+                if (selectedID != -1) {
+                    if (Employee_in_view != null) {
+                        // If the user is viewing another employee then that form is closed
                         Employee_in_view.dispose();
                     }
 
-                    formOneEmployee form = new formOneEmployee().getFrame();    // Opens a new instance of the formOneEmployee() form
-                    form.setLocation(1630, 422);                    // Sets the location of the employee view to the right of the current employee management form
-                    form.setVisible(true);                          // Makes the new employee view visible
-                    form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-                    form.EmployeeID = selectedID;                   // Tells the employee view form which employee to load
-                    form.previousForm = formManageEmployees.this;   // Informs the employee view what the previous form is 
-                    form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details
-                    if (selectedID == WHO_LOGGED_IN) {
+                    formOneEmployee form = new formOneEmployee().getFrame();
+                    form.setLocation(1630, 422);
+                    form.setVisible(true);
+
+                    // Loads employee into the other form and sets up previousForm variable
+                    form.EmployeeID = selectedID;
+                    form.previousForm = formManageEmployees.this;
+                    form.loadEmployee();
+
+                    // Sets employee in view variable to the employee which is being viewed
+                    Employee_in_view = form;
+
+                    // Makes sure logged in user cannot remove themself from the system or make themself an admin in the other form
+                    if (selectedID == LoggedInUser.getID()) {
                         form.disableButtonsForSelfChanges();
                     }
-                    Employee_in_view = form;                        // Sets the employee in view to this
                 }
             }
         });
 
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+        // When the user changes their search in the search box
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadEmployees();                                    // Refreshes the employee table as the search term has changed
+            public void insertUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadEmployees();
             }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadEmployees();                                    // Refreshes the employee table as the search term has changed
+            public void removeUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadEmployees();
             }
 
             @Override
@@ -104,46 +121,53 @@ public class formManageEmployees extends javax.swing.JFrame {
 
         });
 
+        // Adjusting the header widths
         jTable_Employees = Utility.setColumnWidths(jTable_Employees, new int[]{40, 120, 100, 175, 120});
     }
 
+    // Used when the form is opened from within another form
     public formManageEmployees getFrame() {
         return this;
     }
 
-    // Loads all the employees in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
+    // Loads all the employees into the table, the results are filtered using the searchParameter (sp)
     public void loadEmployees() {
-        model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
 
+        // Empties the table
+        model.setRowCount(0);
+
         String query = "SELECT employee_id, CONCAT(forename,' ', surname) AS FullName, phone_number, email_address FROM tblEmployee";
-
-        if (!sp.equals("")) {                                       // When searchParameter is something
+        // If the user entered a search into the search box, the WHERE clause is adjusted
+        if (!sp.isEmpty()) {
             query += " WHERE";
-            query += " employee_id LIKE '%" + sp + "%'";                        // \
-            query += " OR CONCAT(forename,' ', surname) LIKE '%" + sp + "%'";   //  |-- Check whether a column value contains the searchParameter
-            query += " OR phone_number LIKE '%" + sp + "%'";                    //  |
-            query += " OR email_address LIKE '%" + sp + "%'";                   // /
+            query += " employee_id LIKE '%" + sp + "%'";
+            query += " OR CONCAT(forename,' ', surname) LIKE '%" + sp + "%'";
+            query += " OR phone_number LIKE '%" + sp + "%'";
+            query += " OR email_address LIKE '%" + sp + "%'";
         }
-
         query += " ORDER BY employee_id";
 
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
-            int employeeCounter = 0;                                // variable for counting how many employees are being shown in the table
+            // Counts the amount of employees which are being shown
+            int employeeCounter = 0;
             while (rs.next()) {
                 String last_login_date = sqlManager.getLastLogin(conn, Utility.StringToInt(rs.getString(1)));
 
-                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), last_login_date}); // Adds the employee to the table
-
-                employeeCounter++;                                  // Increments employee counter as a new employee was added to the table
+                // Adds the employee from the DB to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), last_login_date});
+                employeeCounter++;
             }
-            lblEmployeeCount.setText("Number of employees: " + String.valueOf(employeeCounter)); // Updates employee counter label
+
+            // Updates employee counter label
+            lblEmployeeCount.setText("Number of employees: " + String.valueOf(employeeCounter));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
     }
 
@@ -258,36 +282,45 @@ public class formManageEmployees extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (Employee_in_view != null) {                             // Checks whether there is another form opened showing the selected employee
-            Employee_in_view.dispose();                             // If there is another form then it gets rid of it
+        // Checks if the user is viewing a employee in another form
+        if (Employee_in_view != null) {
+            Employee_in_view.dispose();
         }
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the employee management form (current form)
+
+        // Makes previous form visible and closes current form
+        previousForm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
+        // Checks if the user is adding an employee in another form
         if (!CurrentlyAddingEmployee) {
-            formAddEmployee form = new formAddEmployee().getFrame();            // Opens a new instance of the formAddEmployee() form
-            form.setLocationRelativeTo(null);                       // Sets the location of the employee view to the right of the current employee management form
-            form.setVisible(true);                                  // Makes the new employee view visible
+            formAddEmployee form = new formAddEmployee().getFrame();
+            form.setVisible(true);
             form.previousForm = this;
             CurrentlyAddingEmployee = true;
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 
-    // Returns the Employee_id of the selected employee in the employee table
+    // Returns the employee_id of the selected employee in the table
     public int getSelectedEmployee() {
-        int selectedRow = jTable_Employees.getSelectedRow();        // Gets the selected row in the table
+        int selectedRow = jTable_Employees.getSelectedRow();
 
-        if (selectedRow == -1) {                                    // If no row is selected in the table
+        if (selectedRow == -1) {
+            // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
-        } else {                                                    // If there is a row selected in the table
-            String string_id = model.getValueAt(selectedRow, 0).toString();     // Gets the id of the selected in string form
-            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
+
+        } else {
+            // Returns id of selected employee
+            String string_id = model.getValueAt(selectedRow, 0).toString();
+            int id = Utility.StringToInt(string_id);
             return id;
         }
-        return -1;                                                  //  Returns -1 if there were to be an error somewhere
+
+        // Returns -1 if there were to be an error somewhere
+        return -1;
     }
 
     /**

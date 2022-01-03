@@ -1,34 +1,32 @@
 package nea;
 
-// This class stores a single row inside the invoice table
+// This class stores the details for a item row from a receipt table
 public class tableRow {
-    
-        // Array which stores each of the 4 cells inside the row
-	String[] data = new String[4];
 
-        // Constructor for the tableRow
-	public tableRow(String data1, String data2, String data3, String data4) {
-		this.data[0] = data1;
-		this.data[1] = data2;
-		this.data[2] = data3;
-		this.data[3] = data4;
-	}
+    String[] data = new String[4];
 
-        // Setter method
-	public void set(int index, String input) {
-		this.data[index] = input;
-	}
+    // Constructor
+    public tableRow(String data1, String data2, String data3, String data4) {
+        this.data[0] = data1;
+        this.data[1] = data2;
+        this.data[2] = data3;
+        this.data[3] = data4;
+    }
 
-        // Getter method
-	public String get(int index) {
-		return this.data[index];
-	}
+    // Setter
+    public void set(int index, String input) {
+        this.data[index] = input;
+    }
 
-        // Method to turn the table row into a string - useful for debugging
-	@Override
-	public String toString() {
-		return this.get(0) + ", " + this.get(1) + ", " + this.get(2) + ", " + this.get(3);
+    // Getter
+    public String get(int index) {
+        return this.data[index];
+    }
 
-	}
-
+    // Turn the table row into a string
+    // Used for debugging
+    @Override
+    public String toString() {
+        return this.get(0) + ", " + this.get(1) + ", " + this.get(2) + ", " + this.get(3);
+    }
 }

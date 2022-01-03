@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -24,27 +26,32 @@ import javax.swing.table.JTableHeader;
  */
 public class formManageQuotations extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formManageQuotations
-     */
-    int WHO_LOGGED_IN = 1;
-    formMainMenu previousForm = null;                               // Stores the previously open form
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model;                                        // The table model
-    formOneQuotation Quotation_in_view = null;                      // could be null or could store whichever quotation the user is currently viewing
-    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    private static final Logger logger = Logger.getLogger(formManageQuotations.class.getName());
+    formMainMenu previousForm = null;
+    Connection conn = null;
+
+    // Init
+    DefaultTableModel model;
+    public static String sp = "";
+
+    // Whether the user is currently viewing a quotation in another form
+    formOneQuotation Quotation_in_view = null;
 
     public formManageQuotations() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_Quotations.getModel();   // Fetches the table model of the table
-        jTable_Quotations.setDefaultEditor(Object.class, null);     // Makes it so the user cannot edit the table
 
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_Quotations.getModel();
+        jTable_Quotations.setDefaultEditor(Object.class, null);
+
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_Quotations.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        jTable_Quotations.addMouseListener(new MouseListener() {    // Mouse listener for when the user clicks on a row in the quotation table
+        // When the user clicks on a row in the table
+        jTable_Quotations.addMouseListener(new MouseListener() {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -63,33 +70,43 @@ public class formManageQuotations extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedID = getSelectedQuotation();            // Gets the id of the quotation which is currently selected in the table
-                if (selectedID != -1) {                             // id of the quotation is not '-1', this is the default return value from getSelectedQuotation()
+                // Gets the id of the quotaiton which is currently selected in the table
+                int selectedID = getSelectedQuotation();
+                if (selectedID != -1) {
                     if (Quotation_in_view != null) {
+                        // If the user is viewing another quotation then that form is closed
                         Quotation_in_view.dispose();
                     }
-                    formOneQuotation form = new formOneQuotation().getFrame();  // Opens a new instance of the formOneQuotation() form
-                    form.setLocation(1630, 422);                    // Sets the location of the quotation view to the right of the current quotation management form
-                    form.setVisible(true);                          // Makes the new quotation view visible
-                    form.QuotationID = selectedID;                  // Tells the quotation view form which quotation to load
-                    form.previousForm = formManageQuotations.this;  // Informs the quotation view what the previous form is 
-                    form.loadQuotation();                           // Runs the loadQuotation() method which will load all of the specified quotation's details
-                    Quotation_in_view = form;                       // Sets the quotation in view to this
+
+                    formOneQuotation form = new formOneQuotation().getFrame();
+                    form.setLocation(1630, 422);
+                    form.setVisible(true);
+
+                    // Loads quotation into the other form and sets up previousForm variable
+                    form.QuotationID = selectedID;
+                    form.previousForm = formManageQuotations.this;
+                    form.loadQuotation();
+
+                    // Sets quotation in view variable to the quotation which is being viewed
+                    Quotation_in_view = form;
                 }
             }
         });
 
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+        // When the user changes their search in the search box
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadQuotations();                                   // Refreshes the quotation table as the search term has changed
+            public void insertUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadQuotations();
             }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadQuotations();                                   // Refreshes the quotation table as the search term has changed
+            public void removeUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadQuotations();
             }
 
             @Override
@@ -98,9 +115,11 @@ public class formManageQuotations extends javax.swing.JFrame {
 
         });
 
+        // Adjusting the header widths
         jTable_Quotations = Utility.setColumnWidths(jTable_Quotations, new int[]{40, 120, 120, 120, 80});
     }
 
+    // Used when the form is opened from within another form
     public formManageQuotations getFrame() {
         return this;
     }
@@ -218,11 +237,14 @@ public class formManageQuotations extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void loadQuotations() {    // Raw SQL query: https://pastebin.com/YyF8jJ6b
-        model.setRowCount(0);                                       // Empties the table
+    public void loadQuotations() {
         conn = sqlManager.openConnection();
 
-        String mainQuery = "SELECT q.quotation_id AS id,"
+        // Empties the table
+        model.setRowCount(0);
+
+        // Raw SQL query: https://pastebin.com/YyF8jJ6b
+        String query = "SELECT q.quotation_id AS id,"
                 + " CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
                 + " CONCAT(e.forename, ' ', e.surname) AS employeeFullName,"
                 + " q.date_created,"
@@ -232,68 +254,76 @@ public class formManageQuotations extends javax.swing.JFrame {
                 + " LEFT JOIN tblEmployee e ON q.employee_id = e.employee_id"
                 + " JOIN tblQuotationDetail qD ON q.quotation_id = qD.quotation_id"
                 + " GROUP BY q.quotation_id";
-
-        if (!sp.equals("")) {                                       // When searchParameter is something
-
-            // Check whether a column value contains the searchParameter
-            mainQuery += " HAVING"
-                    + " q.quotation_id LIKE '%" + sp + "%'"
-                    + " OR customerFullName LIKE '%" + sp + "%'"
-                    + " OR employeeFullName LIKE '%" + sp + "%'"
-                    + " OR q.date_created LIKE '%" + sp + "%'"
-                    + " OR quotationTotal LIKE '%" + sp + "%'";
+        // If the user entered a search into the search box, the WHERE clause is adjusted
+        if (!sp.isEmpty()) {
+            query += " HAVING";
+            query += " q.quotation_id LIKE '%" + sp + "%'";
+            query += " OR customerFullName LIKE '%" + sp + "%'";
+            query += " OR employeeFullName LIKE '%" + sp + "%'";
+            query += " OR q.date_created LIKE '%" + sp + "%'";
+            query += " OR quotationTotal LIKE '%" + sp + "%'";
         }
-        
-        mainQuery += " ORDER BY q.quotation_id";
+        query += " ORDER BY q.quotation_id";
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(mainQuery);
+            ResultSet rs = stmt.executeQuery(query);
 
-            int quotationCounter = 0;                               // variable for counting how many quotations are being shown in the table
+            // Counts the amount of quotations which are being shown
+            int quotationCounter = 0;
             while (rs.next()) {
                 String quotationTotal = Utility.formatCurrency(rs.getDouble(5));
 
-                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), quotationTotal}); // Adds the quotation to the table
-
-                quotationCounter++;                                 // Increments quotation counter as a new quotation was added to the table
+                // Adds the quotation from the DB to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), quotationTotal});
+                quotationCounter++;
             }
-            lblQuotationCount.setText("Number of quotations: " + String.valueOf(quotationCounter)); // Updates quotation counter label
+
+            // Updates quotation counter label
+            lblQuotationCount.setText("Number of quotations: " + String.valueOf(quotationCounter));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
     }
 
-    // Returns the quotation_id of the selected quotation in the quotation table
+    // Returns the quotation_id of the selected quotation in the table
     public int getSelectedQuotation() {
-        int selectedRow = jTable_Quotations.getSelectedRow();       // Gets the selected row in the table
+        int selectedRow = jTable_Quotations.getSelectedRow();
 
-        if (selectedRow == -1) {                                    // If no row is selected in the table
+        if (selectedRow == -1) {
+            // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
 
-        } else {                                                    // If there is a row selected in the table
-            String string_id = model.getValueAt(selectedRow, 0).toString(); // Gets the id of the selected in string form
-            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
+        } else {
+            // Returns id of selected quotation
+            String string_id = model.getValueAt(selectedRow, 0).toString();
+            int id = Utility.StringToInt(string_id);
             return id;
         }
-        return -1;                                                  //  Returns -1 if there were to be an error somewhere
+
+        //  Returns -1 if there were to be an error somewhere
+        return -1;
     }
 
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (Quotation_in_view != null) {                            // Checks whether there is another form opened showing the selected quotation
-            Quotation_in_view.dispose();                            // If there is another form then it gets rid of it
+        // Checks if the user is viewing an quotation in another form
+        if (Quotation_in_view != null) {
+            Quotation_in_view.dispose();
         }
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the document management form (current form)
+
+        // Makes previous form visible and closes current form
+        previousForm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         formNewQuotation form = new formNewQuotation().getFrame();
-        form.previousForm2 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        form.previousForm2 = this;
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     /**

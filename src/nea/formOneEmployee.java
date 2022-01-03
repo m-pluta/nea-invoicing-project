@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -19,81 +21,72 @@ import javax.swing.JTextField;
  */
 public class formOneEmployee extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formOneEmployee
-     */
-    int WHO_LOGGED_IN = 0;
-    int EmployeeID = 0;                                             // employee_id of currently loaded employee
-    Connection conn = null;                                         // Stores the connection object
-    formManageEmployees previousForm = null;                        // Stores the previous Form object
+    private static final Logger logger = Logger.getLogger(formOneEmployee.class.getName());
+    formManageEmployees previousForm = null;
+    Connection conn = null;
+
+    // employee_id of the employee which is currently loaded into the form
+    int EmployeeID = 0;
+
+    // Stores all the editable/uneditable JTextFields in the form so it's easy to access them throughout the code
+    JTextField[] fields;
 
     public formOneEmployee() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
 
-        btnConfirmEdit.setVisible(false);                           // Makes the Confirm Changes button invisible
-        JTextField[] fields = {txtEmployeeID, txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress, txtLastLogin};
+        // Confirm Edit button is made invisible since it only appears after editing has begun
+        btnConfirmEdit.setVisible(false);
+
+        // Initialises global array which stores all the textfields in the form
+        fields = new JTextField[]{txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+        // Makes all the fields uneditable + the admin CheckBox
+        Utility.setEditable(fields, false);
         cbAdmin.setEnabled(false);
-        setEditable(fields, false);                                 // Makes all the fields uneditable
     }
 
+    // Used when the form is opened from within another form
     public formOneEmployee getFrame() {
         return this;
     }
 
-    // Sets these components to either visible or invisible depending on the boolean state
-    public void setEditable(JTextField[] fields, boolean state) {
-        for (JTextField field : fields) {
-            field.setEditable(state);
-        }
-    }
-
+    // Loads the customer details into the form
     public void loadEmployee() {
-        txtEmployeeID.setText(String.valueOf(EmployeeID));
-
         conn = sqlManager.openConnection();
 
-        String query = "SELECT CONCAT(forename,' ',surname), forename, surname, address1, address2, address3, county, postcode, phone_number, email_address FROM tblEmployee WHERE employee_id = ?";
-        try {
-            PreparedStatement pstmt = conn.prepareStatement(query);
+        txtEmployeeID.setText(String.valueOf(EmployeeID));
 
+        String query = "SELECT CONCAT(forename,' ',surname), forename, surname,"
+                + " address1, address2, address3, county,"
+                + " postcode, phone_number, email_address"
+                + " FROM tblEmployee"
+                + " WHERE employee_id = ?";
+
+        try {
+            // Query Setup & Execution
+            PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, EmployeeID);
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                System.out.println("-------------------------------");
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));                // Shows employee data
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
-                System.out.println(rs.getString(6));
-                System.out.println(rs.getString(7));
-                System.out.println(rs.getString(8));
-                System.out.println(rs.getString(9));
-                System.out.println(rs.getString(10));
 
+            if (rs.next()) {
+
+                // Loads all the data from the DB into the JTextFields
                 lblFullName.setText(rs.getString(1));
-                txtForename.setText(rs.getString(2));
-                txtSurname.setText(rs.getString(3));
-                txtAddress1.setText(rs.getString(4));
-                txtAddress2.setText(rs.getString(5));
-                txtAddress3.setText(rs.getString(6));
-                txtCounty.setText(rs.getString(7));
-                txtPostcode.setText(rs.getString(8));
-                txtPhoneNumber.setText(rs.getString(9));
-                txtEmailAddress.setText(rs.getString(10));
+                for (int i = 0; i < 9; i++) {
+                    fields[i].setText(rs.getString(i + 2));
+                }
                 txtLastLogin.setText(sqlManager.getLastLogin(conn, EmployeeID));
                 cbAdmin.setSelected(sqlManager.isAdmin(conn, EmployeeID));
+
             } else {
-                System.out.println("-------------------------------");
-                System.out.println("Error occurred fetching employee data");
+                logger.log(Level.WARNING, "Error occured fetching employee data");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
 
+        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -170,7 +163,11 @@ public class formOneEmployee extends javax.swing.JFrame {
         lblAdmin.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblAdmin.setText("Admin:");
 
+        txtEmployeeID.setEditable(false);
+
         txtAddress1.setToolTipText("");
+
+        txtLastLogin.setEditable(false);
 
         btnRemove.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnRemove.setText("Remove");
@@ -335,111 +332,122 @@ public class formOneEmployee extends javax.swing.JFrame {
         enableEditMode();
     }//GEN-LAST:event_btnEditActionPerformed
 
-    // Disable the button and combo box that a user should not be able to modify about themself
-    // e.g. Can't remove themself and cant change their admin status
+    public void enableEditMode() {
+        // Makes all the fields editable, disables the edit button and makes the confirm button visible
+        Utility.setEditable(fields, true);
+        btnEdit.setEnabled(false);
+        btnConfirmEdit.setVisible(true);
+
+        // Checks if the employee making these edits is an admin
+        // If they are then they are allowed to change the admin status of other employees
+        if (LoggedInUser.isAdmin()) {
+            cbAdmin.setEnabled(true);
+        }
+
+        // Moves the insertion pointer to the forename field for convenience
+        txtForename.requestFocus();
+    }
+
+    // Disable the remove button and admin ComboBox so a user can't remove themself or make themself an admin
+    // This method is used when the user is editing their own details
     public void disableButtonsForSelfChanges() {
         btnRemove.setEnabled(false);
         cbAdmin.setEnabled(false);
     }
 
-    public void enableEditMode() {
-        JTextField[] fields = {txtForename, txtSurname, txtAddress1, txtAddress2, txtAddress3, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        setEditable(fields, true);                                  // Makes all the fields editable
-        conn = sqlManager.openConnection();
-        if (sqlManager.isAdmin(conn, WHO_LOGGED_IN)) {
-            cbAdmin.setEnabled(true);
-        }
-        sqlManager.closeConnection(conn);
-        btnConfirmEdit.setVisible(true);                            // Makes the confirm button visible
-        txtForename.requestFocus();
-        btnEdit.setEnabled(false);
-    }
-
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         conn = sqlManager.openConnection();
-        int NoInvoices = sqlManager.countRecords(conn, "tblInvoice", "employee_id", EmployeeID);        // Counts how many invoices the employee has
-        int NoQuotations = sqlManager.countRecords(conn, "tblQuotation", "employee_id", EmployeeID);    // Counts how many quotations the employee has
-        System.out.println("-------------------------------");
-        System.out.println("Employee ID: " + EmployeeID);
-        System.out.println("No. of invoices: " + NoInvoices);
-        System.out.println("No. of quotations: " + NoQuotations);
-        if (NoInvoices > 0 || NoQuotations > 0) {                   // If the employee has any invoices or quotations associated with them then the user is informed
-            ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, "This employee has " + (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "") + (NoInvoices > 0 && NoQuotations > 0 ? " and " : "") + (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "") + " associated with them and therefore cannot be removed.");
 
+        // Counts how many invoices and quotations the employee has
+        int NoInvoices = sqlManager.countRecords(conn, "tblInvoice", "employee_id", EmployeeID);
+        int NoQuotations = sqlManager.countRecords(conn, "tblQuotation", "employee_id", EmployeeID);
+
+        if (NoInvoices > 0 || NoQuotations > 0) {
+            // If the employee has any invoices or quotations associated with them then the user is informed
+            String sInvoice = (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "");
+            String conjunction = (NoInvoices > 0 && NoQuotations > 0 ? " and " : "");
+            String sQuotation = (NoQuotations > 0 ? NoQuotations + " quotation" : "") + (NoQuotations > 1 ? "s" : "");
+
+            String msg = "This employee has " + sInvoice + conjunction + sQuotation + " associated with them and therefore cannot be removed.";
+            ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, msg);
         } else {
             // Asks user whether they really want to remove this employee
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?", "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) {                                       // If response is yes
-                sqlManager.removeRecord(conn, "tblEmployee", "employee_id", EmployeeID);   // Removes the employee
-                this.dispose();                                     // Closes this form since the employee no longer exists
-                previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since a employee was removed
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this employee?",
+                    "Remove Employee", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 
+            // If response is yes
+            if (YesNo == 0) {
+                // Removes employee and closes the form since the employee no longer exists
+                sqlManager.removeRecord(conn, "tblEmployee", "employee_id", EmployeeID);
+                this.dispose();
+
+                // Refreshes the employee table in the previous form since a employee was removed
+                previousForm.loadEmployees();
             }
         }
+
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
-    // Counts how many of the input fields is empty and returns the integer value
-    public int countEmptyFields(JTextField[] fields) {
-        int emptyFields = 0;
-        for (JTextField field : fields) {
-            if (field.getText().equals("")) {
-                emptyFields++;
-            }
-        }
-        return emptyFields;
-    }
-
+    // When the user has finished making edits to the employee's details
     private void btnConfirmEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmEditActionPerformed
-        JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
-        // Checks if any of the input fields are empty
-        if (countEmptyFields(inputFields) != 0) {                   // Checks if any of the input fields are empty
+        JTextField[] requiredFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
+
+        if (Utility.countEmptyFields(requiredFields) != 0) {
+            // Checks if any of the required input fields are empty
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
-        } else if (!validInputs()) {                                // Validates input lengths
-        } else {
+
+        } else if (validInputs()) {
+
             // Asks user whether they really want to edit this employee's details
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?", "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) {                                       // If response is yes
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to update this employee's details?",
+                    "Update employee details", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            // If response is yes
+            if (YesNo == 0) {
                 conn = sqlManager.openConnection();
-                String query = "UPDATE tblEmployee SET forename = ?, surname = ?, address1 = ?, address2 = ?, address3 = ?, county = ?, postcode = ?, phone_number = ?, email_address = ? WHERE employee_id = ?";
+
+                String query = "UPDATE tblEmployee SET forename = ?, surname = ?, address1 = ?,"
+                        + " address2 = ?, address3 = ?, county = ?, postcode = ?,"
+                        + " phone_number = ?, email_address = ?, admin = ?"
+                        + " WHERE employee_id = ?";
+
                 try {
+                    // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
+
                     pstmt.setString(1, txtForename.getText());
                     pstmt.setString(2, txtSurname.getText());
                     pstmt.setString(3, txtAddress1.getText());
-                    pstmt.setString(4, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
-                    pstmt.setString(5, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
+                    // If the address2 or address3 is empty then it is replaced by null instead of ""
+                    pstmt.setString(4, (txtAddress2.getText().isEmpty() ? null : txtAddress2.getText()));
+                    pstmt.setString(5, (txtAddress3.getText().isEmpty() ? null : txtAddress3.getText()));
                     pstmt.setString(6, txtCounty.getText());
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, EmployeeID);
+                    pstmt.setBoolean(10, cbAdmin.isSelected());
+                    pstmt.setInt(11, EmployeeID);
+
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) updated.");
-
-                    query = "UPDATE tblEmployee SET admin = ? WHERE employee_id = ?";
-                    pstmt = conn.prepareStatement(query);
-                    pstmt.setBoolean(1, cbAdmin.isSelected());
-                    pstmt.setInt(2, EmployeeID);
-                    
-                    rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) updated.");
-
+                    logger.log(Level.INFO, rowsAffected + " row(s) updated.");
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "SQLException");
                 }
                 sqlManager.closeConnection(conn);
-                setEditable(inputFields, false);                    // Makes all the fields no longer editable
-                txtAddress2.setEditable(false);                     // Makes txtAddress2 non editable as the previous line doesnt take care of that
-                txtAddress3.setEditable(false);                     // Makes txtAddress3 non editable as the previous line doesnt take care of that
-                cbAdmin.setEnabled(false);
-                btnConfirmEdit.setVisible(false);                   // Hides the Confirm details button
+
+                // Resets JTextFields and buttons to their default (non-editing) state
+                Utility.setEditable(fields, false);
+                btnConfirmEdit.setVisible(false);
                 btnEdit.setEnabled(true);
+                cbAdmin.setEnabled(false);
+
+                // Need to check if previousForm is null since user can come here from main menu or from employee management
                 if (previousForm != null) {
-                    previousForm.loadEmployees();                       // Refreshes the employee table in the previous form since an employee's details were changed
+                    // Refreshes the employee table in the previous form since an employee's details were changed
+                    previousForm.loadEmployees();
                 } else {
+                    // Closes the form if the user came from the main menu
                     this.dispose();
                 }
             }
@@ -447,10 +455,11 @@ public class formOneEmployee extends javax.swing.JFrame {
         txtEmployeeID.requestFocus();
     }//GEN-LAST:event_btnConfirmEditActionPerformed
 
-    // Validating input length against the max lengths in the DB
+    // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
         conn = sqlManager.openConnection();
         boolean output = false;
+
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
@@ -479,8 +488,10 @@ public class formOneEmployee extends javax.swing.JFrame {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
+            // If all inputs passed the validity checks then boolean set to true
             output = true;
         }
+
         sqlManager.closeConnection(conn);
         return output;
     }

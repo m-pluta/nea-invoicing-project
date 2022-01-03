@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -24,28 +26,33 @@ import javax.swing.table.JTableHeader;
  */
 public class formManageCustomers extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formAddNewCustomer
-     */
-    int WHO_LOGGED_IN = 1;
-    formMainMenu previousForm = null;                               // Stores the previously open form
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model;                                        // The table model
-    formOneCustomer Customer_in_view = null;                        // could be null or could store whichever customer the user is currently viewing
-    public static String sp = "";                                   // SearchParameter, this stores whatever is currently in the Search box
+    private static final Logger logger = Logger.getLogger(formManageCustomers.class.getName());
+    formMainMenu previousForm = null;
+    Connection conn = null;
+
+    // Init
+    DefaultTableModel model = null;
+    public static String sp = "";
+
+    // Whether the user is currently viewing a customer in another form or adding a new customer 
+    formOneCustomer Customer_in_view = null;
     public boolean CurrentlyAddingCustomer = false;
 
     public formManageCustomers() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        model = (DefaultTableModel) jTable_Customers.getModel();    // Fetches the table model of the table
-        jTable_Customers.setDefaultEditor(Object.class, null);      // Makes it so the user cannot edit the table
 
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_Customers.getModel();
+        jTable_Customers.setDefaultEditor(Object.class, null);
+
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_Customers.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        jTable_Customers.addMouseListener(new MouseListener() {     // Mouse listener for when the user clicks on a row in the customer table
+        // When the user clicks on a row in the table
+        jTable_Customers.addMouseListener(new MouseListener() {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
@@ -64,35 +71,43 @@ public class formManageCustomers extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedID = getSelectedCustomer();             // Gets the id of the customer which is currently selected in the table
-                if (selectedID != -1) {                             // id of the customer is not '-1', this is the default return value from getSelectedCustomer()
-                    if (Customer_in_view != null) {                 // If there is another customer in view then it closes it
+                // Gets the id of the customer which is currently selected in the table
+                int selectedID = getSelectedCustomer();
+                if (selectedID != -1) {
+                    if (Customer_in_view != null) {
+                        // If the user is viewing another customer then that form is closed
                         Customer_in_view.dispose();
                     }
 
-                    formOneCustomer form = new formOneCustomer().getFrame();    // Opens a new instance of the formOneCustomer() form
-                    form.setLocation(1630, 422);                    // Sets the location of the customer view to the right of the current customer management form
-                    form.setVisible(true);                          // Makes the new customer view visible
-                    form.CustomerID = selectedID;                   // Tells the customer view form which customer to load
-                    form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-                    form.previousForm = formManageCustomers.this;   // Informs the customer view what the previous form is 
-                    form.loadCustomer();                            // Runs the loadCustomer() method which will load all of the specified customer's details
-                    Customer_in_view = form;                        // Sets the customer in view to this
+                    formOneCustomer form = new formOneCustomer().getFrame();
+                    form.setLocation(1630, 422);
+                    form.setVisible(true);
+
+                    // Loads customer into the other form and sets up previousForm variable
+                    form.CustomerID = selectedID;
+                    form.previousForm = formManageCustomers.this;
+                    form.loadCustomer();
+
+                    //Sets customer in view variable to the customer which is being viewed
+                    Customer_in_view = form;
                 }
             }
         });
 
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {    // Document Listener for when the user wants to search for something new
+        // When the user changes their search in the search box
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(DocumentEvent e) {             // When an insert occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadCustomers();                                    // Refreshes the customer table as the search term has changed
+            public void insertUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadCustomers();
             }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {             // When a remove occured in the search bar
-                sp = txtSearch.getText();                           // sets the sp (searchParameter) to whatever value the text field holds
-                loadCustomers();                                    // Refreshes the customer table as the search term has changed
+            public void removeUpdate(DocumentEvent e) {
+                // Updates the search parameter and refreshes the table
+                sp = txtSearch.getText();
+                loadCustomers();
             }
 
             @Override
@@ -101,45 +116,53 @@ public class formManageCustomers extends javax.swing.JFrame {
 
         });
 
+        // Adjusting the header widths
         jTable_Customers = Utility.setColumnWidths(jTable_Customers, new int[]{40, 120, 100, 100, 175});
     }
 
+    // Used when the form is opened from within another form
     public formManageCustomers getFrame() {
         return this;
     }
 
-    // Loads all the customers in the DB into the table, the results are limited by whatever the searchParameter is (the value in the search bar)
+    // Loads all the customers into the table, the results are filtered using the searchParameter (sp)
     public void loadCustomers() {
-        model.setRowCount(0);                                       // Empties the table
         conn = sqlManager.openConnection();
 
+        // Empties the table
+        model.setRowCount(0);
+
         String query = "SELECT customer_id, CONCAT(forename,' ', surname) AS FullName, postcode, phone_number, email_address FROM tblCustomer";
-
-        if (!sp.equals("")) {                                       // When searchParameter is something
+        // If the user entered a search into the search box, the WHERE clause is adjusted
+        if (!sp.isEmpty()) {
             query += " WHERE";
-            query += " customer_id LIKE '%" + sp + "%'";                        // \
-            query += " OR CONCAT(forename,' ', surname) LIKE '%" + sp + "%'";   //  |
-            query += " OR postcode LIKE '%" + sp + "%'";                        //  |-- Check whether a column value contains the searchParameter
-            query += " OR phone_number LIKE '%" + sp + "%'";                    //  |
-            query += " OR email_address LIKE '%" + sp + "%'";                   // /
+            query += " customer_id LIKE '%" + sp + "%'";
+            query += " OR CONCAT(forename,' ', surname) LIKE '%" + sp + "%'";
+            query += " OR postcode LIKE '%" + sp + "%'";
+            query += " OR phone_number LIKE '%" + sp + "%'";
+            query += " OR email_address LIKE '%" + sp + "%'";
         }
-
         query += " ORDER BY customer_id";
 
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
-            int customerCounter = 0;                                // variable for counting how many customers are being shown in the table
+            // Counts the amount of customers which are being shown
+            int customerCounter = 0;
             while (rs.next()) {
-                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)}); // Adds the customer to the table
 
-                customerCounter++;                                  // Increments customer counter as a new customer was added to the table
+                // Adds the customer from the DB to the table
+                model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)});
+                customerCounter++;
             }
-            lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter)); // Updates customer counter label
+
+            // Updates customer counter label
+            lblCustomerCount.setText("Number of customers: " + String.valueOf(customerCounter));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
     }
 
@@ -152,8 +175,6 @@ public class formManageCustomers extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
         lblManageCustomers = new javax.swing.JLabel();
         lblSearch = new javax.swing.JLabel();
         lblCustomerCount = new javax.swing.JLabel();
@@ -162,8 +183,6 @@ public class formManageCustomers extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Customers = new javax.swing.JTable();
         btnBack = new javax.swing.JButton();
-
-        jScrollPane2.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Customer Management");
@@ -260,36 +279,44 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        if (Customer_in_view != null) {                             // Checks whether there is another form opened showing the selected customer
-            Customer_in_view.dispose();                             // If there is another form then it gets rid of it
+        // Checks if the user is viewing a customer in another form
+        if (Customer_in_view != null) {
+            Customer_in_view.dispose();
         }
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the customer management form (current form)
+
+        // Makes previous form visible and closes current form
+        previousForm.setVisible(true);
+        this.dispose();
 
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
+        // Checks if the user is adding a customer in another form
         if (!CurrentlyAddingCustomer) {
-            formAddCustomer form = new formAddCustomer().getFrame();            // Opens a new instance of the formAddCustomer() form
-            form.setLocationRelativeTo(null);                       // Sets the location of the customer view to the right of the current customer management form
-            form.setVisible(true);                                  // Makes the new customer view visible
+            formAddCustomer form = new formAddCustomer().getFrame();
+            form.setVisible(true);
             form.previousForm1 = this;
             CurrentlyAddingCustomer = true;
         }
     }//GEN-LAST:event_btnAddNewActionPerformed
 
-    // Returns the customer_id of the selected customer in the customer table
+    // Returns the customer_id of the selected customer in the table
     public int getSelectedCustomer() {
-        int selectedRow = jTable_Customers.getSelectedRow();        // Gets the selected row in the table
+        int selectedRow = jTable_Customers.getSelectedRow();
 
-        if (selectedRow == -1) {                                    // If no row is selected in the table
+        if (selectedRow == -1) {
+            // If no row is selected in the table
             ErrorMsg.throwError(ErrorMsg.NOTHING_SELECTED_ERROR);
-        } else {                                                    // If there is a row selected in the table
-            String string_id = model.getValueAt(selectedRow, 0).toString();     // Gets the id of the selected in string form
-            int id = Utility.StringToInt(string_id);                // Converts the id from string type to integer type
+
+        } else {
+            // Returns id of selected customer
+            String string_id = model.getValueAt(selectedRow, 0).toString();
+            int id = Utility.StringToInt(string_id);
             return id;
         }
-        return -1;                                                  //  Returns -1 if there were to be an error somewhere
+
+        // Returns -1 if there were to be an error somewhere
+        return -1;
     }
 
     /**
@@ -331,9 +358,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddNew;
     private javax.swing.JButton btnBack;
-    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable_Customers;
     private javax.swing.JLabel lblCustomerCount;
     private javax.swing.JLabel lblManageCustomers;

@@ -11,24 +11,31 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class formLogin extends javax.swing.JFrame {
 
+    private static final Logger logger = Logger.getLogger(formLogin.class.getName());
     static Connection conn = null;
     private static int attemptsRemaining = 3;
 
     public formLogin() {
         initComponents();
-        this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Hides the text in the password JTextField
         txtPassword.setEchoChar('•');
 
+        // Initial value of the caps lock key
         boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
         lblCapsLock.setVisible(isCapsLockOn);
 
+        // KeyListener for when the user presses the caps lock key
         KeyListener CapsLock = new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -50,25 +57,28 @@ public class formLogin extends javax.swing.JFrame {
 
         };
 
+        // Adds the key listener to the username and password field
         txtUsername.addKeyListener(CapsLock);
         txtPassword.addKeyListener(CapsLock);
 
+        // Init
         BufferedImage imgMainLogo = null;
         BufferedImage imgLogos = null;
+        // Loads the company images
         try {
             imgMainLogo = ImageIO.read(new File("Main Logo.png"));
             imgLogos = ImageIO.read(new File("Logos.png"));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "IOException");
         }
 
-        Image scaledMainLogo = imgMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(),
-                Image.SCALE_SMOOTH);
-        Image scaledLogos = imgLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(),
-                Image.SCALE_SMOOTH);
+        // Scales the loaded buffered images and turns them into image icons
+        Image scaledMainLogo = imgMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(), Image.SCALE_SMOOTH);
+        Image scaledLogos = imgLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon imageIcon1 = new ImageIcon(scaledMainLogo);
         ImageIcon imageIcon2 = new ImageIcon(scaledLogos);
 
+        // Adds the image icons to the label.
         lblMainLogo.setIcon(imageIcon1);
         lblLogos.setIcon(imageIcon2);
     }
@@ -230,72 +240,85 @@ public class formLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Fetches password from the password field and returns the string equivalent since the JPasswordField.getPassword() returns a char array and not a string
+    // Fetches password from the password field and returns the string
     private String getPassword() {
-        String inputPassword = "";
         char[] passwordArray = txtPassword.getPassword();
-        for (char chr : passwordArray) {                            // Loops through each element in char array
-            inputPassword += chr;                                   // Concatenates char to string
-        }
-        return inputPassword;
+        return new String(passwordArray);
     }
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        // User input and hashing
         String inputUsername = txtUsername.getText();
-        String inputPassword = getPassword();                       // User Input into variables
+        String inputPassword = getPassword();
         byte[] hashedInputPassword = Utility.hash(inputPassword);
 
-        Boolean found = false;                                      // Whether a user exists under the given login details
-        int fetchedID = -1;                                         // Init
+        // Init
+        Boolean found = false;
+        int fetchedID = -1;
 
         conn = sqlManager.openConnection();
-        String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
+
         try {
+            // Query Setup & Execution
+            String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputUsername);
             pstmt.setBytes(2, hashedInputPassword);
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {                                        // If any results were fetched from the DB
-
-                fetchedID = rs.getInt(1);                           // Gets the id of whoever logged in
+            if (rs.next()) {
+                // Gets the id of whoever logged in
+                fetchedID = rs.getInt(1);
                 found = true;
-
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
 
-        if (!found) {                                               // If a user was not found
+        if (!found) {
+            // LOGIN UNSUCCESSFUL
             attemptsRemaining--;
             if (attemptsRemaining == 0) {
                 ErrorMsg.throwCustomError("You have run out of login attempts", "No login attempts remaining");
+                // Disables user input since they have run out of login attempts
                 incorrectPasswordLock();
             } else {
                 ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
             }
-        } else {                                                    // If a user was found with those login details
+        } else {
+            // LOGIN SUCCESSFUL
             sqlManager.updateLastLogin(conn, fetchedID);
 
-            formMainMenu MainMenu = new formMainMenu().getFrame();  // Creates a new instance of the main menu form
-            MainMenu.WHO_LOGGED_IN = fetchedID;                     // The employee_id of whoever is logged in
-            MainMenu.whoLoggedIn();                                 // Updates label in Main Menu form to show who logged in
-            MainMenu.checkWhetherAdmin();                           // If the user is an admin then they will have permission to all the management features
-            MainMenu.setVisible(true);                              // Makes the main menu visible
-            this.dispose();                                         // Closes login form and disposes instance from system memory pool
+            formMainMenu MainMenu = new formMainMenu().getFrame();
+
+            // Updates the values for the class which stores the logged in user
+            LoggedInUser.setID(fetchedID);
+            LoggedInUser.updateAdminStatus();
+
+            // Updates label to show who logged in
+            MainMenu.whoLoggedIn();
+            // If the user is an admin then they will have permission to all the management features
+            MainMenu.checkWhetherAdmin();
+
+            // Makes the main menu visible and closes login form
+            MainMenu.setVisible(true);
+            this.dispose();
         }
+
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed
+        // Reveals the password if the user selected the CheckBox
         if (cbPassword.isSelected()) {
-            txtPassword.setEchoChar((char) 0);                      // If the user wants to see their password
+            txtPassword.setEchoChar((char) 0);
         } else {
             txtPassword.setEchoChar('•');
         }
     }//GEN-LAST:event_cbPasswordActionPerformed
 
     private void incorrectPasswordLock() {
+        // Disables JTextField and Login button after 3 unsuccessful login attempts
         txtUsername.setEditable(false);
         txtPassword.setEditable(false);
         btnLogin.setEnabled(false);

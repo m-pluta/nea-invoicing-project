@@ -18,6 +18,8 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -32,74 +34,88 @@ import javax.swing.table.JTableHeader;
  */
 public class formNewInvoice extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formNewInvoice
-     */
-    int WHO_LOGGED_IN = 1;
+    private static final Logger logger = Logger.getLogger(formNewInvoice.class.getName());
     int InvoiceID = 1;
-    formMainMenu previousForm1 = null;                              // Stores the previously open form
-    formManageInvoices previousForm2 = null;                        // Stores the previously open form
-    formOneCustomer previousForm3 = null;                           // Stores the previously open form
-    DefaultTableModel model;                                        // The table model
-    Connection conn = null;                                         // Stores the connection object
+    Connection conn = null;
+
+    // The previous forms the user could have navigated from
+    formMainMenu previousForm1 = null;
+    formManageInvoices previousForm2 = null;
+    formOneCustomer previousForm3 = null;
+
+    // Init
+    DefaultTableModel model;
     boolean CurrentlyAddingCustomer = false;
     int selectedItem = 0;
-    
+    boolean CurrentlyEditing = false;
+
     private void goBack() {
+        // If the user came from the Main Menu
         if (previousForm1 != null) {
             previousForm1.setVisible(true);
             this.dispose();
         }
+        // If the user came from the Invoice management form
         if (previousForm2 != null) {
             previousForm2.setVisible(true);
             previousForm2.loadInvoices();
             this.dispose();
         }
+        // If the user came from a specific customer
         if (previousForm3 != null) {
             previousForm3.setVisible(true);
             previousForm3.previousForm.setVisible(true);
             this.dispose();
         }
     }
-    
+
+    // Selects a specific customer for the invoice if the user came from formOneCustomer
     public void selectCustomer(int customerID) {
+        // Gets the customer name for a specific customerID
         conn = sqlManager.openConnection();
         String customer = sqlManager.getCustomerFullName(conn, customerID);
         sqlManager.closeConnection(conn);
-        
+
+        // Selects the customer in the ComboBox
         cbCustomers.setSelectedItem(customer);
     }
-    
+
     public formNewInvoice() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
-        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();   // Fetches the table model of the table
-        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);     // Makes it so the user cannot edit the table
 
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_InvoiceDetails.getModel();
+        jTable_InvoiceDetails.setDefaultEditor(Object.class, null);
+
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_InvoiceDetails.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
-        JTextField[] fields = {txtInvoiceID, txtSubtotal, txtTotal, txtItemTotal};  // Makes some of the fields which are automatically filled uneditable
-        setEditable(fields, false);
+        // Gets the next available invoiceID
         conn = sqlManager.openConnection();
-        InvoiceID = sqlManager.getNextPKValue(conn, "tblInvoice", "invoice_id"); // Gets the next available invoice id
+        InvoiceID = sqlManager.getNextPKValue(conn, "tblInvoice", "invoice_id");
         sqlManager.closeConnection(conn);
         txtInvoiceID.setText(String.valueOf(InvoiceID));
+
+        // Loads all the customers and item categories into the ComboBoxes
         loadCustomersIntoCB();
         loadItemCategoriesIntoCB();
 
-        // Mouse Listener for when someone clicks on a row in the table
-        jTable_InvoiceDetails.addMouseListener(new MouseListener() {            // Mouse listener for when the user clicks on a row in the invoice table
+        // When the user clicks on a row in the table
+        jTable_InvoiceDetails.addMouseListener(new MouseListener() {
             @Override
             public void mouseReleased(MouseEvent e) {
             }
-            
+
             @Override
             public void mousePressed(MouseEvent e) {
+                // If the user is not editing another row already
                 if (!CurrentlyEditing) {
-                    int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the id of the invoice which is currently selected in the table
-                    if (selectedRow != -1) {                        // -1 = no row selected
+                    // Gets the id of the invoice item which is currently selected in the table
+                    int selectedRow = jTable_InvoiceDetails.getSelectedRow();
+                    if (selectedRow != -1) {
+
                         // Loads the row into the side view
                         selectedItem = selectedRow;
                         txtItem.setText(model.getValueAt(selectedRow, 0).toString());
@@ -109,63 +125,71 @@ public class formNewInvoice extends javax.swing.JFrame {
                         txtItemTotal.setText(model.getValueAt(selectedRow, 4).toString());
 
                         // Makes some of the fields uneditable since a row was loaded into side view
-                        txtItem.setEditable(false);
                         JTextField[] fields = {txtQuantity, txtUnitPrice};
-                        setEditable(fields, false);
+                        Utility.setEditable(fields, false);
+                        txtItem.setEditable(false);
 
-                        // Makes all the row management rows available
+                        // Makes all the item management rows available
                         btnRemoveItem.setEnabled(true);
                         btnEditItem.setEnabled(true);
                         btnAddItem.setEnabled(true);
-                        
+
                     } else {
-                        System.out.println("-------------------------------");
-                        System.out.println("No row selected");
+                        logger.log(Level.WARNING, "No row selected");
                     }
                 }
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
             }
         });
 
-        // Add new customer row
-        cbCustomers.addActionListener(new ActionListener() {        // When an action happens within the combo box - e.g. the selectedIndex changed
+        // Listens for a change in the selectedIndex
+        cbCustomers.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
+                // Checks if the user selected the last item ('Add a new customer...')
+                if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {
                     if (!CurrentlyAddingCustomer) {
-                        formAddCustomer form = new formAddCustomer().getFrame();    // Opens a new instance of the formAddCustomer() form
-                        form.setLocationRelativeTo(null);
-                        form.setVisible(true);                      // Makes the new customer view visible
+
+                        // Opens formAddCustomer
+                        formAddCustomer form = new formAddCustomer().getFrame();
+                        form.setVisible(true);
                         form.previousForm2 = formNewInvoice.this;
+
+                        // Boolean updated since a new customer is being added
                         CurrentlyAddingCustomer = true;
+                        // ComboBox is reset temporarily in case the new customer form is closed
                         cbCustomers.setSelectedIndex(0);
                     }
                 }
             }
         });
-        // Add new item category row
-        cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
+
+        // Listens for a change in the selectedIndex
+        cbCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new customer...')
+                // If the user selected the last item ('Add a new category...')
+                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {
+                    // Prompts user to a add a new category
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewItemCategory(conn);
                     sqlManager.closeConnection(conn);
-                    
+
                     if (addedCategory != null) {
-                        loadItemCategoriesIntoCB();                 // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
+                        // If the user successfully added a new category then that category is selected
+                        loadItemCategoriesIntoCB();
+                        cbCategory.setSelectedItem(addedCategory);
                     } else {
                         cbCategory.setSelectedIndex(0);
                     }
@@ -173,18 +197,18 @@ public class formNewInvoice extends javax.swing.JFrame {
             }
         });
 
-        // Updates the totals for the item currently being added if the value in txtQuantity and txtUnitPrice is changed
+        // Updates the totals for the item currently if the values in txtQuantity or txtUnitPrice are changed
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 updateItemTotals();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateItemTotals();
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
@@ -198,123 +222,136 @@ public class formNewInvoice extends javax.swing.JFrame {
             public void insertUpdate(DocumentEvent e) {
                 updateTableTotals();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateTableTotals();
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
         });
-        
-        updateTableTotals();                                        // Calculates the initial totals and puts them in the text fields - these should just be £0
-        resetSideView();                                            // Resets the side view
 
-        dcDateCreated.setDate(new Date());                          // Puts the current date as the date created value in case the user forgets to specify it himself
+        // Calculates the initial totals and resets the side view. Puts current date as the date
+        updateTableTotals();
+        resetSideView();
+        dcDateCreated.setDate(new Date());
 
+        // Adjusting the header widths
         jTable_InvoiceDetails = Utility.setColumnWidths(jTable_InvoiceDetails, new int[]{300, 100, 60, 90, 90});
     }
 
-    // Checks if the quantity and unit price are valid values
-    // Updates the value for the Item Total
+    // Calculates the item total if the quantity and unit price are valid
     public void updateItemTotals() {
         String sQuantity = txtQuantity.getText();
-        String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", ""); // Gets rid of the £ sign and any commas
-        if (sQuantity.equals("") || sUnitPrice.equals("")) {
-            txtItemTotal.setText("");                               // If one of the fields is empty
-        } else {
-            if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sUnitPrice) && Pattern.matches("^[0-9]+$", txtQuantity.getText())) {   // If the quantity is a valid int and unit price is valid double
+        // Gets rid of the £ sign and any commas
+        String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");
 
+        if (sQuantity.isEmpty() || sUnitPrice.isEmpty()) {
+            // If either of the fields is empty
+            txtItemTotal.setText("");
+        } else {
+            // If the quantity is a valid int and unit price is valid double
+            if (Pattern.matches("^[0-9]+$", sQuantity) && Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sUnitPrice)) {
+
+                // Calculates the item total
                 int quantity = Utility.StringToInt(sQuantity);
                 double unit_price = Double.valueOf(sUnitPrice);
-                
-                double item_subtotal = quantity * unit_price;       // The total value of the item
+                double item_subtotal = quantity * unit_price;
 
-                txtItemTotal.setText(Utility.formatCurrency(item_subtotal));    // Updates the Item Total text field
+                // Updates the Item Total JTextField
+                txtItemTotal.setText(Utility.formatCurrency(item_subtotal));
             }
         }
     }
 
-    // Calculates the Subtotal and Total for the entire invoice and updates the JTextFields
+    // Calculates the Subtotal and Total if the values are valid
     public void updateTableTotals() {
+        // Gets the subtotal
         double subtotal = calculateSubtotal();
         txtSubtotal.setText(Utility.formatCurrency(subtotal));
-        
+
+        // Gets rid of the £ sign and any commas
         String sPayments = txtPayments.getText().replace("£", "").replace(",", "");
         double payments = 0;
-        if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {// If the payments value is a valid double
+        // If the payments value is a valid double
+        if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sPayments)) {
             payments = Double.valueOf(sPayments);
         }
-        
+
+        //Updates the total
         double total = subtotal - payments;
-        txtTotal.setText(Utility.formatCurrency(total));            //Updates the total field
+        txtTotal.setText(Utility.formatCurrency(total));
     }
 
-    // Function for calculating the subtotal of the invoice by summing all the values in the table
+    // Calculates the subtotal of the invoice by summing all item totals in the invoice
     public double calculateSubtotal() {
-        double subTotal = 0.0;                                      // Init
-        int NoRows = model.getRowCount();                           // Gets the number of rows in the table
+        // Init
+        double subTotal = 0.0;
+        int NoRows = model.getRowCount();
+
+        // Goes through each invoice item
         for (int i = 0; i < NoRows; i++) {
-            String value = model.getValueAt(i, 4).toString().replace("£", "").replace(",", "");  // Gets the value of the item(s) as a string
-            subTotal += Double.valueOf(value);                      // Converts the value in string type into double type and add it to the running subtotal
+            // Gets rid of the £ sign and any commas and adds to the subtotal
+            String value = model.getValueAt(i, 4).toString().replace("£", "").replace(",", "");
+            subTotal += Double.valueOf(value);
         }
-        
+
         return subTotal;
     }
-    
+
+    // Used when the form is opened from within another forms
     public formNewInvoice getFrame() {
         return this;
     }
 
-    // Method for loading all the customers currently in the system into the combo box
+    // Method for loading all the customers currently in the system into the ComboBox
     public void loadCustomersIntoCB() {
+        // Clears ComboBox
         cbCustomers.removeAllItems();
+
         conn = sqlManager.openConnection();
-        String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomer ORDER BY customerFullName";
         try {
+            // Query Setup & Execution
+            String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomer ORDER BY customerFullName";
             Statement stmt = conn.createStatement();
-            
             ResultSet rs = stmt.executeQuery(query);
-            System.out.println("-------------------------------");
+
             while (rs.next()) {
-                System.out.println(rs.getString(1));
-                cbCustomers.addItem(rs.getString(1));               // Adds the customer to the combo box
+                // Adds the customer to the ComboBox
+                cbCustomers.addItem(rs.getString(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
-        cbCustomers.addItem("Add a new customer...");               // Adds an option for adding a new customer
+        cbCustomers.addItem("Add a new customer...");
     }
 
-    // Method for loading all the item categories currently in the system into the combo box
+    // Method for loading all the item categories into the ComboBox
     public void loadItemCategoriesIntoCB() {
+        // Clears ComboBox
         cbCategory.removeAllItems();
+
         conn = sqlManager.openConnection();
-        String query = "SELECT category_name FROM tblItemCategory";
         try {
+            // Query Setup & Execution
+            String query = "SELECT category_name FROM tblItemCategory";
             Statement stmt = conn.createStatement();
-            
             ResultSet rs = stmt.executeQuery(query);
-            System.out.println("-------------------------------");
+
             while (rs.next()) {
-                System.out.println(rs.getString(1));
-                cbCategory.addItem(rs.getString(1));                // Adds the category to the combo box
+                // Adds category to the ComboBox
+                cbCategory.addItem(rs.getString(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
-        cbCategory.addItem("Add a new category...");                // Adds an option for adding a new category
-    }
 
-    // Sets these components to either visible or invisible depending on the boolean state
-    public void setEditable(JTextField[] fields, boolean state) {
-        for (JTextField field : fields) {
-            field.setEditable(state);
-        }
+        sqlManager.closeConnection(conn);
+        cbCategory.addItem("Add a new category...");
     }
 
     /**
@@ -382,6 +419,8 @@ public class formNewInvoice extends javax.swing.JFrame {
         lblDateCreated.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblDateCreated.setText("Date Created:");
 
+        txtInvoiceID.setEditable(false);
+
         cbCustomers.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         dcDateCreated.setDateFormatString("yyyy-MM-dd");
@@ -404,6 +443,10 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblTotal.setText("Total:");
+
+        txtSubtotal.setEditable(false);
+
+        txtTotal.setEditable(false);
 
         lblSideView.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblSideView.setText("Side View");
@@ -428,6 +471,8 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         lblItemTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblItemTotal.setText("Item Total:");
+
+        txtItemTotal.setEditable(false);
 
         lblCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCategory.setText("Category:");
@@ -621,34 +666,43 @@ public class formNewInvoice extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Add the item in the side view into the table if it is valid
+    // Adds the item from the side view into the table if it is valid
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
         conn = sqlManager.openConnection();
-        if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
+
+        if (txtItem.getText().isEmpty()) {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-            
-        } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
+
+        } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-            
-        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
+
+        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) {
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
-            
-        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetail", "description")) {  // If the entered item description is longer than what the DB can store
+
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetail", "description")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-            
+
         } else {
-            // Adds the item to the table
-            model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(), "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
-            resetSideView();                                        // Resets the side view
-            updateTableTotals();                                    // Recalculates the totals for the entire invoice
+            // If all inputs passed the validity checks then item is added to the table
+            model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(),
+                "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
+
+            // Resets the side view and updates invoice total
+            resetSideView();
+            updateTableTotals();
         }
+
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnAddItemActionPerformed
 
-    // Back button for going back to the previous form
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        // Checks if the user has entered anything into the invoice
         if (model.getRowCount() != 0) {
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back? All entered data will be lost", "Confirm going back", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to go back? All entered data will be lost",
+                    "Confirm going back", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            // If the user still wants to go back to the previous form
             if (YesNo == 0) {
                 goBack();
             }
@@ -657,169 +711,204 @@ public class formNewInvoice extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnBackActionPerformed
 
-    // This button sets the invoice given all the inputs are valid and insert a row into the DB
+    // This button finishes the invoice (given all the inputs are valid) and adds it to the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
-        if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) { // Checks if the 'Add new customer' option is selected
+
+        if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {
             ErrorMsg.throwError(ErrorMsg.DEFAULT_ERROR, "The 'Add new customer' option is not a valid customer");
-            
-        } else if (dcDateCreated.getDate() == null) {                           // Makes sure the start date is valid
+
+        } else if (dcDateCreated.getDate() == null) {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Date cannot be empty");
-            
-        } else if (model.getRowCount() == 0) {                                  // Checks if there are items in the table - cannot be a blank invoice
+
+        } else if (model.getRowCount() == 0) {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Invoice must have at least one item");
-            
-        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {    // Checks if the payments value  is a valid double
+
+        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "The entered payments value is not a valid decimal");
-            
+
         } else {
+            // Gets the date created of the invoice
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String strDateCreated = dateFormat.format(dcDateCreated.getDate()); // Turns the Date Object in dcDateCreated into a string
+            String strDateCreated = dateFormat.format(dcDateCreated.getDate());
+
+            // Gets the next available invoice id
+            int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoice", "invoice_id");
 
             conn = sqlManager.openConnection();
-            String query = "INSERT INTO tblInvoice (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
             try {
-                // Makes a new record in tblInvoice with the invoice metadata
+                // Query Setup & Execution
+                String query = "INSERT INTO tblInvoice (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
                 PreparedStatement pstmt = conn.prepareStatement(query);
-                int new_invoiceID = sqlManager.getNextPKValue(conn, "tblInvoice", "invoice_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_invoiceID);
                 pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
-                pstmt.setDouble(4, txtPayments.getText().equals("") ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
-                pstmt.setInt(5, WHO_LOGGED_IN);
-                
-                System.out.println(pstmt);
+                pstmt.setDouble(4, txtPayments.getText().isEmpty() ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
+                pstmt.setInt(5, LoggedInUser.getID());
+
                 int rowsAffected = pstmt.executeUpdate();
-                System.out.println("-------------------------------");
-                System.out.println(rowsAffected + " row(s) inserted.");
-                
+                logger.log(Level.INFO, rowsAffected + " row(s) inserted.");
+
+                // Begins inserting all invoice items into the DB
                 uploadInvoiceDetails(new_invoiceID);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "SQLException");
             }
+
             sqlManager.closeConnection(conn);
+            // Goes back to the previous form
             goBack();
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
-    // Uploads each individual row of the table to tblInvoiceDetail
+    // Uploads each row of the invoice to tblInvoiceDetail in the DB
     public void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
-        
+
         conn = sqlManager.openConnection();
+
         for (int i = 0; i < NoRows; i++) {
+            // Item Pre-processing
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
             int category = sqlManager.getIDofCategory(conn, "tblItemCategory", model.getValueAt(i, 1).toString());
-            
-            String query = "INSERT INTO tblInvoiceDetail (row_id,invoice_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
+
+            // Gets the next available row_id for the invoice item
+            int new_rowID = sqlManager.getNextPKValue(conn, "tblInvoiceDetail", "row_id");
+
             try {
-                // Inserts data about each row into tblInvoiceDetail
+                // Query Setup & Execution
+                String query = "INSERT INTO tblInvoiceDetail (row_id,invoice_id,description,quantity,unit_price,category_id) VALUES (?,?,?,?,?,?)";
                 PreparedStatement pstmt = conn.prepareStatement(query);
-                int new_rowID = sqlManager.getNextPKValue(conn, "tblInvoiceDetail", "row_id");   // Gets the next available value of the primary key
                 pstmt.setInt(1, new_rowID);
                 pstmt.setInt(2, invoiceID);
                 pstmt.setString(3, Item);
                 pstmt.setInt(4, quantity);
                 pstmt.setDouble(5, unit_price);
                 pstmt.setInt(6, category);
-                
-                System.out.println(pstmt);
+
                 int rowsAffected = pstmt.executeUpdate();
-                System.out.println("-------------------------------");
-                System.out.println(rowsAffected + " row(s) inserted.");
+                logger.log(Level.INFO, rowsAffected + " row(s) inserted.");
+
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "SQLException");
             }
         }
+
         sqlManager.closeConnection(conn);
     }
 
-    // Remove button to remove the selected item in the table from the table
+    // Remove button to remove the selected item in the table
     private void btnRemoveItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveItemActionPerformed
-        int selectedRow = jTable_InvoiceDetails.getSelectedRow();   // Gets the index of the selected row
+        int selectedRow = jTable_InvoiceDetails.getSelectedRow();
 
-        if (selectedRow != -1) {                                    // -1 = no row selected
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?", "Remove invoice item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+        // Checks if a row is selected
+        if (selectedRow != -1) {
+            // Asks user if they really want to remove this item
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?",
+                    "Remove invoice item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            // If the response is yes
             if (YesNo == 0) {
-                model.removeRow(selectedRow);                       // Removes the row
-                updateTableTotals();                                // Recalculates the invoice totals
-                resetSideView();                                    // Resets the side view
-                selectedItem = 0;                                   // No item in the table is now 'selected'
+                // Removes the item, updates the invoice totals and resets the side view
+                model.removeRow(selectedRow);
+                updateTableTotals();
+                resetSideView();
+
+                // Since no item is selected
+                selectedItem = 0;
             }
         }
     }//GEN-LAST:event_btnRemoveItemActionPerformed
-    
-    boolean CurrentlyEditing = false;
+
     private void btnEditItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditItemActionPerformed
-        if (!CurrentlyEditing) {                                    // If the user is not yet editing
-            CurrentlyEditing = true;                                // Flips the boolean
+        // If the user is not yet editing
+        if (!CurrentlyEditing) {
+            // Flips the boolean
+            CurrentlyEditing = true;
+
+            // Makes the item fields editable
             txtItem.setEditable(true);
-            txtQuantity.setEditable(true);                          // Makes the fields editable
+            txtQuantity.setEditable(true);
             txtUnitPrice.setEditable(true);
-            btnEditItem.setText("Confirm Edit");                    // Changes the button text
+
+            // Changes the item management buttons so the user can only confirm the edit
+            btnEditItem.setText("Confirm Edit");
             btnRemoveItem.setEnabled(false);
-            btnAddItem.setEnabled(false);                           // Disables the other buttons
+            btnAddItem.setEnabled(false);
+
         } else {
             conn = sqlManager.openConnection();
-            if (txtItem.getText().equals("")) {                                     // If the description of the item is  ""
+            if (txtItem.getText().isEmpty()) {
                 ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-                
-            } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {       // If the quantity entered is not a valid integer
+
+            } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-                
-            } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) { // If the Unit price entered is not a valid double
+
+            } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) {
                 ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price not a double");
-                
-            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetail", "description")) {  // If the entered item description is longer than what the DB can store
+
+            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblInvoiceDetail", "description")) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-                
+
             } else {
+                // Changes the values of the item which is being edited
                 model.setValueAt(txtItem.getText(), selectedItem, 0);
                 model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
-                model.setValueAt(txtQuantity.getText(), selectedItem, 2);               // Changes the value of the 'selected' row
+                model.setValueAt(txtQuantity.getText(), selectedItem, 2);
                 model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
                 model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
-                
-                updateTableTotals();                                // Recalculates the invoice totals
 
-                CurrentlyEditing = false;                           // Flips the boolean
+                // Recalculates the invoice totals
+                updateTableTotals();
+
+                // Flips the boolean since editing is finished
+                CurrentlyEditing = false;
+
+                // Makes the item fields uneditable
                 txtItem.setEditable(false);
-                txtQuantity.setEditable(false);                     // Makes the fields uneditable
+                txtQuantity.setEditable(false);
                 txtUnitPrice.setEditable(false);
-                btnEditItem.setText("Edit Item");                   // Changes the button text
+
+                // Changes the item management buttons so the user can once again remove, add or edit
+                btnEditItem.setText("Edit Item");
                 btnRemoveItem.setEnabled(true);
-                btnAddItem.setEnabled(true);                        // Enables the other buttons
+                btnAddItem.setEnabled(true);
             }
+
             sqlManager.closeConnection(conn);
         }
     }//GEN-LAST:event_btnEditItemActionPerformed
 
-    // Clear button for clearing all the fields in the side view
+    // Clear button to clear all the fields in the side view and some other variables
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the side view?", "Clear side view", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+        // Asks user for confirmation
+        int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the side view?", "Clear side view",
+                JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
         if (YesNo == 0) {
+            // If the response is yes
             resetSideView();
             selectedItem = 0;
             jTable_InvoiceDetails.clearSelection();
         }
     }//GEN-LAST:event_btnClearActionPerformed
 
-    // Method for clearing/resetting all the fields and buttons in the side view to their original state
+    // Method for resetting all the fields and buttons in the side view to their original state
     public void resetSideView() {
+        // Item detail fields
         txtItem.setText("");
         txtItem.setEditable(true);
-        
         txtQuantity.setText("");
         txtQuantity.setEditable(true);
-        
         txtUnitPrice.setText("");
         txtUnitPrice.setEditable(true);
-        
+
+        // Item metadata fields
         txtItemTotal.setText("");
-        
         cbCategory.setSelectedIndex(0);
-        
+
+        // Item management buttons
         btnRemoveItem.setEnabled(false);
         btnEditItem.setEnabled(false);
         btnAddItem.setEnabled(true);

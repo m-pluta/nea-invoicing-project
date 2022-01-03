@@ -31,7 +31,7 @@ import javax.swing.JTextField;
  */
 public class Utility {
 
-    private static final Logger logger = java.util.logging.Logger.getLogger(formLogin.class.getName());
+    private static final Logger logger = java.util.logging.Logger.getLogger(Utility.class.getName());
 
     // Hashes any string input using SHA256
     public static byte[] hash(String input) {
@@ -51,6 +51,25 @@ public class Utility {
         }
 
         return outputHash;
+    }
+
+    // Sets the input JTextFields to either editable or uneditable
+    public static void setEditable(JTextField[] fields, boolean state) {
+        // Loops through all the JTextFields
+        for (JTextField field : fields) {
+            field.setEditable(state);
+        }
+    }
+
+    // Returns number of input fields which are empty
+    public static int countEmptyFields(JTextField[] fields) {
+        int emptyFields = 0;
+        for (JTextField field : fields) {
+            if (field.getText().isEmpty()) {
+                emptyFields++;
+            }
+        }
+        return emptyFields;
     }
 
     // Returns the date of the financial year for a given date

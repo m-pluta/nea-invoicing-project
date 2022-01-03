@@ -22,6 +22,8 @@ import java.time.format.TextStyle;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,9 +40,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public class formReportOne extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formReportOne
-     */
     /**
      * One per day
      * <p>
@@ -86,289 +85,44 @@ public class formReportOne extends javax.swing.JFrame {
      */
     int BAR_SPACING_YEAR = 4;
 
-    Connection conn = null;                                         // Shows the connection object to the DB
-    formMainMenu previousForm = null;                               // Stores the previousForm object to make the Back button work
-    int WHO_LOGGED_IN = 1;                                          // The employee id of the logged in employee
+    private static final Logger logger = Logger.getLogger(formReportOne.class.getName());
+    Connection conn = null;
+    formMainMenu previousForm = null;
+
+    // For formatting dates into an appropriate format
+    DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");
+    DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
 
     public formReportOne() {
         initComponents();
-        this.setLocationRelativeTo(null);                           // Positions the form in the middle of the screen
+        this.setLocationRelativeTo(null);
 
+        // Makes the option to set a custom start date and end date invisible temporarily
         lblStart.setVisible(false);
         dcStart.setVisible(false);
         lblEnd.setVisible(false);
         dcEnd.setVisible(false);
 
-        // ActionListener for when the users changes the selected item in the time combo box
-        cbTime.addActionListener(new ActionListener() {             // When an action happens within the combo box - e.g. the selectedIndex changed
+        // Listens for a change in the selectedIndex
+        cbTime.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {   // If the user selected the last item ('Other')
+                if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {
+                    // If the user selected the last item i.e. 'Other'
+                    // Makes the date selectors for start and end date visible
                     lblStart.setVisible(true);
                     dcStart.setVisible(true);
-                    lblEnd.setVisible(true);                        // Makes the date selectors for start and end date appear
+                    lblEnd.setVisible(true);
                     dcEnd.setVisible(true);
                 } else {
+                    // Makes the date selectors for start and end date invisible
                     lblStart.setVisible(false);
                     dcStart.setVisible(false);
-                    lblEnd.setVisible(false);                       // Makes the date selectors for start and end date disappear
+                    lblEnd.setVisible(false);
                     dcEnd.setVisible(false);
                 }
             }
         });
-    }
-
-    // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
-    private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
-        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");      // For formatting dates into an appropriate format
-        DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
-        conn = sqlManager.openConnection();
-
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();          // the final output dataset
-        LinkedHashMap<String, Double> dataArr_Invoice = null;                   // Makes an empty hashmap with all the categories as the key
-        LinkedHashMap<String, Double> dataArr_Quotation = null;                 // Makes an empty hashmap with all the categories as the key
-
-        if (getInvoices) {
-            dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
-            //<editor-fold defaultstate="collapsed" desc="Loading all invoice results into Hashmap">
-            try {
-                // Raw SQL query: https://pastebin.com/RJ5B4hpc
-
-                String query = "SELECT i.date_created,"
-                        + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
-                        + " FROM tblInvoice i"
-                        + " INNER JOIN tblInvoiceDetail iD ON i.invoice_id = iD.invoice_id"
-                        + " WHERE i.date_created BETWEEN ? AND ?"
-                        + " GROUP BY i.invoice_id"
-                        + " ORDER BY i.date_created";
-
-                PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the invoices between two dates and sorts them in ascending order
-                pstmt.setObject(1, start);
-                pstmt.setObject(2, end);
-
-                ResultSet rs = rs = pstmt.executeQuery();
-                if (barSpacing == BAR_SPACING_DAY) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = rs.getDate(1).toLocalDate().format(daymonth);          // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);  // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_WEEK) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    LocalDateTime counter = start;
-                    while (rs.next()) {
-                        //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
-                        boolean upToDate = false;                   // boolean for keeping track whether the counter is storing the date of the current commencing week
-                        while (!upToDate) {
-                            Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0)); // Calculates days between the counter and date of the data being added
-                            if ((int) dr.toDays() < 7) {            // If the data is within the same commencing week
-                                upToDate = true;
-                            } else {
-                                upToDate = false;
-                                counter = counter.plusWeeks(1);     // Steps the counter one week forward
-                            }
-                        }
-                        //</editor-fold>
-                        String key = counter.format(daymonth);                              // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_MONTH) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_QUARTER) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2);                                      // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);          // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_YEAR) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = "" + rs.getDate(1).toLocalDate().getYear();            // The key in the hashmap
-                        Double invoiceTotal = rs.getDouble(2);                              // The total value of the invoice
-                        dataArr_Invoice.put(key, dataArr_Invoice.get(key) + invoiceTotal);  // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            //</editor-fold>
-
-            System.out.println(dataArr_Invoice.toString());                     // The populated invoice hashmap
-
-            for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
-                dataset.addValue(i.getValue(), "Invoice", i.getKey());          // Adds it to the dataset
-            }
-        }
-        if (getQuotations) {
-            dataArr_Quotation = generateEmptyDict(start, end, barSpacing);
-            //<editor-fold defaultstate="collapsed" desc="Loading all quotation results into Hashmap">
-            try {
-                // Raw SQL query: https://pastebin.com/uA3ifThF
-
-                String query = "SELECT q.date_created,"
-                        + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
-                        + " FROM tblQuotation q"
-                        + " INNER JOIN tblQuotationDetail qD ON q.quotation_id = qD.quotation_id"
-                        + " WHERE q.date_created BETWEEN ? AND ?"
-                        + " GROUP BY q.quotation_id"
-                        + " ORDER BY q.quotation_id";
-
-                PreparedStatement pstmt = conn.prepareStatement(query); // Gets all the quotations between two dates and sorts them in ascending order
-                pstmt.setObject(1, start);
-                pstmt.setObject(2, end);
-
-                ResultSet rs = rs = pstmt.executeQuery();
-                if (barSpacing == BAR_SPACING_DAY) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = rs.getDate(1).toLocalDate().format(daymonth);                  // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_WEEK) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    LocalDateTime counter = start;
-                    while (rs.next()) {
-                        //<editor-fold defaultstate="collapsed" desc="Code for updating the 'week commencing' tracker variable">
-                        boolean upToDate = false;                   // boolean for keeping track whether the counter is storing the date of the current commencing week
-                        while (!upToDate) {
-                            Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0)); // Calculates days between the counter and date of the data being added
-                            if ((int) dr.toDays() < 7) {            // If the data is within the same commencing week
-                                upToDate = true;
-                            } else {
-                                upToDate = false;
-                                counter = counter.plusWeeks(1);     // Steps the counter one week forward
-                            }
-                        }
-                        //</editor-fold>
-                        String key = counter.format(daymonth);                          // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);                        // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_MONTH) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_QUARTER) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = Utility.getQuarter(rs.getDate(1).toLocalDate()) + "-" + rs.getDate(1).toLocalDate().format(year);  // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                } else if (barSpacing == BAR_SPACING_YEAR) {
-                    //<editor-fold defaultstate="collapsed" desc="Data categorising">
-                    while (rs.next()) {
-                        String key = "" + rs.getDate(1).toLocalDate().getYear();                    // The key in the hashmap
-                        Double quotationTotal = rs.getDouble(2);                                    // The total value of the quotation
-                        dataArr_Quotation.put(key, dataArr_Quotation.get(key) + quotationTotal);    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    }
-                    //</editor-fold>
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            //</editor-fold>
-
-            System.out.println(dataArr_Quotation.toString());                   // The populated quotation hashmap
-
-            for (Map.Entry<String, Double> i : dataArr_Quotation.entrySet()) {  // Goes through each Entry in the hashmap
-                dataset.addValue(i.getValue(), "Quotation", i.getKey());        // Adds it to the dataset
-            }
-        }
-        sqlManager.closeConnection(conn);
-
-        if (getInvoices && getQuotations) {
-            for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {    // Goes through each Entry in the hashmap
-                if (i.getValue() != 0.0 && dataArr_Quotation.get(i.getKey()) != 0.) {
-                    dataset.addValue(i.getValue() + dataArr_Quotation.get(i.getKey()), "Both", i.getKey()); // Adds the total of both to the dataset
-                }
-            }
-        }
-        return dataset;                                             // Returns the populated dataset
-    }
-
-    // Generates an empty dictionary and then populates it with all the time categories
-    public LinkedHashMap<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
-
-        LinkedHashMap<String, Double> output = new LinkedHashMap<String, Double>(); // The empty hashmap
-
-        DateTimeFormatter daymonth = DateTimeFormatter.ofPattern("dd/MM");          // DateTimeFormatters for all the dates
-        DateTimeFormatter year = DateTimeFormatter.ofPattern("yy");
-
-        System.out.println(start.format(DateTimeFormatter.ISO_DATE));
-        System.out.println(end.format(DateTimeFormatter.ISO_DATE));
-
-        if (barSpacing == BAR_SPACING_DAY) {
-            //<editor-fold defaultstate="collapsed" desc="Time category generation">
-            LocalDateTime counter = start;
-            output.put(counter.format(daymonth), 0.00);
-
-            while (!counter.toLocalDate().isEqual(end.toLocalDate())) {
-                counter = counter.plusDays(1);
-                output.put(counter.format(daymonth), 0.00);
-            }
-            //</editor-fold>
-        } else if (barSpacing == BAR_SPACING_WEEK) {
-            //<editor-fold defaultstate="collapsed" desc="Time category generation">
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate()) || counter.toLocalDate().isEqual(end.toLocalDate())) {
-                output.put(counter.format(daymonth), 0.00);
-                counter = counter.plusWeeks(1);
-            }
-            //</editor-fold>
-        } else if (barSpacing == BAR_SPACING_MONTH) {
-            //<editor-fold defaultstate="collapsed" desc="Time category generation">
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
-                counter = counter.plusMonths(1);
-            }
-            output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + end.format(year), 0.00);
-            //</editor-fold>
-        } else if (barSpacing == BAR_SPACING_QUARTER) {
-            //<editor-fold defaultstate="collapsed" desc="Time category generation">
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                output.put(Utility.getQuarter(counter.toLocalDate()) + "-" + counter.format(year), 0.00);
-                counter = counter.plusMonths(3);
-            }
-            output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
-            //</editor-fold>
-        } else if (barSpacing == BAR_SPACING_YEAR) {
-            //<editor-fold defaultstate="collapsed" desc="Time category generation">
-            LocalDateTime counter = start;
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                output.put("" + counter.getYear(), 0.00);
-                counter = counter.plusYears(1);
-            }
-            output.put("" + end.getYear(), 0.00);
-            //</editor-fold>
-        }
-        return output;
     }
 
     /**
@@ -524,158 +278,548 @@ public class formReportOne extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the Sales Analysis (current form)
+        previousForm.setVisible(true);
+        this.dispose();
 
     }//GEN-LAST:event_btnBackActionPerformed
 
     // When the user clicks the Analyze button
     private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
-        CategoryDataset data = null;                                // Empty dataset - about to be populated
+        // Creates an empty dataset
+        CategoryDataset data = null;
 
-        boolean getInvoices = false;                                // Whether the user wants to load invoices or quotations, both can be true
-        boolean getQuotations = false;                              //
+        // Whether the user wants to load invoices or quotations, both can be true
+        boolean getInvoices = false;
+        boolean getQuotations = false;
 
-        LocalDateTime start = null;                                 // Dates from which to get the results from
-        LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
+        // Dates from which to get the results from
+        // End date is always the current date unless user specifies otherwise
+        LocalDateTime start = null;
+        LocalDateTime end = LocalDateTime.now();
 
-        String title = "Value invoiced/quoted against time";        // Default labels on the bar chart
-        String xLabel = "Date";                                     //
-        String yLabel = "Value invoiced/quoted";                    //
+        // Default labels on the bar chart
+        String title = "Value invoiced/quoted against time";
+        String xLabel = "Date";
+        String yLabel = "Value invoiced/quoted";
 
         // Sets the boolean for whether to load invoices, quotations or both AND sets the title and yLabel correctly
-        if (cbData.getSelectedIndex() == 0) {                       // Just invoices
-            getInvoices = true;
-            title = "Value invoiced against time";
-            yLabel = "Value invoiced";
-        } else if (cbData.getSelectedIndex() == 1) {                // Just quotations
-            getQuotations = true;
-            title = "Value quoted against time";
-            yLabel = "Value quoted";
-        } else if (cbData.getSelectedIndex() == 2) {                // Both invoices and quotations
-            getInvoices = true;
-            getQuotations = true;
-            // Labels do not need to be changes as these are the default ones
+        switch (cbData.getSelectedIndex()) {
+            case 0:// User wants to analyze just the invoices
+                getInvoices = true;
+                title = "Value invoiced against time";
+                yLabel = "Value invoiced";
+                break;
+            case 1:// User wants to analyze just the quotations
+                getQuotations = true;
+                title = "Value quoted against time";
+                yLabel = "Value quoted";
+                break;
+            case 2:// Both invoices and quotations
+                getInvoices = true;
+                getQuotations = true;
+                break;
         }
 
-        //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
-        boolean valid = true;                                                   // boolean for input validity, assume always valid
-        if (cbTime.getSelectedIndex() == 0) {                                   // Past month
-            start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 1) {                            // Past year
-            start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 2) {                            // This month
-            start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 3) {                            // This quarter
-            start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 4) {                            // This year
-            start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 5) {                            // This financial year
-            start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 6) {                            // All time
-            //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
-            conn = sqlManager.openConnection();
+        // Code for assigning the start date for each choice in cbTime
+        // Boolean for input validity, assume always valid
+        boolean valid = false;
+        switch (cbTime.getSelectedIndex()) {
+            case 0:// Past month
+                start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 1:// Past year
+                start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 2:// This month
+                start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 3:// This quarter
+                start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 4:// This year
+                start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 5:// This financial year
+                start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 6:// All time
+                conn = sqlManager.openConnection();
 
-            LocalDateTime inv = null;                               // Stores the date of the earliest invoice
-            LocalDateTime quot = null;                              // and quotation
-            if (getInvoices) {
-                inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");      //
-            }                                                                                   // Gets the earliest dates
-            if (getQuotations) {                                                                //
-                quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");   //
-            }
-            if (getInvoices && !getQuotations) {                    // Just invoices
-                start = inv;
-            } else if (getQuotations && !getInvoices) {             // Just quotations
-                start = quot;
-            } else {                                                // Otherwise
-                if (inv.isAfter(quot)) {                            // if inv is the later date
-                    start = quot;                                   // sets quot as the earliest
-                } else {
-                    start = inv;                                    // else inv is the earliest
+                // Gets the date_created of the first invoice and quotation ever created
+                if (getInvoices && !getQuotations) {
+                    // Analyze just invoices
+                    start = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
+
+                } else if (!getInvoices && getQuotations) {
+                    // Analyze just quotations
+                    start = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
+
+                } else if (getInvoices && getQuotations) {
+                    // Analyze both invoices and quotations
+
+                    // Init
+                    LocalDateTime inv;
+                    LocalDateTime quot;
+
+                    // Gets the dates of first invoice and quotation 
+                    inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
+                    quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
+
+                    // Sets the date_created of the first ever receipt
+                    if (inv.isBefore(quot)) {
+                        start = inv;
+                    } else {
+                        start = quot;
+                    }
                 }
-            }
-            sqlManager.closeConnection(conn);
-            //</editor-fold>
-        } else if (cbTime.getSelectedIndex() == 7) {                            // Other
-            //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
-            if (dcStart.getDate() == null) {
-                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
-                valid = false;
+                valid = true;
+                sqlManager.closeConnection(conn);
+                break;
+            case 7:// Other
 
-            } else if (dcEnd.getDate() == null) {
-                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "End date cannot be empty");
-                valid = false;
+                if (dcStart.getDate() == null) {
+                    ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
+                    valid = false;
 
-            } else if (dcEnd.getDate().before(dcStart.getDate())) {
-                ErrorMsg.throwCustomError("Start Date should be before the end date", "Invalid Input Error");
-                valid = false;
+                } else if (dcEnd.getDate() == null) {
+                    ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "End date cannot be empty");
+                    valid = false;
 
-            } else {
-                start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
-                end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
-            }
-            //</editor-fold>
+                } else if (dcEnd.getDate().before(dcStart.getDate())) {
+                    ErrorMsg.throwCustomError("Start Date should be before the end date", "Invalid Input Error");
+                    valid = false;
+
+                } else {
+                    // If the date inputs pass the obove checks then these are set as the start and end date
+                    start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0);
+                    end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);
+                    valid = true;
+                }
+                break;
         }
-        //</editor-fold>
 
-        if (valid) {                                                // If input is valid
+        // If input start and end date is valid
+        if (valid) {
+
+            // Calculates the amounts of days between the dates
             Duration dr = Duration.between(start, end);
-            int daysBetweenDates = (int) dr.toDays();               // Calculates the amounts of days between the dates
+            int daysBetweenDates = (int) dr.toDays();
 
-            //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
-            int barSpacing = BAR_SPACING_WEEK;                                     // Sets the spacing of the bars in the bar chart and the xLabels
+            // Determines the spacing of the bars in the bar chart and the xLabels
+            // This is done to ensure there is never too many bars displayed i.e. one bar for each day over 2 years
+            int barSpacing = BAR_SPACING_WEEK;
+
             if (daysBetweenDates < 7) {
                 barSpacing = BAR_SPACING_DAY;
                 xLabel = "Date of day (dd/mm)";
+
             } else if (daysBetweenDates < 84) {
                 barSpacing = BAR_SPACING_WEEK;
                 xLabel = "Date of day of commencing week (dd/mm)";
+
             } else if (daysBetweenDates < 366) {
                 barSpacing = BAR_SPACING_MONTH;
                 xLabel = "Month (month-year)";
+
             } else if (daysBetweenDates < 365 * 3) {
                 barSpacing = BAR_SPACING_QUARTER;
                 xLabel = "Quarter (quarter-year)";
+
             } else if (daysBetweenDates >= 365 * 3) {
                 barSpacing = BAR_SPACING_YEAR;
                 xLabel = "Year";
             }
-            //</editor-fold>
 
-            data = getData(getInvoices, getQuotations, start, end, barSpacing); // Gets the CategoryDataset with all the data
+            // Gets the CategoryDataset with all the data
+            data = getData(getInvoices, getQuotations, start, end, barSpacing);
+
+            // Creates the JFreeChart bar chart
             JFreeChart barChart = ChartFactory.createBarChart(
                     title,
                     xLabel,
                     yLabel,
                     data,
                     PlotOrientation.VERTICAL,
-                    cbData.getSelectedIndex() == 2, // only shows legend if the user wanted both types of data 
+                    cbData.getSelectedIndex() == 2, // only shows the legend if the user analyzed invoices and quotations
                     true,
                     false);
 
+            // Adds horizontal grid lines to the plot
             CategoryPlot p = barChart.getCategoryPlot();
             p.setRangeGridlinePaint(Color.black);
-            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
-            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);       // Makes the x axis labels vertical to conserve space
 
-            ChartPanel barPanel = new ChartPanel(barChart);         // chartPanel will hold the bar chart
-            pOutput.removeAll();                                    // Clears the JPanel
-            pOutput.add(barPanel, BorderLayout.CENTER);             // Adds the chartPanel
-            pOutput.validate();                                     // Validates the JPanel to make sure changes are visible
+            // Makes the x axis labels vertical to conserve space
+            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+
+            // Clears the JPanel and adds the ChartPanel which holds the barChart graphic
+            ChartPanel barPanel = new ChartPanel(barChart);
+            pOutput.removeAll();
+            pOutput.add(barPanel, BorderLayout.CENTER);
+
+            // Validates the JPanel to make sure changes are visible
+            pOutput.validate();
         }
-        //<editor-fold defaultstate="collapsed" desc="Leftover code in case I want to open the report as a new window">
-//      To open a new form with the report
-//      CategoryPlot p = barChart.getCategoryPlot();
-//      p.setRangeGridlinePaint(Color.black);
-//      ChartFrame frame = new ChartFrame("Bar chart", barChart);
-//      frame.setLocationRelativeTo(null);
-//      frame.setVisible(true);
-//      frame.setSize(450, 350);
-        //</editor-fold>
+
+        // Leftover code in case I want to open the report as a new window
+//        CategoryPlot p = barChart.getCategoryPlot();
+//        p.setRangeGridlinePaint(Color.black);
+//        ChartFrame frame = new ChartFrame("Bar chart", barChart);
+//        frame.setLocationRelativeTo(null);
+//        frame.setVisible(true);
+//        frame.setSize(450, 350);
     }//GEN-LAST:event_btnAnalyzeActionPerformed
 
+    // Creates an empty hashmap and then populates it with all the time categories
+    public LinkedHashMap<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
+
+        // Init
+        LinkedHashMap<String, Double> output = new LinkedHashMap<String, Double>();
+
+        if (barSpacing == BAR_SPACING_DAY) {
+            // Creates one bar per day analyzed
+            LocalDateTime counter = start;
+            output.put(counter.format(daymonth), 0.00);
+
+            while (!counter.toLocalDate().isEqual(end.toLocalDate())) {
+                // Moves to the next day and adds it to the hashmap
+                counter = counter.plusDays(1);
+                output.put(counter.format(daymonth), 0.00);
+            }
+
+        } else if (barSpacing == BAR_SPACING_WEEK) {
+            // Creates one bar per week analyzed
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                // Moves to the next week and adds it to the hashmap
+                output.put(counter.format(daymonth), 0.00);
+                counter = counter.plusWeeks(1);
+            }
+
+        } else if (barSpacing == BAR_SPACING_MONTH) {
+            // Creates one bar per month analyzed
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                // Moves to the next month and adds it to the hashmap
+                output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
+                counter = counter.plusMonths(1);
+            }
+            // Adds the final month which doesn't get added in the while loop
+            output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + end.format(year), 0.00);
+
+        } else if (barSpacing == BAR_SPACING_QUARTER) {
+            // Creates one bar per quarter analyzed
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                // Moves to the next quarter and adds it to the hashmap
+                output.put(Utility.getQuarter(counter.toLocalDate()) + "-" + counter.format(year), 0.00);
+                counter = counter.plusMonths(3);
+            }
+            // Adds the final quarter which doesn't get added in the while loop
+            output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
+
+        } else if (barSpacing == BAR_SPACING_YEAR) {
+            // Creates one bar per year analyzed
+            LocalDateTime counter = start;
+
+            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                // Moves to the next year and adds it to the hashmap
+                output.put("" + counter.getYear(), 0.00);
+                counter = counter.plusYears(1);
+            }
+            // Adds the final tear which doesn't get added in the while loop
+            output.put("" + end.getYear(), 0.00);
+        }
+
+        return output;
+    }
+
+    // Generates the dataset by fetching the data from the DB
+    private CategoryDataset getData(boolean getInvoices, boolean getQuotations, LocalDateTime start, LocalDateTime end, int barSpacing) {
+
+        // CategoryDataSet for the final output
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Init
+        LinkedHashMap<String, Double> dataArr_Invoice = null;
+        LinkedHashMap<String, Double> dataArr_Quotation = null;
+
+        if (getInvoices) {
+            // Gets the hashmap with all the invoice data categorised
+            dataArr_Invoice = getInvoiceDataSetHashMap(start, end, barSpacing);
+
+            // Goes through each Entry in the hashmap and adds it to the dataset
+            for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {
+                dataset.addValue(i.getValue(), "Invoice", i.getKey());
+            }
+        }
+        if (getQuotations) {
+            // Gets the hashmap with all the invoice data categorised
+            dataArr_Quotation = getQuotationDataSetHashMap(start, end, barSpacing);
+
+            // Goes through each Entry in the hashmap and adds it to the dataset
+            for (Map.Entry<String, Double> i : dataArr_Quotation.entrySet()) {
+                dataset.addValue(i.getValue(), "Quotation", i.getKey());
+            }
+        }
+
+        // If the user wanted to analyze invoices and quotations then the values for 'Both' are calculated
+        if (getInvoices && getQuotations) {
+            // Goes through each Entry in the hashmap
+            for (Map.Entry<String, Double> i : dataArr_Invoice.entrySet()) {
+                if (i.getValue() != 0.0 && dataArr_Quotation.get(i.getKey()) != 0.) {
+                    // Adds the total of both to the dataset
+                    dataset.addValue(i.getValue() + dataArr_Quotation.get(i.getKey()), "Both", i.getKey());
+                }
+            }
+        }
+
+        // Returns the populated dataset
+        return dataset;
+    }
+
+    // Returns the hashmap with all the invoice data categorised
+    private LinkedHashMap<String, Double> getInvoiceDataSetHashMap(LocalDateTime start, LocalDateTime end, int barSpacing) {
+        conn = sqlManager.openConnection();
+
+        // Init
+        LinkedHashMap<String, Double> dataArr_Invoice = null;
+        dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
+
+        // Raw SQL query: https://pastebin.com/RJ5B4hpc
+        String query = "SELECT i.date_created,"
+                + " COALESCE(SUM(iD.quantity * iD.unit_price), 0) AS invoiceTotal"
+                + " FROM tblInvoice i"
+                + " INNER JOIN tblInvoiceDetail iD ON i.invoice_id = iD.invoice_id"
+                + " WHERE i.date_created BETWEEN ? AND ?"
+                + " GROUP BY i.invoice_id"
+                + " ORDER BY i.date_created";
+
+        try {
+            // Query Setup & Execution
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setObject(1, start);
+            pstmt.setObject(2, end);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (barSpacing == BAR_SPACING_DAY) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key = rs.getDate(1).toLocalDate().format(daymonth);
+
+                    // The total value of the invoice
+                    Double invoiceTotal = rs.getDouble(2);
+
+                    // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Invoice.get(key);
+                    double after = before + invoiceTotal;
+                    dataArr_Invoice.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_WEEK) {
+                // Stores the date when the week commences
+                LocalDateTime counter = start;
+
+                while (rs.next()) {
+                    // Calculates days and weeks between the counter and date of the data being added
+                    Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0));
+                    int daysBetween = (int) dr.toDays();
+                    int weeksBetween = daysBetween / 7;
+
+                    // If the data is not within the same commencing week
+                    if (daysBetween >= 7) {
+                        counter = counter.plusWeeks(weeksBetween);
+                    }
+
+                    // The key in the hashmap
+                    String key = counter.format(daymonth);
+
+                    // The total value of the invoice
+                    Double invoiceTotal = rs.getDouble(2);
+
+                    // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Invoice.get(key);
+                    double after = before + invoiceTotal;
+                    dataArr_Invoice.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_MONTH) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key_month = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+                    String key_year = rs.getDate(1).toLocalDate().format(year);
+                    String key = key_month + "-" + key_year;
+
+                    // The total value of the invoice
+                    Double invoiceTotal = rs.getDouble(2);
+
+                    // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Invoice.get(key);
+                    double after = before + invoiceTotal;
+                    dataArr_Invoice.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_QUARTER) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key_quarter = Utility.getQuarter(rs.getDate(1).toLocalDate());
+                    String key_year = rs.getDate(1).toLocalDate().format(year);
+                    String key = key_quarter + "-" + key_year;
+
+                    // The total value of the invoice
+                    Double invoiceTotal = rs.getDouble(2);
+
+                    // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Invoice.get(key);
+                    double after = before + invoiceTotal;
+                    dataArr_Invoice.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_YEAR) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key = String.valueOf(rs.getDate(1).toLocalDate().getYear());
+
+                    // The total value of the invoice
+                    Double invoiceTotal = rs.getDouble(2);
+
+                    // Add the invoiceTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Invoice.get(key);
+                    double after = before + invoiceTotal;
+                    dataArr_Invoice.put(key, after);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQLException");
+        }
+        sqlManager.closeConnection(conn);
+
+        return dataArr_Invoice;
+    }
+
+    // Returns the hashmap with all the quotation data categorised
+    private LinkedHashMap<String, Double> getQuotationDataSetHashMap(LocalDateTime start, LocalDateTime end, int barSpacing) {
+        conn = sqlManager.openConnection();
+
+        // Init
+        LinkedHashMap<String, Double> dataArr_Quotation = null;
+        dataArr_Quotation = generateEmptyDict(start, end, barSpacing);
+
+        // Raw SQL query: https://pastebin.com/uA3ifThF
+        String query = "SELECT q.date_created,"
+                + " COALESCE(SUM(qD.quantity * qD.unit_price), 0) as quotationTotal"
+                + " FROM tblQuotation q"
+                + " INNER JOIN tblQuotationDetail qD ON q.quotation_id = qD.quotation_id"
+                + " WHERE q.date_created BETWEEN ? AND ?"
+                + " GROUP BY q.quotation_id"
+                + " ORDER BY q.quotation_id";
+
+        try {
+            // Query Setup & Execution
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setObject(1, start);
+            pstmt.setObject(2, end);
+            ResultSet rs = rs = pstmt.executeQuery();
+
+            if (barSpacing == BAR_SPACING_DAY) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key = rs.getDate(1).toLocalDate().format(daymonth);
+
+                    // The total value of the quotation
+                    Double quotationTotal = rs.getDouble(2);
+
+                    // Add the quotationTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Quotation.get(key);
+                    double after = before + quotationTotal;
+                    dataArr_Quotation.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_WEEK) {
+                // Stores the date when the week commences
+                LocalDateTime counter = start;
+
+                while (rs.next()) {
+                    // Calculates days and weeks between the counter and date of the data being added
+                    Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0));
+                    int daysBetween = (int) dr.toDays();
+                    int weeksBetween = daysBetween / 7;
+
+                    // If the data is not within the same commencing week
+                    if (daysBetween >= 7) {
+                        counter = counter.plusWeeks(weeksBetween);
+                    }
+
+                    // The key in the hashmap
+                    String key = counter.format(daymonth);
+
+                    // The total value of the quotation
+                    Double quotationTotal = rs.getDouble(2);
+
+                    // Add the quotationTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Quotation.get(key);
+                    double after = before + quotationTotal;
+                    dataArr_Quotation.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_MONTH) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key_month = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+                    String key_year = rs.getDate(1).toLocalDate().format(year);
+                    String key = key_month + "-" + key_year;
+
+                    // The total value of the quotation
+                    Double quotationTotal = rs.getDouble(2);
+
+                    // Add the quotationTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Quotation.get(key);
+                    double after = before + quotationTotal;
+                    dataArr_Quotation.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_QUARTER) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key_quarter = Utility.getQuarter(rs.getDate(1).toLocalDate());
+                    String key_year = rs.getDate(1).toLocalDate().format(year);
+                    String key = key_quarter + "-" + key_year;
+
+                    // The total value of the quotation
+                    Double quotationTotal = rs.getDouble(2);
+
+                    // Add the quotationTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Quotation.get(key);
+                    double after = before + quotationTotal;
+                    dataArr_Quotation.put(key, after);
+                }
+            } else if (barSpacing == BAR_SPACING_YEAR) {
+                while (rs.next()) {
+                    // The key in the hashmap
+                    String key = String.valueOf(rs.getDate(1).toLocalDate().getYear());
+
+                    // The total value of the quotation
+                    Double quotationTotal = rs.getDouble(2);
+
+                    // Add the quotationTotal to the hashmap by adding it to the existing value
+                    double before = dataArr_Quotation.get(key);
+                    double after = before + quotationTotal;
+                    dataArr_Quotation.put(key, after);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQLException");
+        }
+        sqlManager.closeConnection(conn);
+
+        return dataArr_Quotation;
+    }
+
+    // Used when the form is opened from within another form
     public formReportOne getFrame() {
         return this;
     }

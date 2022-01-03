@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -17,17 +19,15 @@ import javax.swing.JFrame;
  */
 public class formMainMenu extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formMainMenu
-     */
-    Connection conn = null;                                         // Stores the connection object
-    static int WHO_LOGGED_IN = 0;                                   // id of whoever is currently logged in
+    private static final Logger logger = Logger.getLogger(formMainMenu.class.getName());
+    Connection conn = null;
 
     public formMainMenu() {
         initComponents();
-        this.setLocationRelativeTo(null);                           // Positions form in the centre of the screen
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Disables the buttons to the parts of the system which require admin access
         btnReport1.setEnabled(false);
         btnReport2.setEnabled(false);
         btnReport3.setEnabled(false);
@@ -35,36 +35,32 @@ public class formMainMenu extends javax.swing.JFrame {
         btnManageEmployees.setEnabled(false);
     }
 
-    // Fetches the full name of whoever is currently logged in and updates label
+    // Updates a JLabel with the name of the currently logged in user
     public void whoLoggedIn() {
+        // Fetches employee full name
         conn = sqlManager.openConnection();
-        String employeeFullName = sqlManager.getEmployeeFullName(conn, WHO_LOGGED_IN);
+        String employeeFullName = sqlManager.getEmployeeFullName(conn, LoggedInUser.getID());
         sqlManager.closeConnection(conn);
 
+        // Updates JLabel with the employee's name
         if (employeeFullName != null) {
-            System.out.println("-------------------------------");
-            System.out.println(WHO_LOGGED_IN);
-            System.out.println(employeeFullName);
-            lblLoggedInAs.setText("Logged in as " + employeeFullName);          // Updates label to say who is currently logged in
+            logger.log(Level.INFO, employeeFullName);
+            lblLoggedInAs.setText("Logged in as " + employeeFullName);
         } else {
-            System.out.println("-------------------------------");
-            System.out.println("Error logging in.");
-            // This point should theoretically not be reachable as the user would not be able to login if the user's name data didnt exist
+            logger.log(Level.WARNING, "Error logging in.");
         }
-
     }
 
-    // Checks whether the logged in user is an admin, if they are then they have access to the management section of the program.
+    // Checks whether the logged in user is an admin, 
+    // if they are then they are given access to the management section of the system.
     public void checkWhetherAdmin() {
-        conn = sqlManager.openConnection();
-        if (sqlManager.isAdmin(conn, WHO_LOGGED_IN)) {
+        if (LoggedInUser.isAdmin()) {
             btnReport1.setEnabled(true);
             btnReport2.setEnabled(true);
             btnReport3.setEnabled(true);
             btnReport4.setEnabled(true);
             btnManageEmployees.setEnabled(true);
         }
-        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -347,100 +343,121 @@ public class formMainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnManageCustomersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomersActionPerformed
-        formManageCustomers form = new formManageCustomers().getFrame();                    // Opens new Customer Management form
-        form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
-        form.sp = "";                                               // Empties search parameter in next form
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        form.loadCustomers();                                       // Load all the customers into the table
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formManageCustomers form = new formManageCustomers().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm = this;
+
+        form.sp = "";
+        form.loadCustomers();
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnManageCustomersActionPerformed
 
     private void btnManageEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageEmployeesActionPerformed
-        formManageEmployees form = new formManageEmployees().getFrame();                    // Opens new Employee Management form
-        form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
-        form.sp = "";                                               // Empties search parameter in next form
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        form.loadEmployees();                                       // Load all the employees into the table
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formManageEmployees form = new formManageEmployees().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm = this;
+
+        form.sp = "";
+        form.loadEmployees();
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnManageEmployeesActionPerformed
 
     private void btnManageItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageItemCategoriesActionPerformed
-        formManageItemCategories form = new formManageItemCategories().getFrame();          // Opens new Item Category Management form
-        form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
-        form.sp = "";                                               // Empties search parameter in next form
-        form.loadCategories();                                      // Load all the categories into the table
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formManageItemCategories form = new formManageItemCategories().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm = this;
+
+        form.sp = "";
+        form.loadCategories();
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnManageItemCategoriesActionPerformed
 
     private void btnManageCustomerCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageCustomerCategoriesActionPerformed
-        formManageCustomerCategories form = new formManageCustomerCategories().getFrame();  // Opens new Customer Category Management form
-        form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
-        form.sp = "";                                               // Empties search parameter in next form
-        form.loadCategories();                                      // Load all the categories into the table
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formManageCustomerCategories form = new formManageCustomerCategories().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm = this;
+
+        form.sp = "";
+        form.loadCategories();
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
     private void btnChangeLoginDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeLoginDetailsActionPerformed
         boolean changingDetails = true;
         while (changingDetails) {
-            String[] inputDetails = Utility.JOptionPaneMultiInput("Change login details", new String[]{"Current username", "Current password", "New username", "Confirm username", "New password", "Confirm password"});
-            if (inputDetails == null) {                             // If the user closed the input window
+            String[] inputDetails = Utility.JOptionPaneMultiInput("Change login details",
+                    new String[]{"Current username", "Current password", "New username",
+                        "Confirm username", "New password", "Confirm password"});
+
+            if (inputDetails == null) {
+                // If the user closed the input window
                 changingDetails = false;
             } else {
-
-                Boolean found = false;                              // Whether a user exists under the given login details
-                int fetchedID = -1;                                 // Init
-
+                // Init
+                Boolean found = false;
+                int fetchedID = -1;
                 conn = sqlManager.openConnection();
+
+                // Authenticates the logged in user
                 try {
+                    // Query Setup & Execution
                     String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, inputDetails[0]);
                     pstmt.setBytes(2, Utility.hash(inputDetails[1]));
 
                     ResultSet rs = pstmt.executeQuery();
-                    if (rs.next()) {                                // If any results were fetched from the DB
 
-                        fetchedID = rs.getInt(1);               // Gets the id of whoever logged in
+                    if (rs.next()) {
+                        // Gets the id of whoever logged in
+                        fetchedID = rs.getInt(1);
                         found = true;
 
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "SQLException");
                 }
 
                 if (!found) {
+                    // If the user logged in incorrectly
                     ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
 
                 } else {
+                    // Checks if the new login details are valid
                     if (!inputDetails[2].equals(inputDetails[3]) || !inputDetails[4].equals(inputDetails[5])) {
                         ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
 
-                    } else if (inputDetails[2].length() < 4) {                  // Checks if the new username is of minimum length (4)
+                    } else if (inputDetails[2].length() < 4) {
+                        // Checks if the new username is of minimum length (4)
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "username");
 
-                    } else if (inputDetails[4].length() < 4) {                  // Checks if the new password is of minimum length (4)
+                    } else if (inputDetails[4].length() < 4) {
+                        // Checks if the new password is of minimum length (4)
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
-                    } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) { // Checks if the new username does not exceed the maximum length in the DB
+                    } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
+                        // Checks if the new username does not exceed the maximum length in the DB
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
-                    } else if (inputDetails[4].length() > 128) { // Checks if the new password does not exceed 128 characters
+                    } else if (inputDetails[4].length() > 128) {
+                        // Checks if the new password does not exceed 128 characters
                         ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
 
-                    } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", inputDetails[2])) {  // Checks if a login with that username already exists
+                    } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", inputDetails[2])) {
+                        // Checks if a login with that username already exists
                         ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "User with these details");
 
                     } else {
+                        // If the new login details are valid then they are updated
                         updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
                         changingDetails = false;
                     }
-
                 }
+
                 sqlManager.closeConnection(conn);
             }
         }
@@ -448,97 +465,107 @@ public class formMainMenu extends javax.swing.JFrame {
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();
-        String query = "UPDATE tblEmployee SET username = ?, password_hash = ? WHERE employee_id = ?";
+
         try {
+            // Query Setup & Execution
+            String query = "UPDATE tblEmployee SET username = ?, password_hash = ? WHERE employee_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, newUsername);
             pstmt.setBytes(2, Utility.hash(newPassword));
             pstmt.setInt(3, id);
 
             int rowsAffected = pstmt.executeUpdate();
-            System.out.println("-------------------------------");
-            System.out.println(rowsAffected + " row(s) updated.");
+            logger.log(Level.INFO, rowsAffected + " row(s) updated.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
         sqlManager.closeConnection(conn);
     }
 
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
-        form.previousForm1 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm1 = this;
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnNewInvoiceActionPerformed
 
     private void btnNewQuotationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewQuotationActionPerformed
-        formNewQuotation form = new formNewQuotation().getFrame();  // Opens new NewQuotation form
-        form.previousForm1 = this;                                  // Makes this form the previousForm so the back buttons work
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formNewQuotation form = new formNewQuotation().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm1 = this;
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnNewQuotationActionPerformed
 
     private void btnManageInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageInvoicesActionPerformed
-        formManageInvoices form = new formManageInvoices().getFrame();      // Opens new Invoice Management form
-        form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
-        form.sp = "";                                               // Empties search parameter in next form
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        form.loadInvoices();                                        // Load all the invoices into the table
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formManageInvoices form = new formManageInvoices().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm = this;
+
+        form.sp = "";
+        form.loadInvoices();
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnManageInvoicesActionPerformed
 
     private void btnManageQuotationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageQuotationsActionPerformed
-        formManageQuotations form = new formManageQuotations().getFrame();  // Opens new Quotations Management form
-        form.previousForm = this;                                   // Makes this form the previousForm so the back buttons work
-        form.sp = "";                                               // Empties search parameter in next form
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        form.loadQuotations();                                      // Load all the quotations into the table
-        this.setVisible(false);                                     // Makes main menu invisible
-        form.setVisible(true);                                      // makes the next form visible
+        formManageQuotations form = new formManageQuotations().getFrame();
+        // Makes this form the previousForm so the back buttons work
+        form.previousForm = this;
+
+        form.sp = "";
+        form.loadQuotations();
+        this.setVisible(false);
+        form.setVisible(true);
     }//GEN-LAST:event_btnManageQuotationsActionPerformed
 
     private void btnReport1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport1ActionPerformed
         formReportOne form = new formReportOne().getFrame();
+        // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport1ActionPerformed
 
     private void btnReport2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport2ActionPerformed
         formReportTwo form = new formReportTwo().getFrame();
+        // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport2ActionPerformed
 
     private void btnReport3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport3ActionPerformed
         formReportThree form = new formReportThree().getFrame();
+        // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport3ActionPerformed
 
     private void btnReport4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReport4ActionPerformed
         formReportFour form = new formReportFour().getFrame();
+        // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
+
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnReport4ActionPerformed
 
     private void btnChangePersonalDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePersonalDetailsActionPerformed
-        formOneEmployee form = new formOneEmployee().getFrame();    // Opens a new instance of the formOneEmployee() form
-        form.setVisible(true);                          // Makes the new employee view visible
-        form.WHO_LOGGED_IN = WHO_LOGGED_IN;
-        form.EmployeeID = WHO_LOGGED_IN;                // Tells the employee view form which employee to load 
-        form.loadEmployee();                            // Runs the loadEmployee() method which will load all of the specified employee's details
+        formOneEmployee form = new formOneEmployee().getFrame();
+        form.setVisible(true);
+        form.EmployeeID = LoggedInUser.getID();
+
+        // Loads all of the logged-in user's details ready for editing
+        form.loadEmployee();
+        // Allows the user to make edits to their information
         form.enableEditMode();
+        // Ensures the user cannot remove themself from the system or make themselves a system admin
         form.disableButtonsForSelfChanges();
     }//GEN-LAST:event_btnChangePersonalDetailsActionPerformed
 

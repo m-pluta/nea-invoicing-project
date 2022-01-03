@@ -17,6 +17,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import org.jfree.chart.ChartFactory;
@@ -35,63 +37,74 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public class formReportThree extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formReportThree
-     */
-    Connection conn = null;                                         // Shows the connection object to the DB
-    formMainMenu previousForm = null;                               // Stores the previousForm object to make the Back button work
-    int WHO_LOGGED_IN = 1;                                          // The employee id of the logged in employee
+    private static final Logger logger = Logger.getLogger(formReportThree.class.getName());
+    Connection conn = null;
+    formMainMenu previousForm = null;
 
     public formReportThree() {
         initComponents();
-        this.setLocationRelativeTo(null);                           // Positions the form in the middle of the screen
+        this.setLocationRelativeTo(null);
 
+        // Makes the option to set a custom start date and end date invisible temporarily
         lblStart.setVisible(false);
         dcStart.setVisible(false);
         lblEnd.setVisible(false);
         dcEnd.setVisible(false);
 
-        // ActionListener for when the users changes the selected item in the time combo box
-        cbTime.addActionListener(new ActionListener() {             // When an action happens within the combo box - e.g. the selectedIndex changed
+        // Listens for a change in the selectedIndex
+        cbTime.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {   // If the user selected the last item ('Other')
+                if (cbTime.getSelectedIndex() == cbTime.getItemCount() - 1) {
+                    // If the user selected the last item i.e. 'Other'
+                    // Makes the date selectors for start and end date visible
                     lblStart.setVisible(true);
                     dcStart.setVisible(true);
-                    lblEnd.setVisible(true);                        // Makes the date selectors for start and end date appear
+                    lblEnd.setVisible(true);
                     dcEnd.setVisible(true);
                 } else {
+                    // Makes the date selectors for start and end date invisible
                     lblStart.setVisible(false);
                     dcStart.setVisible(false);
-                    lblEnd.setVisible(false);                       // Makes the date selectors for start and end date disappear
+                    lblEnd.setVisible(false);
                     dcEnd.setVisible(false);
                 }
             }
         });
 
-        //<editor-fold defaultstate="collapsed" desc="Code for setting the min and max value for the JSpinner">
+        // Init
         int NoEmployees = 1;
         conn = sqlManager.openConnection();
+
         try {
+            // Query Setup & Execution
             String query = "SELECT COUNT(employee_id) FROM tblEmployee";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            rs.next();                                              // Gets the next result from query
-            NoEmployees = rs.getInt(1);
+
+            if (rs.next()) {
+                NoEmployees = rs.getInt(1);
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
         sqlManager.closeConnection(conn);
 
-        int preferredAmount = 5;                                    // The preferred amount of categories to display
-        SpinnerModel sm = new SpinnerNumberModel(NoEmployees < preferredAmount ? NoEmployees : preferredAmount, 1, NoEmployees, 1); // Default, LB, UB, Increment
+        // The preferred amount of categories to display
+        int preferredAmount = 5;
+        int default_val = NoEmployees < preferredAmount ? NoEmployees : preferredAmount;
+
+        // Default, Lower Bound, Upper Bound, Increment
+        SpinnerModel sm = new SpinnerNumberModel(default_val, 1, NoEmployees, 1);
         spEmployeeCount.setModel(sm);
-        //</editor-fold>
     }
 
-    // Generates the dataset by first creating an empty LinkedHashmap so all data can first be added to that.
+    // Generates the dataset by fetching the data from the DB
     private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int EmployeeCount) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();          // the final output dataset
+        conn = sqlManager.openConnection();
+
+        // The final output dataset
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // Raw SQL query: https://pastebin.com/RXQdWpH1
         String queryInvoiceTotals = "SELECT i.employee_id, SUM(iD.quantity * iD.unit_price) AS invoiceSubtotal"
@@ -126,28 +139,31 @@ public class formReportThree extends javax.swing.JFrame {
                 + " ORDER BY overallTotal DESC"
                 + " LIMIT ?";
 
-        conn = sqlManager.openConnection();
         try {
+            // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(mainQuery);
             pstmt.setObject(1, start);
             pstmt.setObject(2, end);
             pstmt.setObject(3, start);
             pstmt.setObject(4, end);
             pstmt.setInt(5, EmployeeCount);
-
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
+                // Adds the data for each employee to the dataset
                 String employee_name = rs.getString(1);
                 dataset.addValue(rs.getDouble(2), "Invoices", employee_name);
                 dataset.addValue(rs.getDouble(3), "Quotations", employee_name);
-                if (rs.getDouble(2) >= 0.005 && rs.getDouble(3) >= 0.005) {
+
+                // If the employee has set both invoices and quotations then a value for both is calculated
+                if (rs.getDouble(2) > 0 && rs.getDouble(3) > 0) {
                     dataset.addValue(rs.getDouble(4), "Both", employee_name);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
         return dataset;
     }
@@ -304,72 +320,99 @@ public class formReportThree extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Goes back to the previous form
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        previousForm.setVisible(true);                              // Makes main previous form visible
-        this.dispose();                                             // Closes the Sales Analysis (current form)
+        previousForm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
+    // When the user clicks the Analyze button
     private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
-        CategoryDataset data = null;                                // Empty dataset - about to be populated
+        // Creates an empty dataset
+        CategoryDataset data = null;
 
-        LocalDateTime start = null;                                 // Dates from which to get the results from
-        LocalDateTime end = LocalDateTime.now();                    // end is always current datetime unless user specifies otherwise
+        // Dates from which to get the results from
+        // End date is always the current date unless user specifies otherwise
+        LocalDateTime start = null;
+        LocalDateTime end = LocalDateTime.now();
 
-        //<editor-fold defaultstate="collapsed" desc="Code for assigning start date values for each choice in cbTime">
-        boolean valid = true;                                       // boolean for input validity, assume always valid
-        if (cbTime.getSelectedIndex() == 0) {                                           // Past month
-            start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 1) {                                    // Past year
-            start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 2) {                                    // This month
-            start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 3) {                                    // This quarter
-            start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 4) {                                    // This year
-            start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 5) {                                    // This financial year
-            start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
-        } else if (cbTime.getSelectedIndex() == 6) {                                    // All time
-            //<editor-fold defaultstate="collapsed" desc="Code for getting the earliest date of invoices or quotations or both">
-            conn = sqlManager.openConnection();
+        // Code for assigning the start date for each choice in cbTime
+        // Boolean for input validity, assume always valid
+        boolean valid = false;
+        switch (cbTime.getSelectedIndex()) {
+            case 0:// Past month
+                start = LocalDate.now().minusMonths(1).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 1:// Past year
+                start = LocalDate.now().minusMonths(12).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 2:// This month
+                start = LocalDate.now().withDayOfMonth(1).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 3:// This quarter
+                start = Utility.getQuarterStart(LocalDate.now()).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 4:// This year
+                start = LocalDate.now().withDayOfYear(1).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 5:// This financial year
+                start = Utility.getFinancialYear(LocalDate.now()).atTime(0, 0, 0);
+                valid = true;
+                break;
+            case 6:// All time
+                conn = sqlManager.openConnection();
 
-            LocalDateTime inv = null;                               // Stores the date of the earliest invoice
-            LocalDateTime quot = null;                              // and quotation
-            inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");      // Gets the earliest dates
-            quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");   //                                            // Otherwise
-            if (inv.isAfter(quot)) {                            // if inv is the later date
-                start = quot;                                   // sets quot as the earliest
-            } else {
-                start = inv;                                    // else inv is the earliest
-            }
-            sqlManager.closeConnection(conn);
-            //</editor-fold>
-        } else if (cbTime.getSelectedIndex() == 7) {                                    // Other
-            //<editor-fold defaultstate="collapsed" desc="Code for verifying user input and setting start and end date">
-            if (dcStart.getDate() == null) {
-                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
-                valid = false;
+                // Init
+                LocalDateTime inv;
+                LocalDateTime quot;
 
-            } else if (dcEnd.getDate() == null) {
-                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "End date cannot be empty");
-                valid = false;
+                // Gets the dates of first invoice and quotation 
+                inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
+                quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
 
-            } else if (dcEnd.getDate().before(dcStart.getDate())) {
-                ErrorMsg.throwCustomError("Start Date should be before the end date", "Invalid Input Error");
-                valid = false;
+                // Sets the date_created of the first ever receipt
+                if (inv.isBefore(quot)) {
+                    start = inv;
+                } else {
+                    start = quot;
+                }
 
-            } else {
-                start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0); // Start of first date selected
-                end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);  // End of second date selected
-            }
-            //</editor-fold>
+                valid = true;
+                sqlManager.closeConnection(conn);
+                break;
+            case 7:// Other
+
+                if (dcStart.getDate() == null) {
+                    ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
+                    valid = false;
+
+                } else if (dcEnd.getDate() == null) {
+                    ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "End date cannot be empty");
+                    valid = false;
+
+                } else if (dcEnd.getDate().before(dcStart.getDate())) {
+                    ErrorMsg.throwCustomError("Start Date should be before the end date", "Invalid Input Error");
+                    valid = false;
+
+                } else {
+                    // If the date inputs pass the obove checks then these are set as the start and end date
+                    start = dcStart.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(0, 0, 0);
+                    end = dcEnd.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atTime(23, 59, 59);
+                    valid = true;
+                }
+                break;
         }
-        //</editor-fold>
 
-        int employeeCount = (int) spEmployeeCount.getValue();       // Gets the amount of employees the user wants to see
+        // Gets the amount of employees the user wants to see
+        int employeeCount = (int) spEmployeeCount.getValue();
 
         if (valid) {
-            data = getData(start, end, employeeCount);              // Gets the CategoryDataset with all the data
+            data = getData(start, end, employeeCount);
             JFreeChart barChart = ChartFactory.createBarChart(
                     "Value invoiced/quoted per employee",
                     "Employee name",
@@ -380,19 +423,26 @@ public class formReportThree extends javax.swing.JFrame {
                     true,
                     false);
 
+            // Adds horizontal grid lines to the plot
             CategoryPlot p = barChart.getCategoryPlot();
             p.setRangeGridlinePaint(Color.black);
-            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
-            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);   // Makes the x axis labels vertical to conserve space
 
-            ChartPanel barPanel = new ChartPanel(barChart);         // chartPanel will hold the bar chart
-            pOutput.removeAll();                                    // Clears the JPanel
-            pOutput.add(barPanel, BorderLayout.CENTER);             // Adds the chartPanel
-            pOutput.validate();                                     // Validates the JPanel to make sure changes are visible
+            // Makes the x axis labels vertical to conserve space
+            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
+            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+
+            // Clears the JPanel and adds the ChartPanel which holds the barChart graphic
+            ChartPanel barPanel = new ChartPanel(barChart);
+            pOutput.removeAll();
+            pOutput.add(barPanel, BorderLayout.CENTER);
+
+            // Validates the JPanel to make sure changes are visible
+            pOutput.validate();
 
         }
     }//GEN-LAST:event_btnAnalyzeActionPerformed
 
+    // Used when the form is opened from within another form
     public formReportThree getFrame() {
         return this;
     }

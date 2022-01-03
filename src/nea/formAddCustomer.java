@@ -14,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -26,42 +28,50 @@ import javax.swing.event.DocumentListener;
  */
 public class formAddCustomer extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formAddCustomer
-     */
-    int CustomerID = 0;                                             // customer_id of new customer being added
-    Connection conn = null;                                         // Stores the connection object
-    formManageCustomers previousForm1;                              // Stores the previous Form object
-    formNewInvoice previousForm2;                                   // Stores the previous Form object
-    formNewQuotation previousForm3;                                 // Stores the previous Form object
+    private static final Logger logger = Logger.getLogger(formAddCustomer.class.getName());
+    Connection conn = null;
+
+    // Customer ID for the new customer being added
+    int CustomerID = 0;
+
+    // Previous forms the user could have come from
+    formManageCustomers previousForm1 = null;
+    formNewInvoice previousForm2 = null;
+    formNewQuotation previousForm3 = null;
 
     public formAddCustomer() {
         initComponents();
+        // Don't close the entire program if the AddCustomer window is closed
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
-        previousForm1 = null;
-        previousForm2 = null;
-        previousForm3 = null;
+        // Loads all the possible customer categories into combo box
+        loadCustomerCategoriesIntoCB();
 
-        loadCustomerCategoriesIntoCB();                             // Loads all the possible customer categories into combo box
-
+        // Gets the ID for the new customer
         conn = sqlManager.openConnection();
-        CustomerID = sqlManager.getNextPKValue(conn, "tblCustomer", "customer_id");   // Tells the customer view form which customer id will be used next
+        CustomerID = sqlManager.getNextPKValue(conn, "tblCustomer", "customer_id");
         sqlManager.closeConnection(conn);
-        txtCustomerID.setText(String.valueOf(CustomerID));
-        txtCustomerID.setEditable(false);
 
-        cbCategory.addActionListener(new ActionListener() {         // When an action happens within the combo box - e.g. the selectedIndex changed
+        txtCustomerID.setText(String.valueOf(CustomerID));
+
+        // Listens for a change in the selectedIndex
+        cbCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {   // If the user selected the last item ('Add a new category...')
+                // If the user selected the last item  i.e., 'Add a new category...'
+                if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {
+                    // Offers user the option to add a new customer category
                     conn = sqlManager.openConnection();
                     String addedCategory = sqlManager.addNewCustomerCategory(conn);
                     sqlManager.closeConnection(conn);
 
+                    // If category was added successfully
                     if (addedCategory != null) {
-                        loadCustomerCategoriesIntoCB();             // Refreshes Combo box so the new category is visible
-                        cbCategory.setSelectedItem(addedCategory);  // Set the selected item to whatever category the user just added
+                        // Refreshes ComboBox so the new category is visible
+                        loadCustomerCategoriesIntoCB();
+                        // Sets the selectedItem to whatever category the user just added
+                        cbCategory.setSelectedItem(addedCategory);
                     } else {
                         cbCategory.setSelectedIndex(0);
                     }
@@ -69,6 +79,7 @@ public class formAddCustomer extends javax.swing.JFrame {
             }
         });
 
+        // Notifies the previous form that the user is no longer adding a new customer.
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -108,6 +119,7 @@ public class formAddCustomer extends javax.swing.JFrame {
             }
         });
 
+        // Updates the fullName JTextField each time the input forename and surname changes
         DocumentListener dListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -127,28 +139,33 @@ public class formAddCustomer extends javax.swing.JFrame {
         txtSurname.getDocument().addDocumentListener(dListener);
     }
 
+    // Used when the form is opened from within another form
     public formAddCustomer getFrame() {
         return this;
     }
 
+    // Loads all the customer categories from the DB into the ComboBox
     public void loadCustomerCategoriesIntoCB() {
+        // Clears ComboBox
         cbCategory.removeAllItems();
-        conn = sqlManager.openConnection();
-        String query = "SELECT category_name FROM tblCustomerCategory";
-        try {
-            Statement stmt = conn.createStatement();
 
+        conn = sqlManager.openConnection();
+        try {
+            // Query Setup & Execution
+            String query = "SELECT category_name FROM tblCustomerCategory";
+            Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            System.out.println("-------------------------------");
+
             while (rs.next()) {
-                System.out.println(rs.getString(1));
-                cbCategory.addItem(rs.getString(1));                // Ads the category to the combo box
+                // Adds category to the ComboBox
+                cbCategory.addItem(rs.getString(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
-        cbCategory.addItem("Add a new category...");                // Set one of the option to a custom category
+        cbCategory.addItem("Add a new category...");
     }
 
     /**
@@ -217,6 +234,8 @@ public class formAddCustomer extends javax.swing.JFrame {
 
         lblCustomerCategory.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblCustomerCategory.setText("Category:");
+
+        txtCustomerID.setEditable(false);
 
         txtAddress1.setToolTipText("");
 
@@ -336,73 +355,80 @@ public class formAddCustomer extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Counts how many of the input fields is empty and returns the integer value
-    public int countEmptyFields(JTextField[] fields) {
-        int emptyFields = 0;
-        for (JTextField field : fields) {
-            if (field.getText().equals("")) {
-                emptyFields++;
-            }
-        }
-        return emptyFields;
-    }
-
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
         JTextField[] inputFields = {txtForename, txtSurname, txtAddress1, txtCounty, txtPostcode, txtPhoneNumber, txtEmailAddress};
 
-        if (countEmptyFields(inputFields) != 0) {                   // Checks if any of the input fields are empty
+        // Checks if any of the input fields are empty
+        if (Utility.countEmptyFields(inputFields) != 0) {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR);
-        } else if (!validInputs()) {                                // Validates input lengths
-        } else {
+
+        } else if (validInputs()) {
             // Asks user whether they really want to add this customer
-            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?", "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
-            if (YesNo == 0) {                                       // If response is yes
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to add this customer?",
+                    "Add new customer", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+            // If response is yes
+            if (YesNo == 0) {
+                String query = "INSERT into tblCustomer "
+                        + "(customer_id, forename, surname, address1, address2,"
+                        + " address3, county, postcode, phone_number,"
+                        + " email_address, category_id)"
+                        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                 conn = sqlManager.openConnection();
-                String query = "INSERT into tblCustomer (customer_id, forename, surname, address1, address2, address3, county, postcode, phone_number, email_address, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try {
+                    // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, CustomerID);
                     pstmt.setString(2, txtForename.getText());
                     pstmt.setString(3, txtSurname.getText());
                     pstmt.setString(4, txtAddress1.getText());
-                    pstmt.setString(5, (txtAddress2.getText().equals("") ? null : txtAddress2.getText()));  // If the address2 or address3 is empty then it is replaced by null instead of ""
-                    pstmt.setString(6, (txtAddress3.getText().equals("") ? null : txtAddress3.getText()));
+                    // If address2 or address3 are empty then they are replaced by null instead of ""
+                    pstmt.setString(5, (txtAddress2.getText().isEmpty() ? null : txtAddress2.getText()));
+                    pstmt.setString(6, (txtAddress3.getText().isEmpty() ? null : txtAddress3.getText()));
                     pstmt.setString(7, txtCounty.getText());
                     pstmt.setString(8, txtPostcode.getText());
                     pstmt.setString(9, txtPhoneNumber.getText());
                     pstmt.setString(10, txtEmailAddress.getText());
-                    pstmt.setInt(11, sqlManager.getIDofCategory(conn, "tblCustomerCategory", cbCategory.getSelectedItem().toString()));  // Gets the index of the selected customer category
+
+                    String selectedCategory = cbCategory.getSelectedItem().toString();
+                    pstmt.setInt(11, sqlManager.getIDofCategory(conn, "tblCustomerCategory", selectedCategory));
 
                     int rowsAffected = pstmt.executeUpdate();
-                    System.out.println("-------------------------------");
-                    System.out.println(rowsAffected + " row(s) inserted.");
+                    logger.log(Level.INFO, rowsAffected + " rows inserted.");
 
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "SQLException");
                 }
                 sqlManager.closeConnection(conn);
+
                 if (previousForm1 != null) {
-                    previousForm1.loadCustomers();                  // Refreshes the customer table in the previous form
+                    // Refreshes the customer table in the previous form
+                    previousForm1.loadCustomers();
                     previousForm1.CurrentlyAddingCustomer = false;
                 }
                 if (previousForm2 != null) {
-                    previousForm2.loadCustomersIntoCB();            // Refreshes the customer combo box in the previous form
+                    // Refreshes the customer combo box in the previous form
+                    previousForm2.loadCustomersIntoCB();
                     previousForm2.CurrentlyAddingCustomer = false;
                 }
                 if (previousForm3 != null) {
-                    previousForm3.loadCustomersIntoCB();            // Refreshes the customer combo box in the previous form
+                    // Refreshes the customer combo box in the previous form
+                    previousForm3.loadCustomersIntoCB();
                     previousForm3.CurrentlyAddingCustomer = false;
                 }
 
-                this.dispose();                                     // Closes the add new customer form (current form)
+                // Closes the AddCustomer form (current form)
+                this.dispose();
             }
         }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
-    // Validating input length against the max lengths in the DB
+    // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
         conn = sqlManager.openConnection();
-        boolean output = false;
+        boolean valid = false;
+
         if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
@@ -431,10 +457,12 @@ public class formAddCustomer extends javax.swing.JFrame {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
-            output = true;
+            // If all inputs passed the validity checks then boolean set to true
+            valid = true;
         }
+
         sqlManager.closeConnection(conn);
-        return output;
+        return valid;
     }
 
     /**

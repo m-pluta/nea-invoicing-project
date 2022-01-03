@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -21,96 +23,103 @@ import javax.swing.table.JTableHeader;
  */
 public class formOneQuotation extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formOneQuotation
-     */
-    int QuotationID = 0;                                            // quotation_id of currently loaded quotation
-    Connection conn = null;                                         // Stores the connection object
-    DefaultTableModel model;                                        // The table model
-    formManageQuotations previousForm = null;                       // Stores the previous Form object
+    private static final Logger logger = Logger.getLogger(formOneQuotation.class.getName());
+    int QuotationID = 0;
+    Connection conn = null;
+
+    // Init
+    DefaultTableModel model;
+    formManageQuotations previousForm = null;
 
     public formOneQuotation() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        model = (DefaultTableModel) jTable_QuotationDetails.getModel();         // Fetches the table model of the table
-        jTable_QuotationDetails.setDefaultEditor(Object.class, null);           // Makes it so the user cannot edit the table
+        // Fetches Table model and makes table non-editable
+        model = (DefaultTableModel) jTable_QuotationDetails.getModel();
+        jTable_QuotationDetails.setDefaultEditor(Object.class, null);
 
+        // Sets up the table header to be a bit larger
         JTableHeader header = jTable_QuotationDetails.getTableHeader();
-        header.setFont(new Font("Dialog", Font.PLAIN, 14));         // Makes the font of the of header in the table larger - this may just be a windows 1440p scaling issue on my end
+        header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
+        // Makes some of the input fields uneditable
         JTextField[] fields = {txtQuotationID, txtCustomer, txtEmployee, txtDateCreated, txtTotal};
-        setEditable(fields, false);
+        Utility.setEditable(fields, false);
 
+        // Adjusting the header widths
         jTable_QuotationDetails = Utility.setColumnWidths(jTable_QuotationDetails, new int[]{300, 100, 60, 90, 90});
-    }
-
-    // Sets these components to either visible or invisible depending on the boolean state
-    public void setEditable(JTextField[] fields, boolean state) {
-        for (JTextField field : fields) {
-            field.setEditable(state);
-        }
     }
 
     public void loadQuotation() {
         conn = sqlManager.openConnection();
+
         String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
-                + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created FROM tblQuotation"
+                + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created"
+                + " FROM tblQuotation"
                 + " INNER JOIN tblCustomer ON tblQuotation.customer_id=tblCustomer.customer_id"
                 + " INNER JOIN tblEmployee ON tblQuotation.employee_id=tblEmployee.employee_id"
                 + " WHERE quotation_id = ?";
-
         try {
+            // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, QuotationID);
-
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
+                // Loads all the data from the DB into the JTextFields
                 txtQuotationID.setText(String.valueOf(QuotationID));
                 txtCustomer.setText(rs.getString(1));
                 txtEmployee.setText(rs.getString(2));
                 txtDateCreated.setText(String.valueOf(rs.getDate(3)));
 
                 double Total = loadQuotationDetails(QuotationID);
-
                 txtTotal.setText(Utility.formatCurrency(Total));
 
             } else {
-                System.out.println("-------------------------------");
-                System.out.println("No quotation with this quotation_id was found");
+                logger.log(Level.WARNING, "No quotation with this quotation_id was found");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
 
+        sqlManager.closeConnection(conn);
     }
 
     public double loadQuotationDetails(int quotationID) {
-        double QuotationTotal = 0;
         conn = sqlManager.openConnection();
-        String query = "SELECT description, category_id, quantity, unit_price FROM tblQuotationDetail WHERE quotation_id = ?";
+
+        // Init
+        double QuotationTotal = 0;
+        String query = "SELECT description, category_id, quantity, unit_price "
+                + "FROM tblQuotationDetail "
+                + "WHERE quotation_id = ?";
         try {
+            // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, quotationID);
-
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
+                // Pre-processing
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 QuotationTotal += itemTotal;
-
                 String itemCategory = sqlManager.getCategory(conn, "tblItemCategory", "category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
-                model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal}); // Adds the quotation to the table
+
+                // Adds the quotation item to the table
+                model.addRow(new Object[]{rs.getString(1), itemCategory, rs.getInt(3), sUnitPrice, sItemTotal});
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQLException");
         }
+
         sqlManager.closeConnection(conn);
         return QuotationTotal;
     }
 
+    // Used when the form is opened from within another form
     public formOneQuotation getFrame() {
         return this;
     }
@@ -155,6 +164,8 @@ public class formOneQuotation extends javax.swing.JFrame {
 
         lblTotal.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         lblTotal.setText("Total:");
+
+        txtQuotationID.setEditable(false);
 
         jTable_QuotationDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -229,34 +240,25 @@ public class formOneQuotation extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTotal))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblTotal)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // This button is for converting the quotation into a Word document
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
-        formFormatIntoWord form = new formFormatIntoWord().getFrame();          // Opens the Word Document generation form
-        form.documentID = QuotationID;                                          // Tells the document formatting form the quotationID in question
-        form.DOCUMENT_TYPE = form.QUOTATION;
+        formFormatIntoWord form = new formFormatIntoWord().getFrame();
+        form.receiptID = QuotationID;
+        form.RECEIPT_TYPE = formFormatIntoWord.QUOTATION;
         form.setDocument();
         form.setVisible(true);
     }//GEN-LAST:event_btnFormatActionPerformed
-
-    // Counts how many of the input fields is empty and returns the integer value
-    public int countEmptyFields(JTextField[] fields) {
-        int emptyFields = 0;
-        for (JTextField field : fields) {
-            if (field.getText().equals("")) {
-                emptyFields++;
-            }
-        }
-        return emptyFields;
-    }
 
     /**
      * @param args the command line arguments
