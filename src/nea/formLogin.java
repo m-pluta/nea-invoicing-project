@@ -23,6 +23,7 @@ public class formLogin extends javax.swing.JFrame {
     static Connection conn = null;
     private static int attemptsRemaining = 3;
 
+    // Sets up the form and loads all the company images into the form.
     public formLogin() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -276,37 +277,45 @@ public class formLogin extends javax.swing.JFrame {
         }
 
         if (!found) {
-            // LOGIN UNSUCCESSFUL
-            attemptsRemaining--;
-            if (attemptsRemaining == 0) {
-                ErrorMsg.throwCustomError("You have run out of login attempts", "No login attempts remaining");
-                // Disables user input since they have run out of login attempts
-                incorrectPasswordLock();
-            } else {
-                ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
-            }
+            unsuccessfulLogin();
+
         } else {
-            // LOGIN SUCCESSFUL
-            sqlManager.updateLastLogin(conn, fetchedID);
-
-            formMainMenu MainMenu = new formMainMenu().getFrame();
-
-            // Updates the values for the class which stores the logged in user
-            LoggedInUser.setID(fetchedID);
-            LoggedInUser.updateAdminStatus();
-
-            // Updates label to show who logged in
-            MainMenu.whoLoggedIn();
-            // If the user is an admin then they will have permission to all the management features
-            MainMenu.checkWhetherAdmin();
-
-            // Makes the main menu visible and closes login form
-            MainMenu.setVisible(true);
-            this.dispose();
+            successfulLogin(fetchedID);
+            
         }
 
         sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void unsuccessfulLogin() {
+        attemptsRemaining--;
+        if (attemptsRemaining == 0) {
+            ErrorMsg.throwCustomError("You have run out of login attempts", "No login attempts remaining");
+            // Disables user input since they have run out of login attempts
+            incorrectPasswordLock();
+        } else {
+            ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
+        }
+    }
+
+    private void successfulLogin(int fetchedID) {
+        sqlManager.updateLastLogin(conn, fetchedID);
+
+        formMainMenu MainMenu = new formMainMenu().getFrame();
+
+        // Updates the values for the class which stores the logged in user
+        LoggedInUser.setID(fetchedID);
+        LoggedInUser.updateAdminStatus();
+
+        // Updates label to show who logged in
+        MainMenu.whoLoggedIn();
+        // If the user is an admin then they will have permission to all the management features
+        MainMenu.checkWhetherAdmin();
+
+        // Makes the main menu visible and closes login form
+        MainMenu.setVisible(true);
+        this.dispose();
+    }
 
     private void cbPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPasswordActionPerformed
         // Reveals the password if the user selected the CheckBox
@@ -314,6 +323,7 @@ public class formLogin extends javax.swing.JFrame {
             txtPassword.setEchoChar((char) 0);
         } else {
             txtPassword.setEchoChar('•');
+
         }
     }//GEN-LAST:event_cbPasswordActionPerformed
 
