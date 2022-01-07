@@ -260,7 +260,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);
 
         if (addedCategory != null) {
-            // Refreshes Combo box so the new category is visible
+            // Refreshes table so the new category is visible
             loadCategories();
         }
     }//GEN-LAST:event_btnAddNewActionPerformed

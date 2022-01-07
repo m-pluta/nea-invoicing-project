@@ -726,7 +726,7 @@ public class formReportOne extends javax.swing.JFrame {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, start);
             pstmt.setObject(2, end);
-            ResultSet rs = rs = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             if (barSpacing == BAR_SPACING_DAY) {
                 while (rs.next()) {

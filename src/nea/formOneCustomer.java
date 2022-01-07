@@ -37,6 +37,7 @@ public class formOneCustomer extends javax.swing.JFrame {
     public formOneCustomer() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
         // Loads all the possible customer categories into ComboBox
         loadCustomerCategoriesIntoCB();

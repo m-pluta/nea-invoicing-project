@@ -139,6 +139,24 @@ public class formAddCustomer extends javax.swing.JFrame {
         txtSurname.getDocument().addDocumentListener(dListener);
     }
 
+    private void goBack() {
+        if (previousForm1 != null) {
+            // Refreshes the customer table in the previous form
+            previousForm1.loadCustomers();
+            previousForm1.CurrentlyAddingCustomer = false;
+        }
+        if (previousForm2 != null) {
+            // Refreshes the customer combo box in the previous form
+            previousForm2.loadCustomersIntoCB();
+            previousForm2.CurrentlyAddingCustomer = false;
+        }
+        if (previousForm3 != null) {
+            // Refreshes the customer combo box in the previous form
+            previousForm3.loadCustomersIntoCB();
+            previousForm3.CurrentlyAddingCustomer = false;
+        }
+    }
+
     // Used when the form is opened from within another form
     public formAddCustomer getFrame() {
         return this;
@@ -402,21 +420,7 @@ public class formAddCustomer extends javax.swing.JFrame {
                 }
                 sqlManager.closeConnection(conn);
 
-                if (previousForm1 != null) {
-                    // Refreshes the customer table in the previous form
-                    previousForm1.loadCustomers();
-                    previousForm1.CurrentlyAddingCustomer = false;
-                }
-                if (previousForm2 != null) {
-                    // Refreshes the customer combo box in the previous form
-                    previousForm2.loadCustomersIntoCB();
-                    previousForm2.CurrentlyAddingCustomer = false;
-                }
-                if (previousForm3 != null) {
-                    // Refreshes the customer combo box in the previous form
-                    previousForm3.loadCustomersIntoCB();
-                    previousForm3.CurrentlyAddingCustomer = false;
-                }
+                goBack();
 
                 // Closes the AddCustomer form (current form)
                 this.dispose();

@@ -79,7 +79,6 @@ public class formManageInvoices extends javax.swing.JFrame {
                     }
 
                     formOneInvoice form = new formOneInvoice().getFrame();
-                    form.setLocation(1630, 422);
                     form.setVisible(true);
 
                     // Loads invoice into the other form and sets up previousForm variable

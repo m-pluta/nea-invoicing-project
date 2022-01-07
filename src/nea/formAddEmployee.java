@@ -46,7 +46,7 @@ public class formAddEmployee extends javax.swing.JFrame {
 
         txtEmployeeID.setText(String.valueOf(EmployeeID));
 
-        // Notifies the previous form that the user is no longer adding a new customer.
+        // Notifies the previous form that the user is no longer adding a new employee.
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {

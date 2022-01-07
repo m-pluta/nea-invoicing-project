@@ -49,37 +49,6 @@ public class formNewQuotation extends javax.swing.JFrame {
     int selectedItem = 0;
     boolean CurrentlyEditing = false;
 
-    private void goBack() {
-        // If the user came from the Main Menu
-        if (previousForm1 != null) {
-            previousForm1.setVisible(true);
-            this.dispose();
-        }
-        // If the user came from the Quotation management form
-        if (previousForm2 != null) {
-            previousForm2.setVisible(true);
-            previousForm2.loadQuotations();
-            this.dispose();
-        }
-        // If the user came from a specific customer
-        if (previousForm3 != null) {
-            previousForm3.setVisible(true);
-            previousForm3.previousForm.setVisible(true);
-            this.dispose();
-        }
-    }
-
-    // Selects a specific customer for the quotation if the user came from formOneCustomer
-    public void selectCustomer(int customerID) {
-        // Gets the customer name for a specific customerID
-        conn = sqlManager.openConnection();
-        String customer = sqlManager.getCustomerFullName(conn, customerID);
-        sqlManager.closeConnection(conn);
-
-        // Selects the customer in the ComboBox
-        cbCustomers.setSelectedItem(customer);
-    }
-
     public formNewQuotation() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -225,27 +194,53 @@ public class formNewQuotation extends javax.swing.JFrame {
         jTable_QuotationDetails = Utility.setColumnWidths(jTable_QuotationDetails, new int[]{300, 100, 60, 90, 90});
     }
 
+    private void goBack() {
+        // If the user came from the Main Menu
+        if (previousForm1 != null) {
+            previousForm1.setVisible(true);
+            this.dispose();
+        }
+        // If the user came from the Quotation management form
+        if (previousForm2 != null) {
+            previousForm2.setVisible(true);
+            previousForm2.loadQuotations();
+            this.dispose();
+        }
+        // If the user came from a specific customer
+        if (previousForm3 != null) {
+            previousForm3.setVisible(true);
+            previousForm3.previousForm.setVisible(true);
+            this.dispose();
+        }
+    }
+
+    // Selects a specific customer for the quotation if the user came from formOneCustomer
+    public void selectCustomer(int customerID) {
+        // Gets the customer name for a specific customerID
+        conn = sqlManager.openConnection();
+        String customer = sqlManager.getCustomerFullName(conn, customerID);
+        sqlManager.closeConnection(conn);
+
+        // Selects the customer in the ComboBox
+        cbCustomers.setSelectedItem(customer);
+    }
+
     // Calculates the item total if the quantity and unit price are valid
     public void updateItemTotals() {
         String sQuantity = txtQuantity.getText();
         // Gets rid of the £ sign and any commas
         String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");
 
-        if (sQuantity.isEmpty() || sUnitPrice.isEmpty()) {
-            // If either of the fields is empty
-            txtItemTotal.setText("");
-        } else {
-            // If the quantity is a valid int and unit price is valid double
-            if (Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sUnitPrice) && Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
+        // If the quantity is a valid int and unit price is valid double
+        if (isQuantityValid() && isUnitPriceValid()) {
 
-                // Calculates the item total
-                int quantity = Utility.StringToInt(sQuantity);
-                double unit_price = Double.valueOf(sUnitPrice);
-                double item_subtotal = quantity * unit_price;
+            // Calculates the item total
+            int quantity = Utility.StringToInt(sQuantity);
+            double unit_price = Double.valueOf(sUnitPrice);
+            double item_subtotal = quantity * unit_price;
 
-                // Updates the Item Total JTextField
-                txtItemTotal.setText(Utility.formatCurrency(item_subtotal));
-            }
+            // Updates the Item Total JTextField
+            txtItemTotal.setText(Utility.formatCurrency(item_subtotal));
         }
     }
 
@@ -606,21 +601,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
     // Adds the item from the side view into the table if it is valid
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
-        conn = sqlManager.openConnection();
-
-        if (txtItem.getText().isEmpty()) {
-            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-
-        } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
-            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-
-        } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) {
-            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
-
-        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetail", "description")) {
-            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-
-        } else {
+        if (isItemValid()) {
             // If all inputs passed the validity checks then item is added to the table
             model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(),
                 "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
@@ -629,8 +610,6 @@ public class formNewQuotation extends javax.swing.JFrame {
             resetSideView();
             updateTableTotal();
         }
-
-        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnAddItemActionPerformed
 
     // Goes back to the previous form
@@ -652,16 +631,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     // This button finishes the quotation (given all the inputs are valid) and adds it to the DB
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
 
-        if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {
-            ErrorMsg.throwError(ErrorMsg.DEFAULT_ERROR, "The 'Add new customer' option is not a valid customer");
-
-        } else if (dcDateCreated.getDate() == null) {
-            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Date cannot be empty");
-
-        } else if (model.getRowCount() == 0) {
-            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Quotation must have at least one item");
-
-        } else {
+        if (isQuotationValid()) {
             // Gets the date created of the quotation
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDateCreated = dateFormat.format(dcDateCreated.getDate());
@@ -693,6 +663,23 @@ public class formNewQuotation extends javax.swing.JFrame {
             goBack();
         }
     }//GEN-LAST:event_btnFinishActionPerformed
+
+    private boolean isQuotationValid() {
+        if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {
+            ErrorMsg.throwError(ErrorMsg.DEFAULT_ERROR, "The 'Add new customer' option is not a valid customer");
+
+        } else if (dcDateCreated.getDate() == null) {
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Date cannot be empty");
+
+        } else if (model.getRowCount() == 0) {
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Quotation must have at least one item");
+
+        } else {
+            return true;
+        }
+
+        return false;
+    }
 
     // Uploads each row of the quotation to tblQuotationDetail in the DB
     public void uploadQuotationDetails(int quotationID) {
@@ -740,6 +727,7 @@ public class formNewQuotation extends javax.swing.JFrame {
 
         // Checks if a row is selected
         if (selectedRow != -1) {
+            // Asks user if they really want to remove this item
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove this item?",
                     "Remove quotation item", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 
@@ -759,62 +747,112 @@ public class formNewQuotation extends javax.swing.JFrame {
     private void btnEditItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditItemActionPerformed
         // If the user is not yet editing
         if (!CurrentlyEditing) {
-            // Flips the boolean
-            CurrentlyEditing = true;
+            startEdit();
+        } else {
+            confirmEdit();
+        }
+    }//GEN-LAST:event_btnEditItemActionPerformed
 
-            // Makes the item fields editable
-            txtItem.setEditable(true);
-            txtQuantity.setEditable(true);
-            txtUnitPrice.setEditable(true);
+    private void startEdit() {
+        // Flips the boolean
+        CurrentlyEditing = true;
 
-            // Changes the item management buttons so the user can only confirm the edit
-            btnEditItem.setText("Confirm Edit");
-            btnRemoveItem.setEnabled(false);
-            btnAddItem.setEnabled(false);
+        // Makes the item fields editable
+        txtItem.setEditable(true);
+        txtQuantity.setEditable(true);
+        txtUnitPrice.setEditable(true);
+
+        // Changes the item management buttons so the user can only confirm the edit
+        btnEditItem.setText("Confirm Edit");
+        btnRemoveItem.setEnabled(false);
+        btnAddItem.setEnabled(false);
+    }
+
+    private void confirmEdit() {
+        if (isItemValid()) {
+            // Changes the values of the item which is being edited
+            model.setValueAt(txtItem.getText(), selectedItem, 0);
+            model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
+            model.setValueAt(txtQuantity.getText(), selectedItem, 2);
+            model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
+            model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
+
+            // Recalculates the quotation total
+            updateTableTotal();
+
+            // Flips the boolean since editing is finished
+            CurrentlyEditing = false;
+
+            // Makes the item fields uneditable
+            txtItem.setEditable(false);
+            txtQuantity.setEditable(false);
+            txtUnitPrice.setEditable(false);
+
+            // Changes the item management buttons so the user can once again remove, add or edit
+            btnEditItem.setText("Edit Item");
+            btnRemoveItem.setEnabled(true);
+            btnAddItem.setEnabled(true);
+        }
+    }
+
+    private boolean isItemValid() {
+        conn = sqlManager.openConnection();
+
+        if (txtItem.getText().isEmpty()) {
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
+
+        } else if (!isQuantityValid()) {
+            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity must be an integer greater than 0");
+
+        } else if (!isUnitPriceValid()) {
+            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit Price must be a double greater than 0");
+
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetail", "description")) {
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
 
         } else {
-            conn = sqlManager.openConnection();
-            if (txtItem.getText().isEmpty()) {
-                ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
-
-            } else if (!Pattern.matches("^[0-9]+$", txtQuantity.getText())) {
-                ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Quantity is not an integer");
-
-            } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$", txtUnitPrice.getText())) {
-                ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit price is not a valid decimal");
-
-            } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetail", "description")) {
-                ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
-
-            } else {
-                // Changes the values of the item which is being edited
-                model.setValueAt(txtItem.getText(), selectedItem, 0);
-                model.setValueAt(cbCategory.getSelectedItem(), selectedItem, 1);
-                model.setValueAt(txtQuantity.getText(), selectedItem, 2);
-                model.setValueAt("£" + txtUnitPrice.getText().replace("£", ""), selectedItem, 3);
-                model.setValueAt("£" + txtItemTotal.getText().replace("£", ""), selectedItem, 4);
-
-                // Recalculates the quotation total
-                updateTableTotal();
-
-                // Flips the boolean since editing is finished
-                CurrentlyEditing = false;
-
-                // Makes the item fields uneditable
-                txtItem.setEditable(false);
-                txtQuantity.setEditable(false);
-                txtUnitPrice.setEditable(false);
-
-                // Changes the item management buttons so the user can once again remove, add or edit
-                btnEditItem.setText("Edit Item");
-                btnRemoveItem.setEnabled(true);
-                btnAddItem.setEnabled(true);
-            }
-
             sqlManager.closeConnection(conn);
+            return true;
         }
+        sqlManager.closeConnection(conn);
+        return false;
+    }
 
-    }//GEN-LAST:event_btnEditItemActionPerformed
+    private boolean isQuantityValid() {
+        String sQuantity = txtQuantity.getText();
+
+        if (sQuantity.isEmpty()) {
+            // Quantity field empty
+
+        } else if (!Pattern.matches("^[0-9]+$", sQuantity)) {
+            // Quantity in the wrong format
+
+        } else if (Utility.StringToInt(sQuantity) == 0) {
+            // Quantity equal to 0
+
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isUnitPriceValid() {
+        String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");;
+
+        if (sUnitPrice.isEmpty()) {
+            // Unit Price field empty
+
+        } else if (!Pattern.matches("^[0-9]+(.[0-9])?[0-9]*$", sUnitPrice)) {
+            // Unit |Price in the wrong format
+
+        } else if (Double.valueOf(sUnitPrice) == 0) {
+            // Unit Price equal to 0
+
+        } else {
+            return true;
+        }
+        return false;
+    }
 
     // Clear button to clear all the fields in the side view and some other variables
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed

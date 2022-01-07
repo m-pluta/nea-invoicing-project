@@ -35,7 +35,7 @@ public class formMainMenu extends javax.swing.JFrame {
         btnManageEmployees.setEnabled(false);
     }
 
-    // Updates a JLabel with the name of the currently logged in user
+    // Updates a label with the name of the currently logged in employee
     public void whoLoggedIn() {
         // Fetches employee full name
         conn = sqlManager.openConnection();
@@ -427,33 +427,10 @@ public class formMainMenu extends javax.swing.JFrame {
                     ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
 
                 } else {
-                    // Checks if the new login details are valid
-                    if (!inputDetails[2].equals(inputDetails[3]) || !inputDetails[4].equals(inputDetails[5])) {
-                        ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
+                    // Checks if the new login details match
+                    if (inputDetails[2].equals(inputDetails[3]) && inputDetails[4].equals(inputDetails[5])) {
 
-                    } else if (inputDetails[2].length() < 4) {
-                        // Checks if the new username is of minimum length (4)
-                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "username");
-
-                    } else if (inputDetails[4].length() < 4) {
-                        // Checks if the new password is of minimum length (4)
-                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
-
-                    } else if (inputDetails[2].length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
-                        // Checks if the new username does not exceed the maximum length in the DB
-                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
-
-                    } else if (inputDetails[4].length() > 128) {
-                        // Checks if the new password does not exceed 128 characters
-                        ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
-
-                    } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", inputDetails[2])) {
-                        // Checks if a login with that username already exists
-                        ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "User with these details");
-
-                    } else {
-                        // If the new login details are valid then they are updated
-                        updateLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
+                        verifyNewLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
                         changingDetails = false;
                     }
                 }
@@ -462,6 +439,37 @@ public class formMainMenu extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
+
+    private void verifyNewLoginDetails(int fetchedID, String newUsername, String newPassword) {
+        conn = sqlManager.openConnection();
+
+        if (newUsername.length() < 4) {
+            // Checks if the new username is of minimum length (4)
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "username");
+
+        } else if (newPassword.length() < 4) {
+            // Checks if the new password is of minimum length (4)
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
+
+        } else if (newUsername.length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
+            // Checks if the new username does not exceed the maximum length in the DB
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
+
+        } else if (newPassword.length() > 128) {
+            // Checks if the new password does not exceed 128 characters
+            ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
+
+        } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", newUsername)) {
+            // Checks if a login with that username already exists
+            ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "User with these details");
+
+        } else {
+            // If the new login details are valid then they are updated
+            updateLoginDetails(fetchedID, newUsername, newPassword);
+        }
+
+        sqlManager.closeConnection(conn);
+    }
 
     public void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();

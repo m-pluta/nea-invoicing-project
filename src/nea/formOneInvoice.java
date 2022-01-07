@@ -34,6 +34,7 @@ public class formOneInvoice extends javax.swing.JFrame {
     public formOneInvoice() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
         // Fetches Table model and makes table non-editable
         model = (DefaultTableModel) jTable_InvoiceDetails.getModel();

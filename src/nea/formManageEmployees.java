@@ -80,7 +80,6 @@ public class formManageEmployees extends javax.swing.JFrame {
                     }
 
                     formOneEmployee form = new formOneEmployee().getFrame();
-                    form.setLocation(1630, 422);
                     form.setVisible(true);
 
                     // Loads employee into the other form and sets up previousForm variable

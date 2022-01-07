@@ -34,6 +34,7 @@ public class formOneQuotation extends javax.swing.JFrame {
     public formOneQuotation() {
         initComponents();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
         // Fetches Table model and makes table non-editable
         model = (DefaultTableModel) jTable_QuotationDetails.getModel();

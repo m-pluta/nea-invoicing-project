@@ -80,7 +80,6 @@ public class formManageCustomers extends javax.swing.JFrame {
                     }
 
                     formOneCustomer form = new formOneCustomer().getFrame();
-                    form.setLocation(1630, 422);
                     form.setVisible(true);
 
                     // Loads customer into the other form and sets up previousForm variable

@@ -79,7 +79,6 @@ public class formManageQuotations extends javax.swing.JFrame {
                     }
 
                     formOneQuotation form = new formOneQuotation().getFrame();
-                    form.setLocation(1630, 422);
                     form.setVisible(true);
 
                     // Loads quotation into the other form and sets up previousForm variable
