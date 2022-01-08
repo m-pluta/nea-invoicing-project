@@ -34,14 +34,12 @@ public class Utility {
     private static final Logger logger = java.util.logging.Logger.getLogger(Utility.class.getName());
 
     // Hashes any string input using SHA256
-    public static byte[] hash(String input) {
-
-        MessageDigest digest;
+    public static byte[] hash(String input) { 
         byte[] outputHash = null;
 
         try {
             // Initialises the MessageDigest instance
-            digest = MessageDigest.getInstance("SHA-256");
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
             // Hashes the input using SHA256
             outputHash = digest.digest(String.valueOf(input).getBytes(StandardCharsets.UTF_8));
@@ -132,7 +130,7 @@ public class Utility {
     // Opens an Input Dialog that has one JTextField component in it and returns the input
     public static String StringInputDialog(String message, String title) {
         // Init
-        String input = null;
+        String input;
         input = JOptionPane.showInputDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 
         // If the window was not closed.
@@ -158,6 +156,7 @@ public class Utility {
         try {
             // String is converted to an integer
             output = Integer.parseInt(input);
+            
         } catch (NumberFormatException e) {
             logger.log(Level.SEVERE, "NumberFormatException");
         }
@@ -213,7 +212,7 @@ public class Utility {
         // Vertical Layout
         SequentialGroup V_sg = layout.createSequentialGroup();
 
-        ParallelGroup temp = null;
+        ParallelGroup temp;
         for (int i = 0; i < NoInputs; i++) {
             // Temporary parallel group
             temp = layout.createParallelGroup(GroupLayout.Alignment.BASELINE);

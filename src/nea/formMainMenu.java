@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 public class formMainMenu extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formMainMenu.class.getName());
-    Connection conn = null;
 
     public formMainMenu() {
         initComponents();
@@ -38,9 +37,7 @@ public class formMainMenu extends javax.swing.JFrame {
     // Updates a label with the name of the currently logged in employee
     public void whoLoggedIn() {
         // Fetches employee full name
-        conn = sqlManager.openConnection();
-        String employeeFullName = sqlManager.getEmployeeFullName(conn, LoggedInUser.getID());
-        sqlManager.closeConnection(conn);
+        String employeeFullName = sqlManager.getEmployeeFullName(LoggedInUser.getID());
 
         // Updates JLabel with the employee's name
         if (employeeFullName != null) {
@@ -347,8 +344,6 @@ public class formMainMenu extends javax.swing.JFrame {
         // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
 
-        form.sp = "";
-        form.loadCustomers();
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnManageCustomersActionPerformed
@@ -358,8 +353,6 @@ public class formMainMenu extends javax.swing.JFrame {
         // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
 
-        form.sp = "";
-        form.loadEmployees();
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnManageEmployeesActionPerformed
@@ -369,8 +362,6 @@ public class formMainMenu extends javax.swing.JFrame {
         // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
 
-        form.sp = "";
-        form.loadCategories();
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnManageItemCategoriesActionPerformed
@@ -380,8 +371,6 @@ public class formMainMenu extends javax.swing.JFrame {
         // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
 
-        form.sp = "";
-        form.loadCategories();
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
@@ -400,10 +389,9 @@ public class formMainMenu extends javax.swing.JFrame {
                 // Init
                 Boolean found = false;
                 int fetchedID = -1;
-                conn = sqlManager.openConnection();
 
                 // Authenticates the logged in user
-                try {
+                try (Connection conn = sqlManager.openConnection()) {
                     // Query Setup & Execution
                     String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
@@ -434,14 +422,11 @@ public class formMainMenu extends javax.swing.JFrame {
                         changingDetails = false;
                     }
                 }
-
-                sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnChangeLoginDetailsActionPerformed
 
     private void verifyNewLoginDetails(int fetchedID, String newUsername, String newPassword) {
-        conn = sqlManager.openConnection();
 
         if (newUsername.length() < 4) {
             // Checks if the new username is of minimum length (4)
@@ -451,7 +436,7 @@ public class formMainMenu extends javax.swing.JFrame {
             // Checks if the new password is of minimum length (4)
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
-        } else if (newUsername.length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
+        } else if (newUsername.length() > sqlManager.getMaxColumnLength("tblEmployee", "username")) {
             // Checks if the new username does not exceed the maximum length in the DB
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
@@ -459,7 +444,7 @@ public class formMainMenu extends javax.swing.JFrame {
             // Checks if the new password does not exceed 128 characters
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
 
-        } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", newUsername)) {
+        } else if (sqlManager.RecordExists("tblEmployee", "username", newUsername)) {
             // Checks if a login with that username already exists
             ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "User with these details");
 
@@ -467,14 +452,11 @@ public class formMainMenu extends javax.swing.JFrame {
             // If the new login details are valid then they are updated
             updateLoginDetails(fetchedID, newUsername, newPassword);
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     private void updateLoginDetails(int id, String newUsername, String newPassword) {
-        conn = sqlManager.openConnection();
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "UPDATE tblEmployee SET username = ?, password_hash = ? WHERE employee_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -487,13 +469,13 @@ public class formMainMenu extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
     }
 
     private void btnNewInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewInvoiceActionPerformed
         formNewInvoice form = new formNewInvoice().getFrame();
         // Makes this form the previousForm so the back buttons work
         form.previousForm1 = this;
+
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnNewInvoiceActionPerformed
@@ -502,6 +484,7 @@ public class formMainMenu extends javax.swing.JFrame {
         formNewQuotation form = new formNewQuotation().getFrame();
         // Makes this form the previousForm so the back buttons work
         form.previousForm1 = this;
+
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnNewQuotationActionPerformed
@@ -511,8 +494,6 @@ public class formMainMenu extends javax.swing.JFrame {
         // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
 
-        form.sp = "";
-        form.loadInvoices();
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnManageInvoicesActionPerformed
@@ -522,8 +503,6 @@ public class formMainMenu extends javax.swing.JFrame {
         // Makes this form the previousForm so the back buttons work
         form.previousForm = this;
 
-        form.sp = "";
-        form.loadQuotations();
         this.setVisible(false);
         form.setVisible(true);
     }//GEN-LAST:event_btnManageQuotationsActionPerformed

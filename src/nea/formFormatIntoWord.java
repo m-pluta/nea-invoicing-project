@@ -58,7 +58,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     // ID of the receipt that is about to be formatted into a Word XWPFDocument
     int receiptID = 0;
-    Connection conn = null;
     private static final Logger logger = Logger.getLogger(formFormatIntoWord.class.getName());
 
     // Filepaths to input template and output file
@@ -263,17 +262,14 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         ArrayList<tableRow> receiptRows = new ArrayList<>();
         double subtotal = 0.0;
 
-        conn = sqlManager.openConnection();
-
         // Gets the subtotal and receipt items from the appropriate table
         if (RECEIPT_TYPE == INVOICE) {
-            subtotal = sqlManager.getReceiptTotal(conn, "tblInvoiceDetail", "invoice_id", receiptID);
+            subtotal = sqlManager.getReceiptTotal("tblInvoiceDetail", "invoice_id", receiptID);
             receiptRows = getReceiptItems("tblInvoiceDetail", "invoice_id", receiptID);
         } else if (RECEIPT_TYPE == QUOTATION) {
-            subtotal = sqlManager.getReceiptTotal(conn, "tblQuotationDetail", "quotation_id", receiptID);
+            subtotal = sqlManager.getReceiptTotal("tblQuotationDetail", "quotation_id", receiptID);
             receiptRows = getReceiptItems("tblQuotationDetail", "quotation_id", receiptID);
         }
-        sqlManager.closeConnection(conn);
 
         // Gets metadata about the specific receipt
         LinkedHashMap<String, String> receiptMetaData = new LinkedHashMap<>();
@@ -324,8 +320,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     private ArrayList<tableRow> getReceiptItems(String tableName, String key, int receipt_id) {
         ArrayList<tableRow> output = new ArrayList<>();
 
-        conn = sqlManager.openConnection();
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = String.format("SELECT description, quantity, unit_price FROM %s WHERE %s = ?", tableName, key);
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -352,16 +347,13 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         return output;
     }
 
     private LinkedHashMap<String, String> getInvoiceMetaData(double subtotal) {
         LinkedHashMap<String, String> output = new LinkedHashMap<>();
 
-        conn = sqlManager.openConnection();
-
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT payments, date_created FROM tblInvoice WHERE invoice_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -376,7 +368,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 output.put("$date", rs.getDate(2).toLocalDate().format(full_short));
 
                 // Calculates the invoice number in the current financial year
-                int InvoiceNoThisFinYear = sqlManager.getReceiptNoThisFinancialYear(conn, "tblInvoice", "invoice_id", rs.getTimestamp(2).toLocalDateTime());
+                int InvoiceNoThisFinYear = sqlManager.getReceiptNoThisFinancialYear("tblInvoice", "invoice_id", rs.getTimestamp(2).toLocalDateTime());
                 String currentYear = Utility.getFinancialYear(rs.getDate(2).toLocalDate()).format(year_short);
                 output.put("$No", InvoiceNoThisFinYear + "/" + currentYear);
             }
@@ -384,16 +376,13 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         return output;
     }
 
     private LinkedHashMap<String, String> getQuotationMetaData(double subtotal) {
         LinkedHashMap<String, String> output = new LinkedHashMap<>();
 
-        conn = sqlManager.openConnection();
-
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT date_created FROM tblQuotation WHERE quotation_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -405,7 +394,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
                 output.put("$date", rs.getDate(1).toLocalDate().format(full_short));
 
                 // Calculates the quotation number in the current financial year
-                int QuotationNoThisFinYear = sqlManager.getReceiptNoThisFinancialYear(conn, "tblQuotation", "quotation_id", rs.getTimestamp(1).toLocalDateTime());
+                int QuotationNoThisFinYear = sqlManager.getReceiptNoThisFinancialYear("tblQuotation", "quotation_id", rs.getTimestamp(1).toLocalDateTime());
                 String currentYear = Utility.getFinancialYear(rs.getDate(1).toLocalDate()).format(year_short);
                 output.put("$No", QuotationNoThisFinYear + "/" + currentYear);
             }
@@ -413,16 +402,13 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         return output;
     }
 
     private LinkedHashMap<String, String> getCustomerMetaData() {
         LinkedHashMap<String, String> output = new LinkedHashMap<>();
 
-        conn = sqlManager.openConnection();
-
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Sets up query's SELECT clause
             String query = "SELECT CONCAT(c.forename, ' ', c.surname) AS customerFullName,"
                     + " COALESCE(c.address1, '') AS address1,"
@@ -460,7 +446,6 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         return output;
     }
 
@@ -662,9 +647,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             }
         }
 
-        FileOutputStream out = null;
         try {
             // Saves the XWPFDocument using the output stream
+            FileOutputStream out;
             out = new FileOutputStream(savingDestination);
             doc.write(out);
             out.close();

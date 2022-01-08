@@ -26,7 +26,6 @@ public class formOneCustomer extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formOneCustomer.class.getName());
     formManageCustomers previousForm = null;
-    Connection conn = null;
 
     // customer_id of the customer which is currently loaded into the form
     int CustomerID = 0;
@@ -58,9 +57,7 @@ public class formOneCustomer extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (isAddNewCategorySelected()) {
                     //Prompts the user to add a new category
-                    conn = sqlManager.openConnection();
-                    String addedCategory = sqlManager.addNewCustomerCategory(conn);
-                    sqlManager.closeConnection(conn);
+                    String addedCategory = sqlManager.addNewCustomerCategory();
 
                     if (addedCategory != null) {
                         // If the user entered a name for the new category
@@ -92,8 +89,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         // Clears ComboBox
         cbCategory.removeAllItems();
 
-        conn = sqlManager.openConnection();
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT category_name FROM tblCustomerCategory";
             Statement stmt = conn.createStatement();
@@ -107,13 +103,11 @@ public class formOneCustomer extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         cbCategory.addItem("Add a new category...");
     }
 
     // Loads the customer details into the form
     public void loadCustomer() {
-        conn = sqlManager.openConnection();
 
         txtCustomerID.setText(String.valueOf(CustomerID));
 
@@ -125,7 +119,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                 + " ON c.category_id = cc.category_id"
                 + " WHERE customer_id = ?";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, CustomerID);
@@ -146,8 +140,6 @@ public class formOneCustomer extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -404,11 +396,10 @@ public class formOneCustomer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        conn = sqlManager.openConnection();
 
         // Counts how many invoices and quotations the customer has
-        int NoInvoices = sqlManager.countRecords(conn, "tblInvoice", "customer_id", CustomerID);
-        int NoQuotations = sqlManager.countRecords(conn, "tblQuotation", "customer_id", CustomerID);
+        int NoInvoices = sqlManager.countRecords("tblInvoice", "customer_id", CustomerID);
+        int NoQuotations = sqlManager.countRecords("tblQuotation", "customer_id", CustomerID);
 
         if (NoInvoices > 0 || NoQuotations > 0) {
             // If the customer has any invoices or quotations associated with them then the user is informed
@@ -426,15 +417,13 @@ public class formOneCustomer extends javax.swing.JFrame {
             // If response is yes
             if (YesNo == 0) {
                 // Removes customer and closes the form since the customer no longer exists
-                sqlManager.removeRecord(conn, "tblCustomer", "customer_id", CustomerID);
+                sqlManager.removeRecord("tblCustomer", "customer_id", CustomerID);
                 this.dispose();
 
                 // Refreshes the customer table in the previous form since a customer was removed
                 previousForm.loadCustomers();
             }
         }
-
-        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     // When the user has finished making edits to the customer's details
@@ -453,14 +442,13 @@ public class formOneCustomer extends javax.swing.JFrame {
 
             // If response is yes
             if (YesNo == 0) {
-                conn = sqlManager.openConnection();
 
                 String query = "UPDATE tblCustomer SET forename = ?, surname = ?, address1 = ?,"
                         + " address2 = ?, address3 = ?, county = ?, postcode = ?,"
                         + " phone_number = ?, email_address = ?, category_id = ?"
                         + " WHERE customer_id = ?";
 
-                try {
+                try (Connection conn = sqlManager.openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
 
@@ -474,7 +462,7 @@ public class formOneCustomer extends javax.swing.JFrame {
                     pstmt.setString(7, txtPostcode.getText());
                     pstmt.setString(8, txtPhoneNumber.getText());
                     pstmt.setString(9, txtEmailAddress.getText());
-                    pstmt.setInt(10, sqlManager.getIDofCategory(conn, "tblCustomerCategory", cbCategory.getSelectedItem().toString()));
+                    pstmt.setInt(10, sqlManager.getIDofCategory("tblCustomerCategory", cbCategory.getSelectedItem().toString()));
                     pstmt.setInt(11, CustomerID);
 
                     int rowsAffected = pstmt.executeUpdate();
@@ -482,7 +470,6 @@ public class formOneCustomer extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     logger.log(Level.SEVERE, "SQLException");
                 }
-                sqlManager.closeConnection(conn);
 
                 // Resets JTextFields and buttons to their default (non-editing) state
                 Utility.setEditable(fields, false);
@@ -498,34 +485,33 @@ public class formOneCustomer extends javax.swing.JFrame {
 
     // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
-        conn = sqlManager.openConnection();
         boolean output = false;
 
-        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "forename")) {
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
-        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "surname")) {
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "surname")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
-        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "address1")) {
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "address1")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
-        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "address2")) {
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "address2")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
-        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "address3")) {
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "address3")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
-        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "county")) {
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "county")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
-        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "postcode")) {
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "postcode")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
-        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "phone_number")) {
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
-        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblCustomer", "email_address")) {
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "email_address")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
@@ -533,7 +519,6 @@ public class formOneCustomer extends javax.swing.JFrame {
             output = true;
         }
 
-        sqlManager.closeConnection(conn);
         return output;
     }
 

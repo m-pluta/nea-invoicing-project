@@ -28,11 +28,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formManageItemCategories.class.getName());
     formMainMenu previousForm = null;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model = null;
-    public static String sp = "";
+    private String sp = "";
 
     public formManageItemCategories() {
         initComponents();
@@ -65,6 +64,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
             }
 
         });
+        
+        //Loads the initial data
+        loadCategories();
 
         // Adjusting the header widths
         jTable_ItemCategories = Utility.setColumnWidths(jTable_ItemCategories, new int[]{40, 130, 130});
@@ -75,9 +77,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         return this;
     }
 
-    public void loadCategories() {
-        conn = sqlManager.openConnection();
-
+    private void loadCategories() {
         // Empties the table
         model.setRowCount(0);
 
@@ -90,7 +90,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             query += " OR date_created LIKE '%" + sp + "%'";
         }
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -108,8 +108,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -255,9 +253,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
-        conn = sqlManager.openConnection();
-        String addedCategory = sqlManager.addNewItemCategory(conn);
-        sqlManager.closeConnection(conn);
+        String addedCategory = sqlManager.addNewItemCategory();
 
         if (addedCategory != null) {
             // Refreshes table so the new category is visible
@@ -284,12 +280,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR);
 
             } else {
-                conn = sqlManager.openConnection();
-
                 // Invoice Rows with the selected category
-                int iRows = sqlManager.countRecords(conn, "tblInvoiceDetail", "category_id", id);
+                int iRows = sqlManager.countRecords("tblInvoiceDetail", "category_id", id);
                 // Quotation Rows with the selected category
-                int qRows = sqlManager.countRecords(conn, "tblQuotationDetail", "category_id", id);
+                int qRows = sqlManager.countRecords("tblQuotationDetail", "category_id", id);
 
                 if (iRows == -1 || qRows == -1) {
                     logger.log(Level.WARNING, "Error fetching receipt rows with this category");
@@ -313,12 +307,10 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         logger.log(Level.INFO, "Removing category " + string_id + " - " + category);
 
                         // Removes the selected category and refreshes the table
-                        sqlManager.removeRecord(conn, "tblItemCategory", "category_id", id);
+                        sqlManager.removeRecord("tblItemCategory", "category_id", id);
                         loadCategories();
                     }
                 }
-
-                sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnRemoveActionPerformed
@@ -342,7 +334,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
                 ErrorMsg.throwError(ErrorMsg.CANNOT_EDIT_ERROR);
 
             } else {
-                conn = sqlManager.openConnection();
                 boolean picked = false;
 
                 while (!picked) {
@@ -354,17 +345,17 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         // Removes all leading and trailing whitespace characters
                         inputCategory = inputCategory.trim();
 
-                        if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, "tblItemCategory", "category_name")) {
+                        if (inputCategory.length() > sqlManager.getMaxColumnLength("tblItemCategory", "category_name")) {
                             // Checks if the entered category name is valid
                             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "category name");
 
-                        } else if (sqlManager.RecordExists(conn, "tblItemCategory", "category_name", inputCategory)) {
+                        } else if (sqlManager.RecordExists("tblItemCategory", "category_name", inputCategory)) {
                             // Checks if category already exists in DB
                             ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Category");
                             // # TODO Allow the user to merge the two categories together under the requested name
 
                         } else {
-                            try {
+                            try (Connection conn = sqlManager.openConnection()) {
                                 // Query Setup & Execution
                                 String query = "UPDATE tblItemCategory SET category_name = ? WHERE category_id = ?";
                                 PreparedStatement pstmt = conn.prepareStatement(query);
@@ -385,8 +376,6 @@ public class formManageItemCategories extends javax.swing.JFrame {
                         }
                     }
                 }
-
-                sqlManager.closeConnection(conn);
             }
         }
     }//GEN-LAST:event_btnEditActionPerformed

@@ -25,7 +25,6 @@ public class formOneInvoice extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formNewInvoice.class.getName());
     int InvoiceID = 0;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model;
@@ -54,14 +53,14 @@ public class formOneInvoice extends javax.swing.JFrame {
     }
 
     public void loadInvoice() {
-        conn = sqlManager.openConnection();
-
+        
         String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
                 + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created, payments FROM tblInvoice"
                 + " INNER JOIN tblCustomer ON tblInvoice.customer_id=tblCustomer.customer_id"
                 + " INNER JOIN tblEmployee ON tblInvoice.employee_id=tblEmployee.employee_id"
                 + " WHERE invoice_id = ?";
-        try {
+        
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, InvoiceID);
@@ -85,27 +84,24 @@ public class formOneInvoice extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     private double loadInvoiceDetails(int invoiceID) {
-        conn = sqlManager.openConnection();
-
         // Init
         double InvoiceTotal = 0;
-        try {
+        
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT description, category_id, quantity, unit_price FROM tblInvoiceDetail WHERE invoice_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, InvoiceID);
+            pstmt.setInt(1, invoiceID);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 // Pre-processing
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 InvoiceTotal += itemTotal;
-                String itemCategory = sqlManager.getCategory(conn, "tblItemCategory", "category_id", rs.getInt(2));
+                String itemCategory = sqlManager.getCategory("tblItemCategory", "category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
 
@@ -116,7 +112,6 @@ public class formOneInvoice extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         return InvoiceTotal;
     }
 

@@ -36,7 +36,6 @@ public class formNewQuotation extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formNewQuotation.class.getName());
     int QuotationID = 1;
-    Connection conn = null;
 
     // The previous forms the user could have navigated from
     formMainMenu previousForm1 = null;
@@ -62,9 +61,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
         // Gets the next available quotationID
-        conn = sqlManager.openConnection();
-        QuotationID = sqlManager.getNextPKValue(conn, "tblQuotation", "quotation_id");
-        sqlManager.closeConnection(conn);
+        QuotationID = sqlManager.getNextPKValue("tblQuotation", "quotation_id");
         txtQuotationID.setText(String.valueOf(QuotationID));
 
         // Loads all the customers and item categories into the ComboBoxes
@@ -151,9 +148,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                 // If the user selected the last item ('Add a new category...')
                 if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {
                     // Prompts user to a add a new category
-                    conn = sqlManager.openConnection();
-                    String addedCategory = sqlManager.addNewItemCategory(conn);
-                    sqlManager.closeConnection(conn);
+                    String addedCategory = sqlManager.addNewItemCategory();
 
                     if (addedCategory != null) {
                         // If the user successfully added a new category then that category is selected
@@ -217,9 +212,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     // Selects a specific customer for the quotation if the user came from formOneCustomer
     public void selectCustomer(int customerID) {
         // Gets the customer name for a specific customerID
-        conn = sqlManager.openConnection();
-        String customer = sqlManager.getCustomerFullName(conn, customerID);
-        sqlManager.closeConnection(conn);
+        String customer = sqlManager.getCustomerFullName(customerID);
 
         // Selects the customer in the ComboBox
         cbCustomers.setSelectedItem(customer);
@@ -271,8 +264,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         // Clears ComboBox
         cbCustomers.removeAllItems();
 
-        conn = sqlManager.openConnection();
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT CONCAT(forename,' ', surname) as customerFullName FROM tblCustomer ORDER BY customerFullName";
             Statement stmt = conn.createStatement();
@@ -286,7 +278,6 @@ public class formNewQuotation extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         cbCustomers.addItem("Add a new customer...");
     }
 
@@ -295,8 +286,7 @@ public class formNewQuotation extends javax.swing.JFrame {
         // Clears ComboBox
         cbCategory.removeAllItems();
 
-        conn = sqlManager.openConnection();
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT category_name FROM tblItemCategory";
             Statement stmt = conn.createStatement();
@@ -310,7 +300,6 @@ public class formNewQuotation extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         cbCategory.addItem("Add a new category...");
     }
 
@@ -637,15 +626,14 @@ public class formNewQuotation extends javax.swing.JFrame {
             String strDateCreated = dateFormat.format(dcDateCreated.getDate());
 
             // Gets the next available quotation id
-            int new_quotationID = sqlManager.getNextPKValue(conn, "tblQuotation", "quotation_id");
+            int new_quotationID = sqlManager.getNextPKValue("tblQuotation", "quotation_id");
 
-            conn = sqlManager.openConnection();
-            try {
+            try (Connection conn = sqlManager.openConnection()) {
                 // Query Setup & Execution
                 String query = "INSERT INTO tblQuotation (quotation_id,customer_id,date_created,employee_id) VALUES (?,?,?,?)";
                 PreparedStatement pstmt = conn.prepareStatement(query);
                 pstmt.setInt(1, new_quotationID);
-                pstmt.setInt(2, sqlManager.getIDofCustomer(conn, cbCustomers.getSelectedItem().toString()));
+                pstmt.setInt(2, sqlManager.getIDofCustomer(cbCustomers.getSelectedItem().toString()));
                 pstmt.setString(3, strDateCreated);
                 pstmt.setInt(4, LoggedInUser.getID());
 
@@ -658,7 +646,6 @@ public class formNewQuotation extends javax.swing.JFrame {
                 logger.log(Level.SEVERE, "SQLException");
             }
 
-            sqlManager.closeConnection(conn);
             // Goes back to the previous form
             goBack();
         }
@@ -685,22 +672,21 @@ public class formNewQuotation extends javax.swing.JFrame {
     private void uploadQuotationDetails(int quotationID) {
         int NoRows = model.getRowCount();
 
-        conn = sqlManager.openConnection();
-
         for (int i = 0; i < NoRows; i++) {
             // Item Pre-processing
             String Item = model.getValueAt(i, 0).toString();
             int quantity = Utility.StringToInt(model.getValueAt(i, 2).toString());
             double unit_price = Double.valueOf(model.getValueAt(i, 3).toString().replace("£", ""));
-            int category = sqlManager.getIDofCategory(conn, "tblItemCategory", model.getValueAt(i, 1).toString());
+            int category = sqlManager.getIDofCategory("tblItemCategory", model.getValueAt(i, 1).toString());
 
             // Gets the next available row_id for the quotation item
-            int new_rowID = sqlManager.getNextPKValue(conn, "tblQuotationDetail", "row_id");
+            int new_rowID = sqlManager.getNextPKValue("tblQuotationDetail", "row_id");
 
             String query = "INSERT INTO tblQuotationDetail"
                     + " (row_id,quotation_id,description,quantity,unit_price,category_id)"
                     + " VALUES (?,?,?,?,?,?)";
-            try {
+
+            try (Connection conn = sqlManager.openConnection()) {
                 // Query Setup & Execution
                 PreparedStatement pstmt = conn.prepareStatement(query);
                 pstmt.setInt(1, new_rowID);
@@ -717,8 +703,6 @@ public class formNewQuotation extends javax.swing.JFrame {
                 logger.log(Level.SEVERE, "SQLException");
             }
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     // Remove button to remove the selected item in the table
@@ -796,7 +780,6 @@ public class formNewQuotation extends javax.swing.JFrame {
     }
 
     private boolean isItemValid() {
-        conn = sqlManager.openConnection();
 
         if (txtItem.getText().isEmpty()) {
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Description of the item cannot be empty");
@@ -807,14 +790,12 @@ public class formNewQuotation extends javax.swing.JFrame {
         } else if (!isUnitPriceValid()) {
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "Unit Price must be a double greater than 0");
 
-        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength(conn, "tblQuotationDetail", "description")) {
+        } else if (txtItem.getText().length() > sqlManager.getMaxColumnLength("tblQuotationDetail", "description")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "item description");
 
         } else {
-            sqlManager.closeConnection(conn);
             return true;
         }
-        sqlManager.closeConnection(conn);
         return false;
     }
 

@@ -86,7 +86,6 @@ public class formReportOne extends javax.swing.JFrame {
     int BAR_SPACING_YEAR = 4;
 
     private static final Logger logger = Logger.getLogger(formReportOne.class.getName());
-    Connection conn = null;
     formMainMenu previousForm = null;
 
     // For formatting dates into an appropriate format
@@ -348,22 +347,20 @@ public class formReportOne extends javax.swing.JFrame {
                 valid = true;
                 break;
             case 6:// All time
-                conn = sqlManager.openConnection();
 
                 // Gets the date_created of the first invoice and quotation ever created
                 if (getInvoices && !getQuotations) {
                     // Analyze just invoices
-                    start = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
+                    start = sqlManager.getEarliestDateTime("tblInvoice", "date_created");
 
                 } else if (!getInvoices && getQuotations) {
                     // Analyze just quotations
-                    start = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
+                    start = sqlManager.getEarliestDateTime("tblQuotation", "date_created");
 
                 } else if (getInvoices && getQuotations) {
-                    start = sqlManager.getDateOfFirstReceipt(conn);
+                    start = sqlManager.getDateOfFirstReceipt();
                 }
                 valid = true;
-                sqlManager.closeConnection(conn);
                 break;
             case 7:// Other
 
@@ -577,11 +574,8 @@ public class formReportOne extends javax.swing.JFrame {
 
     // Returns the hashmap with all the invoice data categorised
     private LinkedHashMap<String, Double> getInvoiceDataSetHashMap(LocalDateTime start, LocalDateTime end, int barSpacing) {
-        conn = sqlManager.openConnection();
-
         // Init
-        LinkedHashMap<String, Double> dataArr_Invoice;
-        dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
+        LinkedHashMap<String, Double> dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
 
         // Raw SQL query: https://pastebin.com/RJ5B4hpc
         String query = "SELECT i.date_created,"
@@ -592,7 +586,7 @@ public class formReportOne extends javax.swing.JFrame {
                 + " GROUP BY i.invoice_id"
                 + " ORDER BY i.date_created";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, start);
@@ -685,18 +679,14 @@ public class formReportOne extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
 
         return dataArr_Invoice;
     }
 
     // Returns the hashmap with all the quotation data categorised
     private LinkedHashMap<String, Double> getQuotationDataSetHashMap(LocalDateTime start, LocalDateTime end, int barSpacing) {
-        conn = sqlManager.openConnection();
-
         // Init
-        LinkedHashMap<String, Double> dataArr_Quotation = null;
-        dataArr_Quotation = generateEmptyDict(start, end, barSpacing);
+        LinkedHashMap<String, Double> dataArr_Quotation = generateEmptyDict(start, end, barSpacing);
 
         // Raw SQL query: https://pastebin.com/uA3ifThF
         String query = "SELECT q.date_created,"
@@ -707,7 +697,7 @@ public class formReportOne extends javax.swing.JFrame {
                 + " GROUP BY q.quotation_id"
                 + " ORDER BY q.quotation_id";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, start);
@@ -800,7 +790,6 @@ public class formReportOne extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
 
         return dataArr_Quotation;
     }

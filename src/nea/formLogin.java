@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 public class formLogin extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formLogin.class.getName());
-    static Connection conn = null;
     private static int attemptsRemaining = 3;
 
     // Sets up the form and loads all the company images into the form.
@@ -257,9 +256,7 @@ public class formLogin extends javax.swing.JFrame {
         Boolean found = false;
         int fetchedID = -1;
 
-        conn = sqlManager.openConnection();
-
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -278,13 +275,9 @@ public class formLogin extends javax.swing.JFrame {
 
         if (!found) {
             unsuccessfulLogin();
-
         } else {
             successfulLogin(fetchedID);
-            
         }
-
-        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void unsuccessfulLogin() {
@@ -299,7 +292,7 @@ public class formLogin extends javax.swing.JFrame {
     }
 
     private void successfulLogin(int fetchedID) {
-        sqlManager.updateLastLogin(conn, fetchedID);
+        sqlManager.updateLastLogin(fetchedID);
 
         formMainMenu MainMenu = new formMainMenu().getFrame();
 

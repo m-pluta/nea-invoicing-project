@@ -28,11 +28,10 @@ public class formManageQuotations extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formManageQuotations.class.getName());
     formMainMenu previousForm = null;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model;
-    public static String sp = "";
+    private String sp = "";
 
     // Whether the user is currently viewing a quotation in another form
     formOneQuotation Quotation_in_view = null;
@@ -113,6 +112,9 @@ public class formManageQuotations extends javax.swing.JFrame {
             }
 
         });
+        
+        //Loads the initial data
+        loadQuotations();
 
         // Adjusting the header widths
         jTable_Quotations = Utility.setColumnWidths(jTable_Quotations, new int[]{40, 120, 120, 120, 80});
@@ -237,8 +239,6 @@ public class formManageQuotations extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public void loadQuotations() {
-        conn = sqlManager.openConnection();
-
         // Empties the table
         model.setRowCount(0);
 
@@ -264,7 +264,7 @@ public class formManageQuotations extends javax.swing.JFrame {
         }
         query += " ORDER BY q.quotation_id";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -283,8 +283,6 @@ public class formManageQuotations extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     // Returns the quotation_id of the selected quotation in the table

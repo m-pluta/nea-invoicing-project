@@ -67,13 +67,14 @@ public class sqlManager {
     }
 
     // Fetches the next available primary key value in a DB table
-    public static int getNextPKValue(Connection conn, String tableName, String key) {
+    public static int getNextPKValue(String tableName, String key) {
         // Default value if the queried table is empty
         int id = 1;
 
         // Query Setup & Execution
         String query = String.format("SELECT MAX(%s) FROM %s", key, tableName);
-        try {
+
+        try (Connection conn = openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -89,11 +90,12 @@ public class sqlManager {
     }
 
     // Removes a record from a given table with a specfic primary key value
-    public static void removeRecord(Connection conn, String tableName, String key, int PK_value) {
+    public static void removeRecord(String tableName, String key, int PK_value) {
 
         // Query Setup & Execution
         String query = String.format("DELETE FROM %s WHERE %s = ?", tableName, key);
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, PK_value);
 
@@ -106,11 +108,12 @@ public class sqlManager {
     }
 
     // Check the presence of a specific record in a DB table
-    public static boolean RecordExists(Connection conn, String tableName, String key, String key_value) {
+    public static boolean RecordExists(String tableName, String key, String key_value) {
 
         // Query Setup & Execution
         String query = String.format("SELECT 1 FROM %s WHERE %s = ?", tableName, key);
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, key_value);
             ResultSet rs = pstmt.executeQuery();
@@ -128,11 +131,12 @@ public class sqlManager {
     }
 
     // Gets the category name of any category given its category_id
-    public static String getCategory(Connection conn, String tableName, String key, int catID) {
+    public static String getCategory(String tableName, String key, int catID) {
 
         // Query Setup & Execution
         String query = String.format("SELECT category_name FROM %s WHERE %s = ?", tableName, key);
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, catID);
             ResultSet rs = pstmt.executeQuery();
@@ -151,11 +155,12 @@ public class sqlManager {
     }
 
     // Returns the amount of records that are in a given table
-    public static int countRecords(Connection conn, String tableName, String key, int id) {
+    public static int countRecords(String tableName, String key, int id) {
 
         // Query Setup & Execution
         String query = String.format("SELECT COUNT(%s) FROM %s WHERE %s = ?", key, tableName, key);
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -172,11 +177,12 @@ public class sqlManager {
     }
 
     // Returns the last time a given employee_id logged into the system
-    public static String getLastLogin(Connection conn, int employee_id) {
+    public static String getLastLogin(int employee_id) {
 
         // Query Setup & Execution
         String query = "SELECT date_last_logged_in FROM tblEmployee WHERE employee_id = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
             ResultSet rs = pstmt.executeQuery();
@@ -194,11 +200,12 @@ public class sqlManager {
     }
 
     // Returns true/false whether an employee has admin permissions
-    public static boolean isAdmin(Connection conn, int employee_id) {
+    public static boolean isAdmin(int employee_id) {
 
         // Query Setup & Execution
         String query = "SELECT admin FROM tblEmployee WHERE employee_id = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
             ResultSet rs = pstmt.executeQuery();
@@ -218,11 +225,12 @@ public class sqlManager {
     }
 
     // Returns the full name of the employee with the given employee_id
-    public static String getEmployeeFullName(Connection conn, int employee_id) {
+    public static String getEmployeeFullName(int employee_id) {
 
         // Query Setup & Execution
         String query = "SELECT CONCAT(forename,' ', surname) FROM tblEmployee WHERE employee_id = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, employee_id);
             ResultSet rs = pstmt.executeQuery();
@@ -240,11 +248,12 @@ public class sqlManager {
     }
 
     // Returns the full name of the customer with the given customer_id
-    public static String getCustomerFullName(Connection conn, int customer_id) {
+    public static String getCustomerFullName(int customer_id) {
 
         // Query Setup & Execution
         String query = "SELECT CONCAT(forename,' ', surname) FROM tblCustomer WHERE customer_id = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, customer_id);
             ResultSet rs = pstmt.executeQuery();
@@ -262,11 +271,12 @@ public class sqlManager {
     }
 
     // Returns the total value of all the items in a given receipt.
-    public static double getReceiptTotal(Connection conn, String tableName, String key, int receipt_id) {
+    public static double getReceiptTotal(String tableName, String key, int receipt_id) {
 
         // Query Setup & Execution
         String query = String.format("SELECT COALESCE(SUM(unit_price * quantity), 0) as total FROM %s WHERE %s = ?", tableName, key);
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, receipt_id);
             ResultSet rs = pstmt.executeQuery();
@@ -283,11 +293,12 @@ public class sqlManager {
     }
 
     // Returns the id of a category given its name
-    public static int getIDofCategory(Connection conn, String tableName, String category) {
+    public static int getIDofCategory(String tableName, String category) {
 
         // Query Setup & Execution
         String query = String.format("SELECT category_id FROM %s WHERE category_name = ?", tableName);
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, category);
             ResultSet rs = pstmt.executeQuery();
@@ -306,11 +317,12 @@ public class sqlManager {
     }
 
     // Returns the id of a customer given their name
-    public static int getIDofCustomer(Connection conn, String name) {
+    public static int getIDofCustomer(String name) {
 
         // Query Setup & Execution
         String query = "SELECT customer_id FROM tblCustomer WHERE CONCAT(forename,' ',surname) = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, name);
             ResultSet rs = pstmt.executeQuery();
@@ -329,11 +341,12 @@ public class sqlManager {
     }
 
     // Updates the date when the user last logged in given the employee_id
-    public static void updateLastLogin(Connection conn, int employee_id) {
+    public static void updateLastLogin(int employee_id) {
 
         // Query Setup & Execution
         String query = "UPDATE tblEmployee SET date_last_logged_in = ? WHERE employee_id = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, Utility.getCurrentDate());
             pstmt.setInt(2, employee_id);
@@ -347,11 +360,12 @@ public class sqlManager {
     }
 
     // Returns the date_created of the first invoice or quotation ever created
-    public static LocalDateTime getEarliestDateTime(Connection conn, String tableName, String key) {
+    public static LocalDateTime getEarliestDateTime(String tableName, String key) {
 
         // Query Setup & Execution
         String query = String.format("SELECT %s FROM %s ORDER BY %s LIMIT 1", key, tableName, key);
-        try {
+
+        try (Connection conn = openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -368,14 +382,14 @@ public class sqlManager {
     }
 
     // Returns the date_created of the first receipt (invoice and quotation) ever created
-    public static LocalDateTime getDateOfFirstReceipt(Connection conn) {
+    public static LocalDateTime getDateOfFirstReceipt() {
         // Init
         LocalDateTime inv;
         LocalDateTime quot;
 
         // Gets the dates of first invoice and quotation 
-        inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
-        quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
+        inv = sqlManager.getEarliestDateTime("tblInvoice", "date_created");
+        quot = sqlManager.getEarliestDateTime("tblQuotation", "date_created");
         // Sets the date_created of the first ever receipt
         if (inv.isBefore(quot)) {
             return inv;
@@ -385,14 +399,15 @@ public class sqlManager {
     }
 
     // Returns the receipt number of a receipt in the current financial year, given a date
-    public static int getReceiptNoThisFinancialYear(Connection conn, String tableName, String key, LocalDateTime datetime) {
+    public static int getReceiptNoThisFinancialYear(String tableName, String key, LocalDateTime datetime) {
 
         // Gets the start date of the current financial year
         LocalDate financialyear = Utility.getFinancialYear(datetime);
 
         // Gets the amount of receipt between the financial year start date and the date of the invoice
         String query = String.format("SELECT COUNT(%s) FROM %s WHERE date_created BETWEEN ? AND ?", key, tableName);
-        try {
+
+        try (Connection conn = openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setObject(1, financialyear.atTime(0, 0, 0));
@@ -411,12 +426,13 @@ public class sqlManager {
     }
 
     // Gets the max length of data which can be stored in a certain column in a DB table
-    public static int getMaxColumnLength(Connection conn, String tableName, String column) {
+    public static int getMaxColumnLength(String tableName, String column) {
 
         // Query Setup & Execution
         String query = "SELECT character_maximum_length FROM information_schema.columns"
                 + " WHERE table_name = ? AND column_name = ?";
-        try {
+
+        try (Connection conn = openConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, tableName);
             pstmt.setString(2, column);
@@ -433,17 +449,17 @@ public class sqlManager {
     }
 
     // Allows the user to add a new customer category
-    public static String addNewCustomerCategory(Connection conn) {
-        return addNewCategory(conn, "tblCustomerCategory");
+    public static String addNewCustomerCategory() {
+        return addNewCategory("tblCustomerCategory");
     }
 
     // Allows the user to add a new item category
-    public static String addNewItemCategory(Connection conn) {
-        return addNewCategory(conn, "tblItemCategory");
+    public static String addNewItemCategory() {
+        return addNewCategory("tblItemCategory");
     }
 
     // Allows the user to add a new category
-    public static String addNewCategory(Connection conn, String tableName) {
+    public static String addNewCategory(String tableName) {
 
         // Prompts user for the name of the new category
         String inputCategory = Utility.StringInputDialog("What should the name of the new category be?", "Add new category");
@@ -453,20 +469,21 @@ public class sqlManager {
             // Removes all leading and trailing whitespace characters 
             inputCategory = inputCategory.trim();
 
-            if (inputCategory.length() > sqlManager.getMaxColumnLength(conn, tableName, "category_name")) {
+            if (inputCategory.length() > sqlManager.getMaxColumnLength(tableName, "category_name")) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "category name");
 
-            } else if (sqlManager.RecordExists(conn, tableName, "category_name", inputCategory)) {
+            } else if (sqlManager.RecordExists(tableName, "category_name", inputCategory)) {
                 ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Category");
 
             } else {
                 // Checks if category name is unique i.e. not already in the DB
 
                 // Gets the next available category_id for the new category
-                int newID = sqlManager.getNextPKValue(conn, tableName, "category_id");
+                int newID = sqlManager.getNextPKValue(tableName, "category_id");
 
                 String query = String.format("INSERT INTO %s (category_id, category_name, date_created) VALUES (?,?,?)", tableName);
-                try {
+                
+                try (Connection conn = openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, newID);

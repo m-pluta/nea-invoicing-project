@@ -25,7 +25,6 @@ public class formOneQuotation extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formOneQuotation.class.getName());
     int QuotationID = 0;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model;
@@ -53,7 +52,6 @@ public class formOneQuotation extends javax.swing.JFrame {
     }
 
     public void loadQuotation() {
-        conn = sqlManager.openConnection();
 
         String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
                 + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created"
@@ -61,7 +59,8 @@ public class formOneQuotation extends javax.swing.JFrame {
                 + " INNER JOIN tblCustomer ON tblQuotation.customer_id=tblCustomer.customer_id"
                 + " INNER JOIN tblEmployee ON tblQuotation.employee_id=tblEmployee.employee_id"
                 + " WHERE quotation_id = ?";
-        try {
+
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, QuotationID);
@@ -84,18 +83,16 @@ public class formOneQuotation extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
     }
 
     private double loadQuotationDetails(int quotationID) {
-        conn = sqlManager.openConnection();
-
         // Init
         double QuotationTotal = 0;
         String query = "SELECT description, category_id, quantity, unit_price "
                 + "FROM tblQuotationDetail "
                 + "WHERE quotation_id = ?";
-        try {
+
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, quotationID);
@@ -105,7 +102,7 @@ public class formOneQuotation extends javax.swing.JFrame {
                 // Pre-processing
                 double itemTotal = rs.getInt(3) * rs.getDouble(4);
                 QuotationTotal += itemTotal;
-                String itemCategory = sqlManager.getCategory(conn, "tblItemCategory", "category_id", rs.getInt(2));
+                String itemCategory = sqlManager.getCategory("tblItemCategory", "category_id", rs.getInt(2));
                 String sItemTotal = Utility.formatCurrency(itemTotal);
                 String sUnitPrice = Utility.formatCurrency(rs.getDouble(4));
 
@@ -116,7 +113,6 @@ public class formOneQuotation extends javax.swing.JFrame {
             logger.log(Level.SEVERE, "SQLException");
         }
 
-        sqlManager.closeConnection(conn);
         return QuotationTotal;
     }
 

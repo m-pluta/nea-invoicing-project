@@ -28,11 +28,10 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formManageEmployees.class.getName());
     formMainMenu previousForm = null;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model;
-    public static String sp = "";
+    private String sp = "";
 
     // Whether the user is currently viewing an employee in another form or adding a new employee 
     formOneEmployee Employee_in_view = null;
@@ -120,6 +119,9 @@ public class formManageEmployees extends javax.swing.JFrame {
 
         });
 
+        //Loads the initial data
+        loadEmployees();
+        
         // Adjusting the header widths
         jTable_Employees = Utility.setColumnWidths(jTable_Employees, new int[]{40, 120, 100, 175, 120});
     }
@@ -131,8 +133,6 @@ public class formManageEmployees extends javax.swing.JFrame {
 
     // Loads all the employees into the table, the results are filtered using the searchParameter (sp)
     public void loadEmployees() {
-        conn = sqlManager.openConnection();
-
         // Empties the table
         model.setRowCount(0);
 
@@ -147,14 +147,14 @@ public class formManageEmployees extends javax.swing.JFrame {
         }
         query += " ORDER BY employee_id";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
             // Counts the amount of employees which are being shown
             int employeeCounter = 0;
             while (rs.next()) {
-                String last_login_date = sqlManager.getLastLogin(conn, Utility.StringToInt(rs.getString(1)));
+                String last_login_date = sqlManager.getLastLogin(Utility.StringToInt(rs.getString(1)));
 
                 // Adds the employee from the DB to the table
                 model.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), last_login_date});
@@ -166,8 +166,6 @@ public class formManageEmployees extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     /**

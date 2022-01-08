@@ -28,11 +28,10 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formManageCustomers.class.getName());
     formMainMenu previousForm = null;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model = null;
-    public static String sp = "";
+    private String sp = "";
 
     // Whether the user is currently viewing a customer in another form or adding a new customer 
     formOneCustomer Customer_in_view = null;
@@ -114,6 +113,9 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
 
         });
+        
+        //Loads the initial data
+        loadCustomers();
 
         // Adjusting the header widths
         jTable_Customers = Utility.setColumnWidths(jTable_Customers, new int[]{40, 120, 100, 100, 175});
@@ -126,8 +128,6 @@ public class formManageCustomers extends javax.swing.JFrame {
 
     // Loads all the customers into the table, the results are filtered using the searchParameter (sp)
     public void loadCustomers() {
-        conn = sqlManager.openConnection();
-
         // Empties the table
         model.setRowCount(0);
 
@@ -143,7 +143,7 @@ public class formManageCustomers extends javax.swing.JFrame {
         }
         query += " ORDER BY customer_id";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -161,8 +161,6 @@ public class formManageCustomers extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     /**

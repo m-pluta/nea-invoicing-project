@@ -5,8 +5,6 @@
  */
 package nea;
 
-import java.sql.Connection;
-
 public class LoggedInUser {
 
     // employee_id of the employee who logged into the program
@@ -27,8 +25,6 @@ public class LoggedInUser {
     }
 
     public static void updateAdminStatus() {
-        Connection conn = sqlManager.openConnection();
-        LoggedInUser.admin = sqlManager.isAdmin(conn, ID);
-        sqlManager.closeConnection(conn);
+        LoggedInUser.admin = sqlManager.isAdmin(ID);
     }
 }

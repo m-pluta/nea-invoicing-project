@@ -23,7 +23,6 @@ public class formOneEmployee extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formOneEmployee.class.getName());
     formManageEmployees previousForm = null;
-    Connection conn = null;
 
     // employee_id of the employee which is currently loaded into the form
     int EmployeeID = 0;
@@ -53,7 +52,6 @@ public class formOneEmployee extends javax.swing.JFrame {
 
     // Loads the customer details into the form
     public void loadEmployee() {
-        conn = sqlManager.openConnection();
 
         txtEmployeeID.setText(String.valueOf(EmployeeID));
 
@@ -63,7 +61,7 @@ public class formOneEmployee extends javax.swing.JFrame {
                 + " FROM tblEmployee"
                 + " WHERE employee_id = ?";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, EmployeeID);
@@ -76,8 +74,8 @@ public class formOneEmployee extends javax.swing.JFrame {
                 for (int i = 0; i < 9; i++) {
                     fields[i].setText(rs.getString(i + 2));
                 }
-                txtLastLogin.setText(sqlManager.getLastLogin(conn, EmployeeID));
-                cbAdmin.setSelected(sqlManager.isAdmin(conn, EmployeeID));
+                txtLastLogin.setText(sqlManager.getLastLogin(EmployeeID));
+                cbAdmin.setSelected(sqlManager.isAdmin(EmployeeID));
 
             } else {
                 logger.log(Level.WARNING, "Error occured fetching employee data");
@@ -85,8 +83,6 @@ public class formOneEmployee extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     /**
@@ -356,11 +352,10 @@ public class formOneEmployee extends javax.swing.JFrame {
     }
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        conn = sqlManager.openConnection();
 
-        // Counts how many invoices and quotations the employee has
-        int NoInvoices = sqlManager.countRecords(conn, "tblInvoice", "employee_id", EmployeeID);
-        int NoQuotations = sqlManager.countRecords(conn, "tblQuotation", "employee_id", EmployeeID);
+// Counts how many invoices and quotations the employee has
+        int NoInvoices = sqlManager.countRecords("tblInvoice", "employee_id", EmployeeID);
+        int NoQuotations = sqlManager.countRecords("tblQuotation", "employee_id", EmployeeID);
 
         if (NoInvoices > 0 || NoQuotations > 0) {
             // If the employee has any invoices or quotations associated with them then the user is informed
@@ -378,15 +373,13 @@ public class formOneEmployee extends javax.swing.JFrame {
             // If response is yes
             if (YesNo == 0) {
                 // Removes employee and closes the form since the employee no longer exists
-                sqlManager.removeRecord(conn, "tblEmployee", "employee_id", EmployeeID);
+                sqlManager.removeRecord("tblEmployee", "employee_id", EmployeeID);
                 this.dispose();
 
                 // Refreshes the employee table in the previous form since a employee was removed
                 previousForm.loadEmployees();
             }
         }
-
-        sqlManager.closeConnection(conn);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     // When the user has finished making edits to the employee's details
@@ -405,14 +398,12 @@ public class formOneEmployee extends javax.swing.JFrame {
 
             // If response is yes
             if (YesNo == 0) {
-                conn = sqlManager.openConnection();
-
                 String query = "UPDATE tblEmployee SET forename = ?, surname = ?, address1 = ?,"
                         + " address2 = ?, address3 = ?, county = ?, postcode = ?,"
                         + " phone_number = ?, email_address = ?, admin = ?"
                         + " WHERE employee_id = ?";
 
-                try {
+                try (Connection conn = sqlManager.openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
 
@@ -434,7 +425,6 @@ public class formOneEmployee extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     logger.log(Level.SEVERE, "SQLException");
                 }
-                sqlManager.closeConnection(conn);
 
                 // Resets JTextFields and buttons to their default (non-editing) state
                 Utility.setEditable(fields, false);
@@ -457,34 +447,33 @@ public class formOneEmployee extends javax.swing.JFrame {
 
     // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
-        conn = sqlManager.openConnection();
         boolean output = false;
 
-        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "forename")) {
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
-        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "surname")) {
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "surname")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
-        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address1")) {
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "address1")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
-        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address2")) {
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "address2")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
-        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address3")) {
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "address3")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
-        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "county")) {
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "county")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
-        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "postcode")) {
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "postcode")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
-        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "phone_number")) {
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
-        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "email_address")) {
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "email_address")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
@@ -492,7 +481,6 @@ public class formOneEmployee extends javax.swing.JFrame {
             output = true;
         }
 
-        sqlManager.closeConnection(conn);
         return output;
     }
 

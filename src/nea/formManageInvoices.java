@@ -28,11 +28,10 @@ public class formManageInvoices extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formManageInvoices.class.getName());
     formMainMenu previousForm = null;
-    Connection conn = null;
 
     // Init
     DefaultTableModel model;
-    public static String sp = "";
+    private String sp = "";
 
     // Whether the user is currently viewing an invoice in another form
     formOneInvoice Invoice_in_view = null;
@@ -113,6 +112,9 @@ public class formManageInvoices extends javax.swing.JFrame {
             }
 
         });
+
+        //Loads the initial data
+        loadInvoices();
 
         // Adjusting the header widths
         jTable_Invoices = Utility.setColumnWidths(jTable_Invoices, new int[]{40, 120, 120, 120, 80});
@@ -237,8 +239,6 @@ public class formManageInvoices extends javax.swing.JFrame {
 
     // Loads all the invoices into the table, the results are filtered using the searchParameter (sp)
     public void loadInvoices() {
-        conn = sqlManager.openConnection();
-
         // Empties the table
         model.setRowCount(0);
 
@@ -264,7 +264,7 @@ public class formManageInvoices extends javax.swing.JFrame {
         }
         query += " ORDER BY i.invoice_id";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -283,8 +283,6 @@ public class formManageInvoices extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
     }
 
     // Returns the invoice_id of the selected invoice in the table

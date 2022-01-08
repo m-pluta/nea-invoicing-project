@@ -38,7 +38,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 public class formReportTwo extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formReportTwo.class.getName());
-    Connection conn = null;
     formMainMenu previousForm = null;
 
     public formReportTwo() {
@@ -78,9 +77,8 @@ public class formReportTwo extends javax.swing.JFrame {
     private void initialiseCategorySpinner() {
         // Init
         int NoCategories = 1;
-        conn = sqlManager.openConnection();
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT COUNT(category_id) FROM tblItemCategory";
             Statement stmt = conn.createStatement();
@@ -92,7 +90,6 @@ public class formReportTwo extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-        sqlManager.closeConnection(conn);
 
         // The preferred amount of categories to display
         int preferredAmount = 5;
@@ -105,8 +102,6 @@ public class formReportTwo extends javax.swing.JFrame {
 
     // Generates the dataset by fetching the data from the DB
     private CategoryDataset getData(LocalDateTime start, LocalDateTime end, int CategoryCount) {
-        conn = sqlManager.openConnection();
-
         // The final output dataset
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -140,7 +135,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 + " ORDER BY combinedTotal DESC"
                 + " LIMIT ?";
 
-        try {
+        try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(mainQuery);
             pstmt.setObject(1, start);
@@ -164,8 +159,7 @@ public class formReportTwo extends javax.swing.JFrame {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
         }
-
-        sqlManager.closeConnection(conn);
+        
         return dataset;
     }
 
@@ -363,9 +357,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 valid = true;
                 break;
             case 6:// All time
-                conn = sqlManager.openConnection();
-                start = sqlManager.getDateOfFirstReceipt(conn);
-                sqlManager.closeConnection(conn);
+                start = sqlManager.getDateOfFirstReceipt();
                 valid = true;
                 break;
             case 7:// Other

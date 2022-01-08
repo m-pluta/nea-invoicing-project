@@ -25,7 +25,6 @@ import javax.swing.event.DocumentListener;
 public class formAddEmployee extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formAddEmployee.class.getName());
-    Connection conn = null;
 
     // Employee ID for the new employee being added
     int EmployeeID = 0;
@@ -40,9 +39,7 @@ public class formAddEmployee extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
 
         // Gets the ID for the new employee
-        conn = sqlManager.openConnection();
-        EmployeeID = sqlManager.getNextPKValue(conn, "tblEmployee", "employee_id");
-        sqlManager.closeConnection(conn);
+        EmployeeID = sqlManager.getNextPKValue("tblEmployee", "employee_id");
 
         txtEmployeeID.setText(String.valueOf(EmployeeID));
 
@@ -305,8 +302,7 @@ public class formAddEmployee extends javax.swing.JFrame {
                         + " username, password_hash, admin, date_last_logged_in)"
                         + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                conn = sqlManager.openConnection();
-                try {
+                try (Connection conn = sqlManager.openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setInt(1, EmployeeID);
@@ -332,7 +328,6 @@ public class formAddEmployee extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     logger.log(Level.SEVERE, "SQLException");
                 }
-                sqlManager.closeConnection(conn);
 
                 // Refreshes the employee table in the previous form since a new employee was added
                 previousForm.loadEmployees();
@@ -347,7 +342,6 @@ public class formAddEmployee extends javax.swing.JFrame {
         // Init
         String[] responses = null;
         boolean validInputs = false;
-        conn = sqlManager.openConnection();
 
         while (!validInputs) {
             // Gets the user's responses
@@ -369,13 +363,13 @@ public class formAddEmployee extends javax.swing.JFrame {
                 // Checks if the password is of minimum length (4)
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_SHORT, "password");
 
-            } else if (responses[0].length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "username")) {
+            } else if (responses[0].length() > sqlManager.getMaxColumnLength("tblEmployee", "username")) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "username");
 
             } else if (responses[2].length() > 128) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "password");
 
-            } else if (sqlManager.RecordExists(conn, "tblEmployee", "username", responses[0])) {
+            } else if (sqlManager.RecordExists("tblEmployee", "username", responses[0])) {
                 ErrorMsg.throwError(ErrorMsg.ALREADY_EXISTS_ERROR, "Employee with this username");
 
             } else {
@@ -389,34 +383,34 @@ public class formAddEmployee extends javax.swing.JFrame {
 
     // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
-        conn = sqlManager.openConnection();
+
         boolean valid = false;
 
-        if (txtForename.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "forename")) {
+        if (txtForename.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "forename")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "forename");
 
-        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "surname")) {
+        } else if (txtSurname.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "surname")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "surname");
 
-        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address1")) {
+        } else if (txtAddress1.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "address1")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 1");
 
-        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address2")) {
+        } else if (txtAddress2.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "address2")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 2");
 
-        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "address3")) {
+        } else if (txtAddress3.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "address3")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "address line 3");
 
-        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "county")) {
+        } else if (txtCounty.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "county")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "county");
 
-        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "postcode")) {
+        } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "postcode")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
 
-        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "phone_number")) {
+        } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
 
-        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength(conn, "tblEmployee", "email_address")) {
+        } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "email_address")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");
 
         } else {
@@ -424,7 +418,6 @@ public class formAddEmployee extends javax.swing.JFrame {
             valid = true;
         }
 
-        sqlManager.closeConnection(conn);
         return valid;
     }
 
