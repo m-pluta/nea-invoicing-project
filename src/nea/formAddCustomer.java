@@ -163,7 +163,7 @@ public class formAddCustomer extends javax.swing.JFrame {
     }
 
     // Loads all the customer categories from the DB into the ComboBox
-    public void loadCustomerCategoriesIntoCB() {
+    private void loadCustomerCategoriesIntoCB() {
         // Clears ComboBox
         cbCategory.removeAllItems();
 

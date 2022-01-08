@@ -343,7 +343,7 @@ public class formAddEmployee extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddEmployeeActionPerformed
 
     // Asks user for the new employee's login details
-    public String[] getLoginDetails() {
+    private String[] getLoginDetails() {
         // Init
         String[] responses = null;
         boolean validInputs = false;

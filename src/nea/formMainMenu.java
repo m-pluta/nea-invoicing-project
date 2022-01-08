@@ -471,7 +471,7 @@ public class formMainMenu extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);
     }
 
-    public void updateLoginDetails(int id, String newUsername, String newPassword) {
+    private void updateLoginDetails(int id, String newUsername, String newPassword) {
         conn = sqlManager.openConnection();
 
         try {

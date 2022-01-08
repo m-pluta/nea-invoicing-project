@@ -87,7 +87,7 @@ public class formOneQuotation extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);
     }
 
-    public double loadQuotationDetails(int quotationID) {
+    private double loadQuotationDetails(int quotationID) {
         conn = sqlManager.openConnection();
 
         // Init

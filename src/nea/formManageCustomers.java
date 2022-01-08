@@ -300,7 +300,7 @@ public class formManageCustomers extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     // Returns the customer_id of the selected customer in the table
-    public int getSelectedCustomer() {
+    private int getSelectedCustomer() {
         int selectedRow = jTable_Customers.getSelectedRow();
 
         if (selectedRow == -1) {

@@ -262,13 +262,13 @@ public class sqlManager {
     }
 
     // Returns the total value of all the items in a given receipt.
-    public static double getReceiptTotal(Connection conn, String tableName, String key, int document_id) {
+    public static double getReceiptTotal(Connection conn, String tableName, String key, int receipt_id) {
 
         // Query Setup & Execution
         String query = String.format("SELECT COALESCE(SUM(unit_price * quantity), 0) as total FROM %s WHERE %s = ?", tableName, key);
         try {
             PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, document_id);
+            pstmt.setInt(1, receipt_id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -365,6 +365,23 @@ public class sqlManager {
 
         // If an error occurs or no result is fetched then the date is set to unix epoch
         return LocalDate.of(1970, 1, 1).atTime(0, 0, 0);
+    }
+
+    // Returns the date_created of the first receipt (invoice and quotation) ever created
+    public static LocalDateTime getDateOfFirstReceipt(Connection conn) {
+        // Init
+        LocalDateTime inv;
+        LocalDateTime quot;
+
+        // Gets the dates of first invoice and quotation 
+        inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
+        quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
+        // Sets the date_created of the first ever receipt
+        if (inv.isBefore(quot)) {
+            return inv;
+        } else {
+            return quot;
+        }
     }
 
     // Returns the receipt number of a receipt in the current financial year, given a date

@@ -288,7 +288,7 @@ public class formManageInvoices extends javax.swing.JFrame {
     }
 
     // Returns the invoice_id of the selected invoice in the table
-    public int getSelectedInvoice() {
+    private int getSelectedInvoice() {
         int selectedRow = jTable_Invoices.getSelectedRow();
 
         if (selectedRow == -1) {

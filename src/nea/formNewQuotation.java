@@ -226,7 +226,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     }
 
     // Calculates the item total if the quantity and unit price are valid
-    public void updateItemTotals() {
+    private void updateItemTotals() {
         String sQuantity = txtQuantity.getText();
         // Gets rid of the £ sign and any commas
         String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");
@@ -245,7 +245,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     }
 
     // Calculates the Total if the values are valid
-    public void updateTableTotal() {
+    private void updateTableTotal() {
         // Init
         double total = 0.0;
         int NoRows = model.getRowCount();
@@ -291,7 +291,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     }
 
     // Method for loading all the item categories into the ComboBox
-    public void loadItemCategoriesIntoCB() {
+    private void loadItemCategoriesIntoCB() {
         // Clears ComboBox
         cbCategory.removeAllItems();
 
@@ -682,7 +682,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     }
 
     // Uploads each row of the quotation to tblQuotationDetail in the DB
-    public void uploadQuotationDetails(int quotationID) {
+    private void uploadQuotationDetails(int quotationID) {
         int NoRows = model.getRowCount();
 
         conn = sqlManager.openConnection();
@@ -869,7 +869,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     }//GEN-LAST:event_btnClearActionPerformed
 
     // Method for resetting all the fields and buttons in the side view to their original state
-    public void resetSideView() {
+    private void resetSideView() {
         // Item detail fields
         txtItem.setText("");
         txtItem.setEditable(true);

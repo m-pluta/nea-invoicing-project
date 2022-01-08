@@ -287,9 +287,6 @@ public class formReportOne extends javax.swing.JFrame {
 
     // When the user clicks the Analyze button
     private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
-        // Creates an empty dataset
-        CategoryDataset data = null;
-
         // Whether the user wants to load invoices or quotations, both can be true
         boolean getInvoices = false;
         boolean getQuotations = false;
@@ -363,22 +360,7 @@ public class formReportOne extends javax.swing.JFrame {
                     start = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
 
                 } else if (getInvoices && getQuotations) {
-                    // Analyze both invoices and quotations
-
-                    // Init
-                    LocalDateTime inv;
-                    LocalDateTime quot;
-
-                    // Gets the dates of first invoice and quotation 
-                    inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
-                    quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
-
-                    // Sets the date_created of the first ever receipt
-                    if (inv.isBefore(quot)) {
-                        start = inv;
-                    } else {
-                        start = quot;
-                    }
+                    start = sqlManager.getDateOfFirstReceipt(conn);
                 }
                 valid = true;
                 sqlManager.closeConnection(conn);
@@ -439,35 +421,40 @@ public class formReportOne extends javax.swing.JFrame {
             }
 
             // Gets the CategoryDataset with all the data
+            CategoryDataset data;
             data = getData(getInvoices, getQuotations, start, end, barSpacing);
 
-            // Creates the JFreeChart bar chart
-            JFreeChart barChart = ChartFactory.createBarChart(
-                    title,
-                    xLabel,
-                    yLabel,
-                    data,
-                    PlotOrientation.VERTICAL,
-                    cbData.getSelectedIndex() == 2, // only shows the legend if the user analyzed invoices and quotations
-                    true,
-                    false);
-
-            // Adds horizontal grid lines to the plot
-            CategoryPlot p = barChart.getCategoryPlot();
-            p.setRangeGridlinePaint(Color.black);
-
-            // Makes the x axis labels vertical to conserve space
-            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
-            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-
-            // Clears the JPanel and adds the ChartPanel which holds the barChart graphic
-            ChartPanel barPanel = new ChartPanel(barChart);
-            pOutput.removeAll();
-            pOutput.add(barPanel, BorderLayout.CENTER);
-
-            // Validates the JPanel to make sure changes are visible
-            pOutput.validate();
+            displayBarChart(title, xLabel, yLabel, data);
         }
+    }//GEN-LAST:event_btnAnalyzeActionPerformed
+
+    private void displayBarChart(String title, String xLabel, String yLabel, CategoryDataset data) {
+        // Creates the JFreeChart bar chart
+        JFreeChart barChart = ChartFactory.createBarChart(
+                title,
+                xLabel,
+                yLabel,
+                data,
+                PlotOrientation.VERTICAL,
+                cbData.getSelectedIndex() == 2, // only shows the legend if the user analyzed invoices and quotations
+                true,
+                false);
+
+        // Adds horizontal grid lines to the plot
+        CategoryPlot p = barChart.getCategoryPlot();
+        p.setRangeGridlinePaint(Color.black);
+
+        // Makes the x axis labels vertical to conserve space
+        CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
+        axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+
+        // Clears the JPanel and adds the ChartPanel which holds the barChart graphic
+        ChartPanel barPanel = new ChartPanel(barChart);
+        pOutput.removeAll();
+        pOutput.add(barPanel, BorderLayout.CENTER);
+
+        // Validates the JPanel to make sure changes are visible
+        pOutput.validate();
 
         // Leftover code in case I want to open the report as a new window
 //        CategoryPlot p = barChart.getCategoryPlot();
@@ -476,13 +463,12 @@ public class formReportOne extends javax.swing.JFrame {
 //        frame.setLocationRelativeTo(null);
 //        frame.setVisible(true);
 //        frame.setSize(450, 350);
-    }//GEN-LAST:event_btnAnalyzeActionPerformed
+    }
 
     // Creates an empty hashmap and then populates it with all the time categories
-    public LinkedHashMap<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
-
+    private LinkedHashMap<String, Double> generateEmptyDict(LocalDateTime start, LocalDateTime end, int barSpacing) {
         // Init
-        LinkedHashMap<String, Double> output = new LinkedHashMap<String, Double>();
+        LinkedHashMap<String, Double> output = new LinkedHashMap<>();
 
         if (barSpacing == BAR_SPACING_DAY) {
             // Creates one bar per day analyzed
@@ -594,7 +580,7 @@ public class formReportOne extends javax.swing.JFrame {
         conn = sqlManager.openConnection();
 
         // Init
-        LinkedHashMap<String, Double> dataArr_Invoice = null;
+        LinkedHashMap<String, Double> dataArr_Invoice;
         dataArr_Invoice = generateEmptyDict(start, end, barSpacing);
 
         // Raw SQL query: https://pastebin.com/RJ5B4hpc

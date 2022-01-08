@@ -288,7 +288,7 @@ public class formManageQuotations extends javax.swing.JFrame {
     }
 
     // Returns the quotation_id of the selected quotation in the table
-    public int getSelectedQuotation() {
+    private int getSelectedQuotation() {
         int selectedRow = jTable_Quotations.getSelectedRow();
 
         if (selectedRow == -1) {

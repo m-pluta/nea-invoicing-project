@@ -243,7 +243,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }
 
     // Calculates the item total if the quantity and unit price are valid
-    public void updateItemTotals() {
+    private void updateItemTotals() {
         String sQuantity = txtQuantity.getText();
         // Gets rid of the £ sign and any commas
         String sUnitPrice = txtUnitPrice.getText().replace("£", "").replace(",", "");
@@ -262,7 +262,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }
 
     // Calculates the Subtotal and Total if the values are valid
-    public void updateTableTotals() {
+    private void updateTableTotals() {
         // Gets the subtotal
         double subtotal = calculateSubtotal();
         txtSubtotal.setText(Utility.formatCurrency(subtotal));
@@ -281,7 +281,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }
 
     // Calculates the subtotal of the invoice by summing all item totals in the invoice
-    public double calculateSubtotal() {
+    private double calculateSubtotal() {
         // Init
         double subTotal = 0.0;
         int NoRows = model.getRowCount();
@@ -326,7 +326,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }
 
     // Method for loading all the item categories into the ComboBox
-    public void loadItemCategoriesIntoCB() {
+    private void loadItemCategoriesIntoCB() {
         // Clears ComboBox
         cbCategory.removeAllItems();
 
@@ -748,7 +748,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }
 
     // Uploads each row of the invoice to tblInvoiceDetail in the DB
-    public void uploadInvoiceDetails(int invoiceID) {
+    private void uploadInvoiceDetails(int invoiceID) {
         int NoRows = model.getRowCount();
 
         conn = sqlManager.openConnection();
@@ -935,7 +935,7 @@ public class formNewInvoice extends javax.swing.JFrame {
     }//GEN-LAST:event_btnClearActionPerformed
 
     // Method for resetting all the fields and buttons in the side view to their original state
-    public void resetSideView() {
+    private void resetSideView() {
         // Item detail fields
         txtItem.setText("");
         txtItem.setEditable(true);

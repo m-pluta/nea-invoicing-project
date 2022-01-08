@@ -304,7 +304,7 @@ public class formManageEmployees extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddNewActionPerformed
 
     // Returns the employee_id of the selected employee in the table
-    public int getSelectedEmployee() {
+    private int getSelectedEmployee() {
         int selectedRow = jTable_Employees.getSelectedRow();
 
         if (selectedRow == -1) {

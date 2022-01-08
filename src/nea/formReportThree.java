@@ -72,6 +72,10 @@ public class formReportThree extends javax.swing.JFrame {
             }
         });
 
+        initialiseEmployeeSpinner();
+    }
+
+    private void initialiseEmployeeSpinner() {
         // Init
         int NoEmployees = 1;
         conn = sqlManager.openConnection();
@@ -328,9 +332,6 @@ public class formReportThree extends javax.swing.JFrame {
 
     // When the user clicks the Analyze button
     private void btnAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalyzeActionPerformed
-        // Creates an empty dataset
-        CategoryDataset data = null;
-
         // Dates from which to get the results from
         // End date is always the current date unless user specifies otherwise
         LocalDateTime start = null;
@@ -366,24 +367,9 @@ public class formReportThree extends javax.swing.JFrame {
                 break;
             case 6:// All time
                 conn = sqlManager.openConnection();
-
-                // Init
-                LocalDateTime inv;
-                LocalDateTime quot;
-
-                // Gets the dates of first invoice and quotation 
-                inv = sqlManager.getEarliestDateTime(conn, "tblInvoice", "date_created");
-                quot = sqlManager.getEarliestDateTime(conn, "tblQuotation", "date_created");
-
-                // Sets the date_created of the first ever receipt
-                if (inv.isBefore(quot)) {
-                    start = inv;
-                } else {
-                    start = quot;
-                }
-
-                valid = true;
+                start = sqlManager.getDateOfFirstReceipt(conn);
                 sqlManager.closeConnection(conn);
+                valid = true;
                 break;
             case 7:// Other
 
@@ -408,39 +394,43 @@ public class formReportThree extends javax.swing.JFrame {
                 break;
         }
 
+        if (valid) {
+            displayBarChart(start, end);
+        }
+    }//GEN-LAST:event_btnAnalyzeActionPerformed
+
+    private void displayBarChart(LocalDateTime start, LocalDateTime end) {
         // Gets the amount of employees the user wants to see
         int employeeCount = (int) spEmployeeCount.getValue();
 
-        if (valid) {
-            data = getData(start, end, employeeCount);
-            JFreeChart barChart = ChartFactory.createBarChart(
-                    "Value invoiced/quoted per employee",
-                    "Employee name",
-                    "Value invoiced/quoted",
-                    data,
-                    PlotOrientation.VERTICAL,
-                    true,
-                    true,
-                    false);
+        CategoryDataset data;
+        data = getData(start, end, employeeCount);
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Value invoiced/quoted per employee",
+                "Employee name",
+                "Value invoiced/quoted",
+                data,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false);
 
-            // Adds horizontal grid lines to the plot
-            CategoryPlot p = barChart.getCategoryPlot();
-            p.setRangeGridlinePaint(Color.black);
+        // Adds horizontal grid lines to the plot
+        CategoryPlot p = barChart.getCategoryPlot();
+        p.setRangeGridlinePaint(Color.black);
 
-            // Makes the x axis labels vertical to conserve space
-            CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
-            axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        // Makes the x axis labels vertical to conserve space
+        CategoryAxis axis = barChart.getCategoryPlot().getDomainAxis();
+        axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
 
-            // Clears the JPanel and adds the ChartPanel which holds the barChart graphic
-            ChartPanel barPanel = new ChartPanel(barChart);
-            pOutput.removeAll();
-            pOutput.add(barPanel, BorderLayout.CENTER);
+        // Clears the JPanel and adds the ChartPanel which holds the barChart graphic
+        ChartPanel barPanel = new ChartPanel(barChart);
+        pOutput.removeAll();
+        pOutput.add(barPanel, BorderLayout.CENTER);
 
-            // Validates the JPanel to make sure changes are visible
-            pOutput.validate();
-
-        }
-    }//GEN-LAST:event_btnAnalyzeActionPerformed
+        // Validates the JPanel to make sure changes are visible
+        pOutput.validate();
+    }
 
     // Used when the form is opened from within another form
     public formReportThree getFrame() {

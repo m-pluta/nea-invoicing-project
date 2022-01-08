@@ -260,7 +260,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     private void beginFormat() {
         // Gets the table rows of the receipt and calculates the subtotal of the receipt
-        ArrayList<tableRow> receiptRows = new ArrayList<tableRow>();
+        ArrayList<tableRow> receiptRows = new ArrayList<>();
         double subtotal = 0.0;
 
         conn = sqlManager.openConnection();
@@ -286,10 +286,9 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         // Gets metadata about the receipt's customer
         LinkedHashMap<String, String> customerData = getCustomerMetaData();
 
-        XWPFDocument doc = null;
         try {
             // Resizes the template to the amount of rows in the receipt and saves to a temp location
-            doc = new XWPFDocument(OPCPackage.open(templateFilePath));
+            XWPFDocument doc = new XWPFDocument(OPCPackage.open(templateFilePath));
             doc = resizeDocumentTable(doc, receiptRows.size());
             saveDocument(doc, outputFilePath, "Temp", false);
 
@@ -322,7 +321,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     }
 
-    private ArrayList<tableRow> getReceiptItems(String tableName, String key, int document_id) {
+    private ArrayList<tableRow> getReceiptItems(String tableName, String key, int receipt_id) {
         ArrayList<tableRow> output = new ArrayList<>();
 
         conn = sqlManager.openConnection();
@@ -330,7 +329,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             // Query Setup & Execution
             String query = String.format("SELECT description, quantity, unit_price FROM %s WHERE %s = ?", tableName, key);
             PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setInt(1, document_id);
+            pstmt.setInt(1, receipt_id);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -476,11 +475,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     }
 
-    // Method for inserting the customer's data and the DocumentNo and date into the XWPFDocument
-    public XWPFDocument insertCustomerData(XWPFDocument document, LinkedHashMap<String, String> customerData, LinkedHashMap<String, String> receiptMetaData) {
+    // Method for inserting the customer's data, the ReceiptNo and date into the XWPFDocument
+    public XWPFDocument insertCustomerData(XWPFDocument doc, LinkedHashMap<String, String> customerData, LinkedHashMap<String, String> receiptMetaData) {
 
         // Gets the pointer to the first table in the Word document
-        List<XWPFTable> tables = document.getTables();
+        List<XWPFTable> tables = doc.getTables();
         XWPFTable table = tables.get(0);
 
         if (customerData.get("$address3").isEmpty()) {
@@ -526,15 +525,15 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             }
         }
 
-        return document;
+        return doc;
     }
 
     // Method for inserting the receipt rows and some of the receipt's metadata (subtotal, payments, total) into the Word document
-    public XWPFDocument insertReceiptData(XWPFDocument document, ArrayList<tableRow> receiptRows, LinkedHashMap<String, String> receiptMetaData) {
+    public XWPFDocument insertReceiptData(XWPFDocument doc, ArrayList<tableRow> receiptRows, LinkedHashMap<String, String> receiptMetaData) {
 
         // Gets info about the table and gets the pointer to the second table in the Word Document
         int NoRows = receiptRows.size();
-        List<XWPFTable> tables = document.getTables();
+        List<XWPFTable> tables = doc.getTables();
         XWPFTable table = tables.get(1);
 
         // Goes through each item in the receipt
@@ -584,15 +583,15 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             }
         }
 
-        return document;
+        return doc;
     }
 
-    // Method for resizing the table inside the template depending on the amount of rows in the receipt
-    public XWPFDocument resizeDocumentTable(XWPFDocument document, int amtRows) {
+    // Method for resizing the table inside the template depending on the number of rows in the receipt
+    public XWPFDocument resizeDocumentTable(XWPFDocument doc, int amtRows) {
 
         // Context: The template contains three empty rows in the table
         // Gets the pointer to the second table in the Word Document
-        List<XWPFTable> tables = document.getTables();
+        List<XWPFTable> tables = doc.getTables();
         XWPFTable table = tables.get(1);
 
         // The third row in the template is the blank row
@@ -629,11 +628,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             }
         }
 
-        return document;
+        return doc;
     }
 
     // Method for saving the XWPFDocument to a given location with the option of a counter for overwrite protection
-    public void saveDocument(XWPFDocument document, String destination, String fileName, boolean withCounter) {
+    public void saveDocument(XWPFDocument doc, String destination, String fileName, boolean withCounter) {
 
         // The directory where the file will be saved
         String savingDestination = destination + "\\" + fileName + ".docx";
@@ -667,7 +666,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         try {
             // Saves the XWPFDocument using the output stream
             out = new FileOutputStream(savingDestination);
-            document.write(out);
+            doc.write(out);
             out.close();
 
             logger.log(Level.INFO, "Document successfully saved to: " + savingDestination);

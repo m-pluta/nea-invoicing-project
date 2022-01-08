@@ -89,7 +89,7 @@ public class formOneInvoice extends javax.swing.JFrame {
         sqlManager.closeConnection(conn);
     }
 
-    public double loadInvoiceDetails(int invoiceID) {
+    private double loadInvoiceDetails(int invoiceID) {
         conn = sqlManager.openConnection();
 
         // Init
