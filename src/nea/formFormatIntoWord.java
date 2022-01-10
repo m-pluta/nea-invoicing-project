@@ -259,6 +259,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGenerateDocumentActionPerformed
 
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     private void beginFormat() {
         // Gets the table rows of the receipt and calculates the subtotal of the receipt
         ArrayList<tableRow> receiptRows = new ArrayList<>();
@@ -321,6 +322,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
 
     }
 
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     private ArrayList<tableRow> getReceiptItems(String tableName, String key, int receipt_id) {
         ArrayList<tableRow> output = new ArrayList<>();
 
@@ -354,6 +356,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         return output;
     }
 
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     private LinkedHashMap<String, String> getInvoiceMetaData(double subtotal) {
         LinkedHashMap<String, String> output = new LinkedHashMap<>();
 
@@ -383,6 +386,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         return output;
     }
 
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     private LinkedHashMap<String, String> getQuotationMetaData(double subtotal) {
         LinkedHashMap<String, String> output = new LinkedHashMap<>();
 
@@ -409,6 +413,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
         return output;
     }
 
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     private LinkedHashMap<String, String> getCustomerMetaData() {
         LinkedHashMap<String, String> output = new LinkedHashMap<>();
 
@@ -465,6 +470,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }
 
     // Method for inserting the customer's data, the ReceiptNo and date into the XWPFDocument
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     public XWPFDocument insertCustomerData(XWPFDocument doc, LinkedHashMap<String, String> customerData, LinkedHashMap<String, String> receiptMetaData) {
 
         // Gets the pointer to the first table in the Word document
@@ -518,6 +524,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }
 
     // Method for inserting the receipt rows and some of the receipt's metadata (subtotal, payments, total) into the Word document
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     public XWPFDocument insertReceiptData(XWPFDocument doc, ArrayList<tableRow> receiptRows, LinkedHashMap<String, String> receiptMetaData) {
 
         // Gets info about the table and gets the pointer to the second table in the Word Document
@@ -576,6 +583,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }
 
     // Method for resizing the table inside the template depending on the number of rows in the receipt
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     public XWPFDocument resizeDocumentTable(XWPFDocument doc, int amtRows) {
 
         // Context: The template contains three empty rows in the table
@@ -621,6 +629,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }
 
     // Method for saving the XWPFDocument to a given location with the option of a counter for overwrite protection
+    // See 4.3.3 in the 'How To' section in the NEA for an explanation of this
     public void saveDocument(XWPFDocument doc, String destination, String fileName, boolean withCounter) {
 
         // The directory where the file will be saved

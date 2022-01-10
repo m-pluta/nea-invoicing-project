@@ -397,7 +397,7 @@ public class formReportOne extends javax.swing.JFrame {
 
             // NEA Objective 4.3: Generate graphs of sales over a period of time with bars for
             // each day, week, month, or year depending on how long the period of time is.
-            // See 4.3.1 in the 'How To' section for an explanation
+            // See 4.3.1 in the 'How To' section in the NEA for an explanation of this
             int barSpacing = BAR_SPACING_WEEK;
 
             if (daysBetweenDates < 7) {
@@ -430,6 +430,8 @@ public class formReportOne extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAnalyzeActionPerformed
 
     private void displayBarChart(String title, String xLabel, String yLabel, CategoryDataset data) {
+
+        // See 4.3.2 in the 'How To' section in the NEA for an explanation of this
         // Creates the JFreeChart bar chart
         JFreeChart barChart = ChartFactory.createBarChart(
                 title,

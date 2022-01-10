@@ -392,6 +392,8 @@ public class formReportTwo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAnalyzeActionPerformed
 
     private void displayBarChart(LocalDateTime start, LocalDateTime end) {
+
+        // See 4.3.2 in the 'How To' section in the NEA for an explanation of this
         // Gets the amount of categories the user wants to see
         int categoryCount = (int) spCategoryCount.getValue();
 
