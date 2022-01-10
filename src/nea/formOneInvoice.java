@@ -53,13 +53,13 @@ public class formOneInvoice extends javax.swing.JFrame {
     }
 
     public void loadInvoice() {
-        
+
         String query = "SELECT CONCAT(tblCustomer.forename,' ',tblCustomer.surname) AS customerFullName,"
                 + " CONCAT(tblEmployee.forename,' ',tblEmployee.surname) AS employeeFullName, date_created, payments FROM tblInvoice"
                 + " INNER JOIN tblCustomer ON tblInvoice.customer_id=tblCustomer.customer_id"
                 + " INNER JOIN tblEmployee ON tblInvoice.employee_id=tblEmployee.employee_id"
                 + " WHERE invoice_id = ?";
-        
+
         try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -89,7 +89,7 @@ public class formOneInvoice extends javax.swing.JFrame {
     private double loadInvoiceDetails(int invoiceID) {
         // Init
         double InvoiceTotal = 0;
-        
+
         try (Connection conn = sqlManager.openConnection()) {
             // Query Setup & Execution
             String query = "SELECT description, category_id, quantity, unit_price FROM tblInvoiceDetail WHERE invoice_id = ?";
@@ -275,6 +275,7 @@ public class formOneInvoice extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // NEA OBJECTIVE 7.1: Allow user to specify which receipt should be turned into a Microsoft-Word Document.
     // This button is for converting the invoice into a Word document
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
         formFormatIntoWord form = new formFormatIntoWord().getFrame();

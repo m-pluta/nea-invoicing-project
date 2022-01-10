@@ -123,6 +123,9 @@ public class formNewQuotation extends javax.swing.JFrame {
         cbCustomers.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // NEA OBJECTIVE 1.2: The user should be able to select an existing customer or be prompted
+                // to add a new customer in a separate window when they are creating a new receipt.
+
                 // Checks if the user selected the last item ('Add a new customer...')
                 if (cbCustomers.getSelectedIndex() == cbCustomers.getItemCount() - 1) {
                     if (!CurrentlyAddingCustomer) {
@@ -145,8 +148,12 @@ public class formNewQuotation extends javax.swing.JFrame {
         cbCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // NEA OBJECTIVE 1.4: The user must be able to select an item category for each item being added to the receipt.
+
                 // If the user selected the last item ('Add a new category...')
                 if (cbCategory.getSelectedIndex() == cbCategory.getItemCount() - 1) {
+
+                    // NEA OBJECTIVE 5.1: Allow the user to create a new item category.
                     // Prompts user to a add a new category
                     String addedCategory = sqlManager.addNewItemCategory();
 
@@ -591,12 +598,16 @@ public class formNewQuotation extends javax.swing.JFrame {
     // Adds the item from the side view into the table if it is valid
     private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
         if (isItemValid()) {
+            // NEA OBJECTIVE 1.3: The user must be able to enter each new item in the receipt as a row in a table.
             // If all inputs passed the validity checks then item is added to the table
             model.addRow(new Object[]{txtItem.getText(), cbCategory.getSelectedItem().toString(), txtQuantity.getText(),
                 "£" + txtUnitPrice.getText().replace("£", ""), "£" + txtItemTotal.getText().replace("£", "")});
 
             // Resets the side view and updates quotation total
             resetSideView();
+
+            // NEA OBJECTIVE 1.6: The values for subtotal and total should be recalculated each time 
+            //a new item is added to the receipt so the user can see what the current totals are.
             updateTableTotal();
         }
     }//GEN-LAST:event_btnAddItemActionPerformed
@@ -621,6 +632,7 @@ public class formNewQuotation extends javax.swing.JFrame {
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
 
         if (isQuotationValid()) {
+            // NEA OBJECTIVE 1.5: The user must be given the option to review their receipt before submitting it.
 
             // Asks user whether they really want to finish this quotation
             int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to finish this quotation?", "Finish Quotation",
@@ -632,6 +644,7 @@ public class formNewQuotation extends javax.swing.JFrame {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 String strDateCreated = dateFormat.format(dcDateCreated.getDate());
 
+                // NEA OBJECTIVE 1.1: Search for last receipt ID and increment for a new receipt.
                 // Gets the next available quotation id
                 int new_quotationID = sqlManager.getNextPKValue("tblQuotation", "quotation_id");
 

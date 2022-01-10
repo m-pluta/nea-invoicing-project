@@ -50,6 +50,8 @@ public class formReportFour extends javax.swing.JFrame {
         lblEnd.setVisible(false);
         dcEnd.setVisible(false);
 
+        // NEA Objective 4.2: If the user selects the ‘Other’ option, then the user
+        // should be able to select between two different dates using jCalendar components.
         // Listens for a change in the selectedIndex
         cbTime.addActionListener(new ActionListener() {
             @Override
@@ -331,8 +333,9 @@ public class formReportFour extends javax.swing.JFrame {
         LocalDateTime start = null;
         LocalDateTime end = LocalDateTime.now();
 
+        // NEA Objective 4.1: Allow the user to select between different time periods
+        // to analyse such as a month, quarter, year or other.
         // Code for assigning the start date for each choice in cbTime
-        // Boolean for input validity, assume always valid
         boolean valid = false;
         switch (cbTime.getSelectedIndex()) {
             case 0:// Past month

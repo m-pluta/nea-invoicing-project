@@ -35,6 +35,8 @@ public class formLogin extends javax.swing.JFrame {
         boolean isCapsLockOn = Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK);
         lblCapsLock.setVisible(isCapsLockOn);
 
+        // NEA OBJECTIVE 2.4: Notify the user if they accidentally clicked their Caps Lock key as this
+        // may cause them to enter their password in wrong because passwords are case-sensitive.
         // KeyListener for when the user presses the caps lock key
         KeyListener CapsLock = new KeyListener() {
             @Override
@@ -281,12 +283,15 @@ public class formLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void unsuccessfulLogin() {
-        attemptsRemaining--;
+        attemptsRemaining--; // Initialised to 3 at the top of the class
+
+        // NEA OBJECTIVE 2.2: Allow a maximum of three attempts to enter the correct username & password.
         if (attemptsRemaining == 0) {
             ErrorMsg.throwCustomError("You have run out of login attempts", "No login attempts remaining");
             // Disables user input since they have run out of login attempts
             incorrectPasswordLock();
         } else {
+            // NEA OBJECTIVE 2.1: Display a message dialog if the user enters an incorrect password.
             ErrorMsg.throwError(ErrorMsg.INVALID_LOGIN_DETAILS_ERROR);
         }
     }

@@ -329,7 +329,7 @@ public class formOneEmployee extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     public void enableEditMode() {
-        // Makes all the fields editable, disables the edit button and makes the confirm button visible
+        // Makes all the fields editable except the EmployeeID field, disables the edit button and makes the confirm button visible
         Utility.setEditable(fields, true);
         btnEdit.setEnabled(false);
         btnConfirmEdit.setVisible(true);

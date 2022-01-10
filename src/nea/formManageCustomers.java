@@ -92,6 +92,8 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
         });
 
+        // NEA OBJECTIVE 6.5: The user should be able to search through all their customers in a table using a
+        // search box. The rows in the table should automatically update depending on the text in the search box.
         // When the user changes their search in the search box
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -113,7 +115,7 @@ public class formManageCustomers extends javax.swing.JFrame {
             }
 
         });
-        
+
         //Loads the initial data
         loadCustomers();
 

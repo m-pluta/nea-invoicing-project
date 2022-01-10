@@ -43,6 +43,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
         JTableHeader header = jTable_CustomerCategories.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
+        // NEA OBJECTIVE 5.4: The user should be able to search through their categories in a table using a search box.
         // When the user changes their search in the search box
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override

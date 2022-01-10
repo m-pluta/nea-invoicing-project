@@ -482,7 +482,7 @@ public class sqlManager {
                 int newID = sqlManager.getNextPKValue(tableName, "category_id");
 
                 String query = String.format("INSERT INTO %s (category_id, category_name, date_created) VALUES (?,?,?)", tableName);
-                
+
                 try (Connection conn = openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);

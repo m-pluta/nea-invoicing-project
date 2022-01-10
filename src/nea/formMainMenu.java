@@ -376,6 +376,8 @@ public class formMainMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_btnManageCustomerCategoriesActionPerformed
 
     private void btnChangeLoginDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeLoginDetailsActionPerformed
+
+        // NEA OBJECTIVE 2.3: Allow the user to update their password.
         boolean changingDetails = true;
         while (changingDetails) {
             String[] inputDetails = Utility.JOptionPaneMultiInput("Change login details",

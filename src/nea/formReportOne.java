@@ -102,6 +102,8 @@ public class formReportOne extends javax.swing.JFrame {
         lblEnd.setVisible(false);
         dcEnd.setVisible(false);
 
+        // NEA Objective 4.2: If the user selects the ‘Other’ option, then the user
+        // should be able to select between two different dates using jCalendar components.
         // Listens for a change in the selectedIndex
         cbTime.addActionListener(new ActionListener() {
             @Override
@@ -318,8 +320,9 @@ public class formReportOne extends javax.swing.JFrame {
                 break;
         }
 
+        // NEA Objective 4.1: Allow the user to select between different time periods
+        // to analyse such as a month, quarter, year or other.
         // Code for assigning the start date for each choice in cbTime
-        // Boolean for input validity, assume always valid
         boolean valid = false;
         switch (cbTime.getSelectedIndex()) {
             case 0:// Past month
@@ -392,8 +395,9 @@ public class formReportOne extends javax.swing.JFrame {
             Duration dr = Duration.between(start, end);
             int daysBetweenDates = (int) dr.toDays();
 
-            // Determines the spacing of the bars in the bar chart and the xLabels
-            // This is done to ensure there is never too many bars displayed i.e. one bar for each day over 2 years
+            // NEA Objective 4.3: Generate graphs of sales over a period of time with bars for
+            // each day, week, month, or year depending on how long the period of time is.
+            // See 4.3.1 in the 'How To' section for an explanation
             int barSpacing = BAR_SPACING_WEEK;
 
             if (daysBetweenDates < 7) {
@@ -467,62 +471,63 @@ public class formReportOne extends javax.swing.JFrame {
         // Init
         LinkedHashMap<String, Double> output = new LinkedHashMap<>();
 
-        if (barSpacing == BAR_SPACING_DAY) {
-            // Creates one bar per day analyzed
-            LocalDateTime counter = start;
-            output.put(counter.format(daymonth), 0.00);
-
-            while (!counter.toLocalDate().isEqual(end.toLocalDate())) {
-                // Moves to the next day and adds it to the hashmap
-                counter = counter.plusDays(1);
+        switch (barSpacing) {
+            case BAR_SPACING_DAY: {
+                // Creates one bar per day analyzed
+                LocalDateTime counter = start;
                 output.put(counter.format(daymonth), 0.00);
+                while (!counter.toLocalDate().isEqual(end.toLocalDate())) {
+                    // Moves to the next day and adds it to the hashmap
+                    counter = counter.plusDays(1);
+                    output.put(counter.format(daymonth), 0.00);
+                }
+                break;
             }
-
-        } else if (barSpacing == BAR_SPACING_WEEK) {
-            // Creates one bar per week analyzed
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                // Moves to the next week and adds it to the hashmap
-                output.put(counter.format(daymonth), 0.00);
-                counter = counter.plusWeeks(1);
+            case BAR_SPACING_WEEK: {
+                // Creates one bar per week analyzed
+                LocalDateTime counter = start;
+                while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                    // Moves to the next week and adds it to the hashmap
+                    output.put(counter.format(daymonth), 0.00);
+                    counter = counter.plusWeeks(1);
+                }
+                break;
             }
-
-        } else if (barSpacing == BAR_SPACING_MONTH) {
-            // Creates one bar per month analyzed
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                // Moves to the next month and adds it to the hashmap
-                output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
-                counter = counter.plusMonths(1);
+            case BAR_SPACING_MONTH: {
+                // Creates one bar per month analyzed
+                LocalDateTime counter = start;
+                while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                    // Moves to the next month and adds it to the hashmap
+                    output.put(counter.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + counter.format(year), 0.00);
+                    counter = counter.plusMonths(1);
+                }       // Adds the final month which doesn't get added in the while loop
+                output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + end.format(year), 0.00);
+                break;
             }
-            // Adds the final month which doesn't get added in the while loop
-            output.put(end.toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + "-" + end.format(year), 0.00);
-
-        } else if (barSpacing == BAR_SPACING_QUARTER) {
-            // Creates one bar per quarter analyzed
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                // Moves to the next quarter and adds it to the hashmap
-                output.put(Utility.getQuarter(counter.toLocalDate()) + "-" + counter.format(year), 0.00);
-                counter = counter.plusMonths(3);
+            case BAR_SPACING_QUARTER: {
+                // Creates one bar per quarter analyzed
+                LocalDateTime counter = start;
+                while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                    // Moves to the next quarter and adds it to the hashmap
+                    output.put(Utility.getQuarter(counter.toLocalDate()) + "-" + counter.format(year), 0.00);
+                    counter = counter.plusMonths(3);
+                }       // Adds the final quarter which doesn't get added in the while loop
+                output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
+                break;
             }
-            // Adds the final quarter which doesn't get added in the while loop
-            output.put(Utility.getQuarter(end.toLocalDate()) + "-" + end.format(year), 0.00);
-
-        } else if (barSpacing == BAR_SPACING_YEAR) {
-            // Creates one bar per year analyzed
-            LocalDateTime counter = start;
-
-            while (counter.toLocalDate().isBefore(end.toLocalDate())) {
-                // Moves to the next year and adds it to the hashmap
-                output.put("" + counter.getYear(), 0.00);
-                counter = counter.plusYears(1);
+            case BAR_SPACING_YEAR: {
+                // Creates one bar per year analyzed
+                LocalDateTime counter = start;
+                while (counter.toLocalDate().isBefore(end.toLocalDate())) {
+                    // Moves to the next year and adds it to the hashmap
+                    output.put("" + counter.getYear(), 0.00);
+                    counter = counter.plusYears(1);
+                }       // Adds the final tear which doesn't get added in the while loop
+                output.put("" + end.getYear(), 0.00);
+                break;
             }
-            // Adds the final tear which doesn't get added in the while loop
-            output.put("" + end.getYear(), 0.00);
+            default:
+                break;
         }
 
         return output;
@@ -593,88 +598,95 @@ public class formReportOne extends javax.swing.JFrame {
             pstmt.setObject(2, end);
             ResultSet rs = pstmt.executeQuery();
 
-            if (barSpacing == BAR_SPACING_DAY) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key = rs.getDate(1).toLocalDate().format(daymonth);
+            switch (barSpacing) {
+                case BAR_SPACING_DAY:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key = rs.getDate(1).toLocalDate().format(daymonth);
 
-                    // The total value of the invoice
-                    Double invoiceTotal = rs.getDouble(2);
+                        // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);
 
-                    // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Invoice.get(key);
-                    double after = before + invoiceTotal;
-                    dataArr_Invoice.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_WEEK) {
-                // Stores the date when the week commences
-                LocalDateTime counter = start;
-
-                while (rs.next()) {
-                    // Calculates days and weeks between the counter and date of the data being added
-                    Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0));
-                    int daysBetween = (int) dr.toDays();
-                    int weeksBetween = daysBetween / 7;
-
-                    // If the data is not within the same commencing week
-                    if (daysBetween >= 7) {
-                        counter = counter.plusWeeks(weeksBetween);
+                        // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Invoice.get(key);
+                        double after = before + invoiceTotal;
+                        dataArr_Invoice.put(key, after);
                     }
+                    break;
+                case BAR_SPACING_WEEK:
+                    // Stores the date when the week commences
+                    LocalDateTime counter = start;
+                    while (rs.next()) {
+                        // Calculates days and weeks between the counter and date of the data being added
+                        Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0));
+                        int daysBetween = (int) dr.toDays();
+                        int weeksBetween = daysBetween / 7;
 
-                    // The key in the hashmap
-                    String key = counter.format(daymonth);
+                        // If the data is not within the same commencing week
+                        if (daysBetween >= 7) {
+                            counter = counter.plusWeeks(weeksBetween);
+                        }
 
-                    // The total value of the invoice
-                    Double invoiceTotal = rs.getDouble(2);
+                        // The key in the hashmap
+                        String key = counter.format(daymonth);
 
-                    // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Invoice.get(key);
-                    double after = before + invoiceTotal;
-                    dataArr_Invoice.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_MONTH) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key_month = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-                    String key_year = rs.getDate(1).toLocalDate().format(year);
-                    String key = key_month + "-" + key_year;
+                        // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);
 
-                    // The total value of the invoice
-                    Double invoiceTotal = rs.getDouble(2);
+                        // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Invoice.get(key);
+                        double after = before + invoiceTotal;
+                        dataArr_Invoice.put(key, after);
+                    }
+                    break;
+                case BAR_SPACING_MONTH:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key_month = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+                        String key_year = rs.getDate(1).toLocalDate().format(year);
+                        String key = key_month + "-" + key_year;
 
-                    // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Invoice.get(key);
-                    double after = before + invoiceTotal;
-                    dataArr_Invoice.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_QUARTER) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key_quarter = Utility.getQuarter(rs.getDate(1).toLocalDate());
-                    String key_year = rs.getDate(1).toLocalDate().format(year);
-                    String key = key_quarter + "-" + key_year;
+                        // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);
 
-                    // The total value of the invoice
-                    Double invoiceTotal = rs.getDouble(2);
+                        // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Invoice.get(key);
+                        double after = before + invoiceTotal;
+                        dataArr_Invoice.put(key, after);
+                    }
+                    break;
+                case BAR_SPACING_QUARTER:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key_quarter = Utility.getQuarter(rs.getDate(1).toLocalDate());
+                        String key_year = rs.getDate(1).toLocalDate().format(year);
+                        String key = key_quarter + "-" + key_year;
 
-                    // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Invoice.get(key);
-                    double after = before + invoiceTotal;
-                    dataArr_Invoice.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_YEAR) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key = String.valueOf(rs.getDate(1).toLocalDate().getYear());
+                        // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);
 
-                    // The total value of the invoice
-                    Double invoiceTotal = rs.getDouble(2);
+                        // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Invoice.get(key);
+                        double after = before + invoiceTotal;
+                        dataArr_Invoice.put(key, after);
+                    }
+                    break;
+                case BAR_SPACING_YEAR:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key = String.valueOf(rs.getDate(1).toLocalDate().getYear());
 
-                    // Add the invoiceTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Invoice.get(key);
-                    double after = before + invoiceTotal;
-                    dataArr_Invoice.put(key, after);
-                }
+                        // The total value of the invoice
+                        Double invoiceTotal = rs.getDouble(2);
+
+                        // Add the invoiceTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Invoice.get(key);
+                        double after = before + invoiceTotal;
+                        dataArr_Invoice.put(key, after);
+                    }
+                    break;
+                default:
+                    break;
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");
@@ -704,88 +716,95 @@ public class formReportOne extends javax.swing.JFrame {
             pstmt.setObject(2, end);
             ResultSet rs = pstmt.executeQuery();
 
-            if (barSpacing == BAR_SPACING_DAY) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key = rs.getDate(1).toLocalDate().format(daymonth);
+            switch (barSpacing) {
+                case BAR_SPACING_DAY:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key = rs.getDate(1).toLocalDate().format(daymonth);
 
-                    // The total value of the quotation
-                    Double quotationTotal = rs.getDouble(2);
+                        // The total value of the quotation
+                        Double quotationTotal = rs.getDouble(2);
 
-                    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Quotation.get(key);
-                    double after = before + quotationTotal;
-                    dataArr_Quotation.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_WEEK) {
-                // Stores the date when the week commences
-                LocalDateTime counter = start;
-
-                while (rs.next()) {
-                    // Calculates days and weeks between the counter and date of the data being added
-                    Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0));
-                    int daysBetween = (int) dr.toDays();
-                    int weeksBetween = daysBetween / 7;
-
-                    // If the data is not within the same commencing week
-                    if (daysBetween >= 7) {
-                        counter = counter.plusWeeks(weeksBetween);
+                        // Add the quotationTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Quotation.get(key);
+                        double after = before + quotationTotal;
+                        dataArr_Quotation.put(key, after);
                     }
+                    break;
+                case BAR_SPACING_WEEK:
+                    // Stores the date when the week commences
+                    LocalDateTime counter = start;
+                    while (rs.next()) {
+                        // Calculates days and weeks between the counter and date of the data being added
+                        Duration dr = Duration.between(counter, rs.getDate(1).toLocalDate().atTime(0, 0, 0));
+                        int daysBetween = (int) dr.toDays();
+                        int weeksBetween = daysBetween / 7;
 
-                    // The key in the hashmap
-                    String key = counter.format(daymonth);
+                        // If the data is not within the same commencing week
+                        if (daysBetween >= 7) {
+                            counter = counter.plusWeeks(weeksBetween);
+                        }
 
-                    // The total value of the quotation
-                    Double quotationTotal = rs.getDouble(2);
+                        // The key in the hashmap
+                        String key = counter.format(daymonth);
 
-                    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Quotation.get(key);
-                    double after = before + quotationTotal;
-                    dataArr_Quotation.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_MONTH) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key_month = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-                    String key_year = rs.getDate(1).toLocalDate().format(year);
-                    String key = key_month + "-" + key_year;
+                        // The total value of the quotation
+                        Double quotationTotal = rs.getDouble(2);
 
-                    // The total value of the quotation
-                    Double quotationTotal = rs.getDouble(2);
+                        // Add the quotationTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Quotation.get(key);
+                        double after = before + quotationTotal;
+                        dataArr_Quotation.put(key, after);
+                    }
+                    break;
+                case BAR_SPACING_MONTH:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key_month = rs.getDate(1).toLocalDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+                        String key_year = rs.getDate(1).toLocalDate().format(year);
+                        String key = key_month + "-" + key_year;
 
-                    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Quotation.get(key);
-                    double after = before + quotationTotal;
-                    dataArr_Quotation.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_QUARTER) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key_quarter = Utility.getQuarter(rs.getDate(1).toLocalDate());
-                    String key_year = rs.getDate(1).toLocalDate().format(year);
-                    String key = key_quarter + "-" + key_year;
+                        // The total value of the quotation
+                        Double quotationTotal = rs.getDouble(2);
 
-                    // The total value of the quotation
-                    Double quotationTotal = rs.getDouble(2);
+                        // Add the quotationTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Quotation.get(key);
+                        double after = before + quotationTotal;
+                        dataArr_Quotation.put(key, after);
+                    }
+                    break;
+                case BAR_SPACING_QUARTER:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key_quarter = Utility.getQuarter(rs.getDate(1).toLocalDate());
+                        String key_year = rs.getDate(1).toLocalDate().format(year);
+                        String key = key_quarter + "-" + key_year;
 
-                    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Quotation.get(key);
-                    double after = before + quotationTotal;
-                    dataArr_Quotation.put(key, after);
-                }
-            } else if (barSpacing == BAR_SPACING_YEAR) {
-                while (rs.next()) {
-                    // The key in the hashmap
-                    String key = String.valueOf(rs.getDate(1).toLocalDate().getYear());
+                        // The total value of the quotation
+                        Double quotationTotal = rs.getDouble(2);
 
-                    // The total value of the quotation
-                    Double quotationTotal = rs.getDouble(2);
+                        // Add the quotationTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Quotation.get(key);
+                        double after = before + quotationTotal;
+                        dataArr_Quotation.put(key, after);
+                    }
+                    break;
+                case BAR_SPACING_YEAR:
+                    while (rs.next()) {
+                        // The key in the hashmap
+                        String key = String.valueOf(rs.getDate(1).toLocalDate().getYear());
 
-                    // Add the quotationTotal to the hashmap by adding it to the existing value
-                    double before = dataArr_Quotation.get(key);
-                    double after = before + quotationTotal;
-                    dataArr_Quotation.put(key, after);
-                }
+                        // The total value of the quotation
+                        Double quotationTotal = rs.getDouble(2);
+
+                        // Add the quotationTotal to the hashmap by adding it to the existing value
+                        double before = dataArr_Quotation.get(key);
+                        double after = before + quotationTotal;
+                        dataArr_Quotation.put(key, after);
+                    }
+                    break;
+                default:
+                    break;
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQLException");

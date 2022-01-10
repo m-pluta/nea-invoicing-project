@@ -26,9 +26,6 @@ public class formAddEmployee extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formAddEmployee.class.getName());
 
-    // Employee ID for the new employee being added
-    int EmployeeID = 0;
-
     // Previous form the user came from
     formManageEmployees previousForm = null;
 
@@ -39,8 +36,7 @@ public class formAddEmployee extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
 
         // Gets the ID for the new employee
-        EmployeeID = sqlManager.getNextPKValue("tblEmployee", "employee_id");
-
+        int EmployeeID = sqlManager.getNextPKValue("tblEmployee", "employee_id");
         txtEmployeeID.setText(String.valueOf(EmployeeID));
 
         // Notifies the previous form that the user is no longer adding a new employee.
@@ -302,10 +298,12 @@ public class formAddEmployee extends javax.swing.JFrame {
                         + " username, password_hash, admin, date_last_logged_in)"
                         + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+                int newEmployeeID = sqlManager.getNextPKValue("tblEmployee", "employee_id");
+
                 try (Connection conn = sqlManager.openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    pstmt.setInt(1, EmployeeID);
+                    pstmt.setInt(1, newEmployeeID);
                     pstmt.setString(2, txtForename.getText());
                     pstmt.setString(3, txtSurname.getText());
                     pstmt.setString(4, txtAddress1.getText());

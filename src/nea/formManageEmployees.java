@@ -121,7 +121,7 @@ public class formManageEmployees extends javax.swing.JFrame {
 
         //Loads the initial data
         loadEmployees();
-        
+
         // Adjusting the header widths
         jTable_Employees = Utility.setColumnWidths(jTable_Employees, new int[]{40, 120, 100, 175, 120});
     }

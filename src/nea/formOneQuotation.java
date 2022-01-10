@@ -248,6 +248,7 @@ public class formOneQuotation extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // NEA OBJECTIVE 7.1: Allow user to specify which receipt should be turned into a Microsoft-Word Document.
     // This button is for converting the quotation into a Word document
     private void btnFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFormatActionPerformed
         formFormatIntoWord form = new formFormatIntoWord().getFrame();

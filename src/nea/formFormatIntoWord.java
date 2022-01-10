@@ -97,6 +97,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             }
         });
 
+        // NEA Objective 7.2: Allow the user to enter a file name that the document should be saved
+        // under and specify the file path of where the document should be saved on the workstation. 
         // MouseListener for when the user clicks the output selection JTextField
         txtOutput.addMouseListener(new MouseAdapter() {
             @Override
@@ -294,6 +296,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             doc = insertCustomerData(doc, customerData, receiptMetaData);
             doc = insertReceiptData(doc, receiptRows, receiptMetaData);
 
+            // NEA Objective 7.2: Allow the user to enter a file name that the document should be saved
+            // under and specify the file path of where the document should be saved on the workstation. 
             String outputFileName = "Output";
             // Checks if the outfile file should have a custom filename
             if (!txtFileName.getText().isEmpty()) {

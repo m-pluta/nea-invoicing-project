@@ -30,9 +30,6 @@ public class formAddCustomer extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(formAddCustomer.class.getName());
 
-    // Customer ID for the new customer being added
-    int CustomerID = 0;
-
     // Previous forms the user could have come from
     formManageCustomers previousForm1 = null;
     formNewInvoice previousForm2 = null;
@@ -48,8 +45,7 @@ public class formAddCustomer extends javax.swing.JFrame {
         loadCustomerCategoriesIntoCB();
 
         // Gets the ID for the new customer
-        CustomerID = sqlManager.getNextPKValue("tblCustomer", "customer_id");
-
+        int CustomerID = sqlManager.getNextPKValue("tblCustomer", "customer_id");
         txtCustomerID.setText(String.valueOf(CustomerID));
 
         // Listens for a change in the selectedIndex
@@ -386,10 +382,13 @@ public class formAddCustomer extends javax.swing.JFrame {
                         + " email_address, category_id)"
                         + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+                // NEA OBJECTIVE 6.1: Allow user to add a new customer to the system, automatically incrementing their customerID.
+                int newCustomerID = sqlManager.getNextPKValue("tblCustomer", "customer_id");
+
                 try (Connection conn = sqlManager.openConnection()) {
                     // Query Setup & Execution
                     PreparedStatement pstmt = conn.prepareStatement(query);
-                    pstmt.setInt(1, CustomerID);
+                    pstmt.setInt(1, newCustomerID);
                     pstmt.setString(2, txtForename.getText());
                     pstmt.setString(3, txtSurname.getText());
                     pstmt.setString(4, txtAddress1.getText());
@@ -419,6 +418,8 @@ public class formAddCustomer extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
+    // NEA OBJECTIVE 6.2: Automatically check whether certain fields are empty and check whether
+    // the entered information is valid. If not, then display an error message to the user.
     // Validates input lengths against the max lengths allowed in the DBMS
     private boolean validInputs() {
         boolean valid = false;

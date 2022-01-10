@@ -386,7 +386,9 @@ public class formOneCustomer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // Makes all the fields editable, disables the edit button and makes the confirm button visible
+        // NEA OBJECTIVE 6.4: The user must be able to select a customer and be able to edit all the information stored about them except their customerID.
+
+        // Makes all the fields editable except the CustomerID field, disables the edit button and makes the confirm button visible
         Utility.setEditable(fields, true);
         btnEdit.setEnabled(false);
         btnConfirmEdit.setVisible(true);
@@ -401,6 +403,7 @@ public class formOneCustomer extends javax.swing.JFrame {
         int NoInvoices = sqlManager.countRecords("tblInvoice", "customer_id", CustomerID);
         int NoQuotations = sqlManager.countRecords("tblQuotation", "customer_id", CustomerID);
 
+        // NEA OBJECTIVE 6.3: The user must be able to remove existing customers only if they have no receipts associated with them.
         if (NoInvoices > 0 || NoQuotations > 0) {
             // If the customer has any invoices or quotations associated with them then the user is informed
             String sInvoice = (NoInvoices > 0 ? NoInvoices + " invoice" : "") + (NoInvoices > 1 ? "s" : "");

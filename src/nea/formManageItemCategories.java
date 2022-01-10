@@ -43,6 +43,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         JTableHeader header = jTable_ItemCategories.getTableHeader();
         header.setFont(new Font("Dialog", Font.PLAIN, 14));
 
+        // NEA OBJECTIVE 5.4: The user should be able to search through their categories in a table using a search box.
         // When the user changes their search in the search box
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -64,7 +65,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
             }
 
         });
-        
+
         //Loads the initial data
         loadCategories();
 
@@ -252,6 +253,7 @@ public class formManageItemCategories extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // NEA OBJECTIVE 5.1: Allow the user to create a new item category.
     private void btnAddNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewActionPerformed
         String addedCategory = sqlManager.addNewItemCategory();
 
@@ -289,6 +291,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
                     logger.log(Level.WARNING, "Error fetching receipt rows with this category");
 
                 } else if (iRows > 0 || qRows > 0) {
+                    // NEA OBJECTIVE 5.2: Allow the user to remove a category. The program should not
+                    // permit the user to remove an item category which is used in an existing receipt.
+
                     // Ensures the user can't remove a category that is being used in a certain receipt
                     // The ternary operators are used for grammar in the error message
                     ErrorMsg.throwError(ErrorMsg.CANNOT_REMOVE_ERROR, "Cannot remove category since "
@@ -355,6 +360,8 @@ public class formManageItemCategories extends javax.swing.JFrame {
                             // # TODO Allow the user to merge the two categories together under the requested name
 
                         } else {
+
+                            // NEA OBJECTIVE 5.3: Allow user to rename existing categories.
                             try (Connection conn = sqlManager.openConnection()) {
                                 // Query Setup & Execution
                                 String query = "UPDATE tblItemCategory SET category_name = ? WHERE category_id = ?";

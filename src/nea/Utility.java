@@ -34,7 +34,7 @@ public class Utility {
     private static final Logger logger = java.util.logging.Logger.getLogger(Utility.class.getName());
 
     // Hashes any string input using SHA256
-    public static byte[] hash(String input) { 
+    public static byte[] hash(String input) {
         byte[] outputHash = null;
 
         try {
@@ -156,7 +156,7 @@ public class Utility {
         try {
             // String is converted to an integer
             output = Integer.parseInt(input);
-            
+
         } catch (NumberFormatException e) {
             logger.log(Level.SEVERE, "NumberFormatException");
         }

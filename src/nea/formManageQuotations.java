@@ -77,6 +77,8 @@ public class formManageQuotations extends javax.swing.JFrame {
                         Quotation_in_view.dispose();
                     }
 
+                    // NEA OBJECTIVE 3.3: Once the user clicks on the shortened receipt, a separate
+                    // form should open with the entire receipt.
                     formOneQuotation form = new formOneQuotation().getFrame();
                     form.setVisible(true);
 
@@ -91,6 +93,8 @@ public class formManageQuotations extends javax.swing.JFrame {
             }
         });
 
+        // NEA OBJECTIVE 3.2: The user must be able to view all their receipts in a table and filter through results
+        // using a search box. The table should update automatically when the search parameter in the search box changes.
         // When the user changes their search in the search box
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -112,7 +116,7 @@ public class formManageQuotations extends javax.swing.JFrame {
             }
 
         });
-        
+
         //Loads the initial data
         loadQuotations();
 
@@ -239,6 +243,10 @@ public class formManageQuotations extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public void loadQuotations() {
+        // NEA OBJECTIVE 3.1: The user must be able to see key information about each receipt such as
+        // the employee who created it, total amount billed, date created, and the associated customer. 
+        // The receipts should be displayed in a shortened format in a table.
+
         // Empties the table
         model.setRowCount(0);
 
