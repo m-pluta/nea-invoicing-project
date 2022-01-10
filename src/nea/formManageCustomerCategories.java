@@ -67,7 +67,7 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
 
         //Loads the initial data
         loadCategories();
-        
+
         // Adjusting the header widths
         jTable_CustomerCategories = Utility.setColumnWidths(jTable_CustomerCategories, new int[]{40, 120, 120});
     }
@@ -368,6 +368,9 @@ public class formManageCustomerCategories extends javax.swing.JFrame {
                             // Exits while loop
                             picked = true;
                         }
+                    } else {
+                        // No input from user or window closed
+                        picked = true;
                     }
                 }
             }

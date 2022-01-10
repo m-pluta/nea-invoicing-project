@@ -41,49 +41,49 @@ import org.jfree.data.category.DefaultCategoryDataset;
 public class formReportOne extends javax.swing.JFrame {
 
     /**
-     * One per day
+     * One bar per day
      * <p>
      * Shows the day and month dd/mm
      * <p>
      * Maximum: 7 bars
      */
-    int BAR_SPACING_DAY = 0;
+    private static final int BAR_SPACING_DAY = 0;
 
     /**
-     * One per week
+     * One bar per week
      * <p>
      * shows the w/c day of each month
      * <p>
      * Maximum: 12 bars
      */
-    int BAR_SPACING_WEEK = 1;
+    private static final int BAR_SPACING_WEEK = 1;
 
     /**
-     * One per month
+     * One bar per month
      * <p>
      * Shown the month name
      * <p>
      * Maximum: 13 bars
      */
-    int BAR_SPACING_MONTH = 2;
+    private static final int BAR_SPACING_MONTH = 2;
 
     /**
-     * One per quarter
+     * One bar per quarter
      * <p>
      * Shows the quarter and year
      * <p>
      * Maximum: 13 bars
      */
-    int BAR_SPACING_QUARTER = 3;
+    private static final int BAR_SPACING_QUARTER = 3;
 
     /**
-     * One per year
+     * One bar per year
      * <p>
      * Shows the year YYyy
      * <p>
      * Maximum: None
      */
-    int BAR_SPACING_YEAR = 4;
+    private static final int BAR_SPACING_YEAR = 4;
 
     private static final Logger logger = Logger.getLogger(formReportOne.class.getName());
     formMainMenu previousForm = null;

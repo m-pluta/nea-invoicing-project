@@ -683,34 +683,42 @@ public class formNewInvoice extends javax.swing.JFrame {
     private void btnFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinishActionPerformed
 
         if (isInvoiceValid()) {
-            // Gets the date created of the invoice
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String strDateCreated = dateFormat.format(dcDateCreated.getDate());
 
-            // Gets the next available invoice id
-            int new_invoiceID = sqlManager.getNextPKValue("tblInvoice", "invoice_id");
+            // Asks user whether they really want to finish this invoice
+            int YesNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to finish this invoice?", "Finish Invoice",
+                    JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 
-            try (Connection conn = sqlManager.openConnection()) {
-                // Query Setup & Execution
-                String query = "INSERT INTO tblInvoice (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setInt(1, new_invoiceID);
-                pstmt.setInt(2, sqlManager.getIDofCustomer(cbCustomers.getSelectedItem().toString()));
-                pstmt.setString(3, strDateCreated);
-                pstmt.setDouble(4, txtPayments.getText().isEmpty() ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
-                pstmt.setInt(5, LoggedInUser.getID());
+            // If the response is yes
+            if (YesNo == 0) {
+                // Gets the date created of the invoice
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String strDateCreated = dateFormat.format(dcDateCreated.getDate());
 
-                int rowsAffected = pstmt.executeUpdate();
-                logger.log(Level.INFO, rowsAffected + " row(s) inserted.");
+                // Gets the next available invoice id
+                int new_invoiceID = sqlManager.getNextPKValue("tblInvoice", "invoice_id");
 
-                // Begins inserting all invoice items into the DB
-                uploadInvoiceDetails(new_invoiceID);
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "SQLException");
+                try (Connection conn = sqlManager.openConnection()) {
+                    // Query Setup & Execution
+                    String query = "INSERT INTO tblInvoice (invoice_id,customer_id,date_created,payments,employee_id) VALUES (?,?,?,?,?)";
+                    PreparedStatement pstmt = conn.prepareStatement(query);
+                    pstmt.setInt(1, new_invoiceID);
+                    pstmt.setInt(2, sqlManager.getIDofCustomer(cbCustomers.getSelectedItem().toString()));
+                    pstmt.setString(3, strDateCreated);
+                    pstmt.setDouble(4, txtPayments.getText().isEmpty() ? 0.0 : Double.valueOf(txtPayments.getText().replace("£", "")));
+                    pstmt.setInt(5, LoggedInUser.getID());
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    logger.log(Level.INFO, rowsAffected + " row(s) inserted.");
+
+                    // Begins inserting all invoice items into the DB
+                    uploadInvoiceDetails(new_invoiceID);
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE, "SQLException");
+                }
+
+                // Goes back to the previous form
+                goBack();
             }
-
-            // Goes back to the previous form
-            goBack();
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 

@@ -297,7 +297,7 @@ public class formFormatIntoWord extends javax.swing.JFrame {
             String outputFileName = "Output";
             // Checks if the outfile file should have a custom filename
             if (!txtFileName.getText().isEmpty()) {
-                if (Pattern.matches("^\\w+$", txtFileName.getText())) {
+                if (Pattern.matches("^[\\w\\-. ]+$", txtFileName.getText())) {
                     outputFileName = txtFileName.getText();
                 }
             }

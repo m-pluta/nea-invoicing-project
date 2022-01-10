@@ -374,6 +374,9 @@ public class formManageItemCategories extends javax.swing.JFrame {
                             // Exits while loop
                             picked = true;
                         }
+                    } else {
+                        // No input from user or window closed
+                        picked = true;
                     }
                 }
             }
