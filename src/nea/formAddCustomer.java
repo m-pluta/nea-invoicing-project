@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -447,6 +448,9 @@ public class formAddCustomer extends javax.swing.JFrame {
 
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
+
+        } else if (!Pattern.matches("^[0-9]+$", txtPhoneNumber.getText())) {
+            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "The phone number must not contain letters");
 
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "email_address")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");

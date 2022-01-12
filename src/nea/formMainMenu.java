@@ -422,6 +422,8 @@ public class formMainMenu extends javax.swing.JFrame {
 
                         verifyNewLoginDetails(fetchedID, inputDetails[2], inputDetails[4]);
                         changingDetails = false;
+                    } else {
+                        ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
                     }
                 }
             }

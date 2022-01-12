@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -510,6 +511,9 @@ public class formOneCustomer extends javax.swing.JFrame {
 
         } else if (txtPostcode.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "postcode")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "postcode");
+
+        } else if (!Pattern.matches("^[a-zA-Z0-9 ]*$", txtPostcode.getText())) {
+            ErrorMsg.throwCustomError("The postcode must be alphanumeric", "Invalid postcode");
 
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength("tblCustomer", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");

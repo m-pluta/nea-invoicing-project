@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -292,45 +293,47 @@ public class formAddEmployee extends javax.swing.JFrame {
             // If response is yes
             if (YesNo == 0) {
                 String[] loginDetails = getLoginDetails();
-                String query = "INSERT into tblEmployee"
-                        + " (employee_id, forename, surname, address1, address2,"
-                        + " address3, county, postcode, phone_number, email_address,"
-                        + " username, password_hash, admin, date_last_logged_in)"
-                        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                if (loginDetails != null) {
+                    String query = "INSERT into tblEmployee"
+                            + " (employee_id, forename, surname, address1, address2,"
+                            + " address3, county, postcode, phone_number, email_address,"
+                            + " username, password_hash, admin, date_last_logged_in)"
+                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                int newEmployeeID = sqlManager.getNextPKValue("tblEmployee", "employee_id");
+                    int newEmployeeID = sqlManager.getNextPKValue("tblEmployee", "employee_id");
 
-                try (Connection conn = sqlManager.openConnection()) {
-                    // Query Setup & Execution
-                    PreparedStatement pstmt = conn.prepareStatement(query);
-                    pstmt.setInt(1, newEmployeeID);
-                    pstmt.setString(2, txtForename.getText());
-                    pstmt.setString(3, txtSurname.getText());
-                    pstmt.setString(4, txtAddress1.getText());
-                    // If address2 or address3 are empty then they are replaced by null instead of ""
-                    pstmt.setString(5, (txtAddress2.getText().isEmpty() ? null : txtAddress2.getText()));
-                    pstmt.setString(6, (txtAddress3.getText().isEmpty() ? null : txtAddress3.getText()));
-                    pstmt.setString(7, txtCounty.getText());
-                    pstmt.setString(8, txtPostcode.getText());
-                    pstmt.setString(9, txtPhoneNumber.getText());
-                    pstmt.setString(10, txtEmailAddress.getText());
+                    try (Connection conn = sqlManager.openConnection()) {
+                        // Query Setup & Execution
+                        PreparedStatement pstmt = conn.prepareStatement(query);
+                        pstmt.setInt(1, newEmployeeID);
+                        pstmt.setString(2, txtForename.getText());
+                        pstmt.setString(3, txtSurname.getText());
+                        pstmt.setString(4, txtAddress1.getText());
+                        // If address2 or address3 are empty then they are replaced by null instead of ""
+                        pstmt.setString(5, (txtAddress2.getText().isEmpty() ? null : txtAddress2.getText()));
+                        pstmt.setString(6, (txtAddress3.getText().isEmpty() ? null : txtAddress3.getText()));
+                        pstmt.setString(7, txtCounty.getText());
+                        pstmt.setString(8, txtPostcode.getText());
+                        pstmt.setString(9, txtPhoneNumber.getText());
+                        pstmt.setString(10, txtEmailAddress.getText());
 
-                    pstmt.setString(11, loginDetails[0]);
-                    pstmt.setBytes(12, Utility.hash(loginDetails[1]));
-                    pstmt.setBoolean(13, cbAdmin.isSelected());
-                    pstmt.setString(14, "0000-00-00 00:00:00");
+                        pstmt.setString(11, loginDetails[0]);
+                        pstmt.setBytes(12, Utility.hash(loginDetails[1]));
+                        pstmt.setBoolean(13, cbAdmin.isSelected());
+                        pstmt.setString(14, "0000-00-00 00:00:00");
 
-                    int rowsAffected = pstmt.executeUpdate();
-                    logger.log(Level.INFO, rowsAffected + " rows inserted.");
+                        int rowsAffected = pstmt.executeUpdate();
+                        logger.log(Level.INFO, rowsAffected + " rows inserted.");
 
-                } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "SQLException");
+                    } catch (SQLException e) {
+                        logger.log(Level.SEVERE, "SQLException");
+                    }
+
+                    // Refreshes the employee table in the previous form since a new employee was added
+                    previousForm.loadEmployees();
+                    // Closes the addEmployee form (current form)
+                    this.dispose();
                 }
-
-                // Refreshes the employee table in the previous form since a new employee was added
-                previousForm.loadEmployees();
-                // Closes the addEmployee form (current form)
-                this.dispose();
             }
         }
     }//GEN-LAST:event_btnAddEmployeeActionPerformed
@@ -349,6 +352,7 @@ public class formAddEmployee extends javax.swing.JFrame {
             // If the user closed the input window
             if (responses == null) {
                 logger.log(Level.INFO, "Login Details Input Dialog closed");
+                return null;
 
             } else if (!responses[0].equals(responses[1]) || !responses[2].equals(responses[3])) {
                 ErrorMsg.throwError(ErrorMsg.INPUT_DETAILS_MISMATCH_ERROR);
@@ -407,6 +411,9 @@ public class formAddEmployee extends javax.swing.JFrame {
 
         } else if (txtPhoneNumber.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "phone_number")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "phone number");
+
+        } else if (!Pattern.matches("^[0-9]+$", txtPhoneNumber.getText())) {
+            ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "The phone number must not contain letters");
 
         } else if (txtEmailAddress.getText().length() > sqlManager.getMaxColumnLength("tblEmployee", "email_address")) {
             ErrorMsg.throwError(ErrorMsg.INPUT_LENGTH_ERROR_LONG, "email address");

@@ -277,7 +277,12 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         //Updates the total
         double total = subtotal - payments;
-        txtTotal.setText(Utility.formatCurrency(total));
+
+        if (total > 0) {
+            txtTotal.setText(Utility.formatCurrency(total));
+        } else {
+            txtTotal.setText("ERROR");
+        }
     }
 
     // Calculates the subtotal of the invoice by summing all item totals in the invoice
@@ -747,6 +752,9 @@ public class formNewInvoice extends javax.swing.JFrame {
 
         } else if (!Pattern.matches("^£?[0-9]+(.[0-9])?[0-9]*$|^$", txtPayments.getText())) {
             ErrorMsg.throwError(ErrorMsg.NUMBER_FORMAT_ERROR, "The entered payments value is not a valid decimal");
+
+        } else if (calculateSubtotal() - Double.parseDouble(txtPayments.getText()) < 0) {
+            ErrorMsg.throwCustomError("The entered payments value is larger than the subtotal", "Invalid payments value");
 
         } else {
             return true;

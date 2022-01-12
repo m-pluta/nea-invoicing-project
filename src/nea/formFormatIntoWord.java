@@ -61,8 +61,8 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     private static final Logger logger = Logger.getLogger(formFormatIntoWord.class.getName());
 
     // Filepaths to input template and output file
-    static String templateFilePath = null;
-    static String outputFilePath = null;
+    private String templateFilePath = null;
+    private String outputFilePath = null;
 
     public formFormatIntoWord() {
         initComponents();
@@ -240,7 +240,11 @@ public class formFormatIntoWord extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGenerateDocumentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateDocumentActionPerformed
-        if (templateFilePath == null) {
+        if (templateFilePath == null && outputFilePath == null) {
+            // If the person has not supplied a filepath to the template or output folder
+            ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "No template or output folder filepath supplied");
+
+        } else if (templateFilePath == null) {
             // If the person has not supplied a filepath to the template
             ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "No template filepath supplied");
 
