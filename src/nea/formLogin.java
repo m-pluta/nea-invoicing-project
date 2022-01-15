@@ -252,7 +252,7 @@ public class formLogin extends javax.swing.JFrame {
         // User input and hashing
         String inputUsername = txtUsername.getText();
         String inputPassword = getPassword();
-        byte[] hashedInputPassword = Utility.hash(inputPassword);
+        String hashedInputPassword = Utility.hash(inputPassword);
 
         // Init
         Boolean found = false;
@@ -263,7 +263,7 @@ public class formLogin extends javax.swing.JFrame {
             String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, inputUsername);
-            pstmt.setBytes(2, hashedInputPassword);
+            pstmt.setString(2, hashedInputPassword);
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {

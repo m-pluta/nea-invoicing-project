@@ -398,7 +398,7 @@ public class formMainMenu extends javax.swing.JFrame {
                     String query = "SELECT employee_id FROM tblEmployee WHERE username = ? AND password_hash = ?";
                     PreparedStatement pstmt = conn.prepareStatement(query);
                     pstmt.setString(1, inputDetails[0]);
-                    pstmt.setBytes(2, Utility.hash(inputDetails[1]));
+                    pstmt.setString(2, Utility.hash(inputDetails[1]));
 
                     ResultSet rs = pstmt.executeQuery();
 
@@ -465,7 +465,7 @@ public class formMainMenu extends javax.swing.JFrame {
             String query = "UPDATE tblEmployee SET username = ?, password_hash = ? WHERE employee_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1, newUsername);
-            pstmt.setBytes(2, Utility.hash(newPassword));
+            pstmt.setString(2, Utility.hash(newPassword));
             pstmt.setInt(3, id);
 
             int rowsAffected = pstmt.executeUpdate();

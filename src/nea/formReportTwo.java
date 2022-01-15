@@ -367,7 +367,7 @@ public class formReportTwo extends javax.swing.JFrame {
                 if (dcStart.getDate() == null && dcEnd.getDate() == null) {
                     ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start & End date cannot be empty");
                     valid = false;
-                    
+
                 } else if (dcStart.getDate() == null) {
                     ErrorMsg.throwError(ErrorMsg.EMPTY_INPUT_FIELD_ERROR, "Start date cannot be empty");
                     valid = false;

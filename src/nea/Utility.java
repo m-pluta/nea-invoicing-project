@@ -34,7 +34,7 @@ public class Utility {
     private static final Logger logger = java.util.logging.Logger.getLogger(Utility.class.getName());
 
     // Hashes any string input using SHA256
-    public static byte[] hash(String input) {
+    public static String hash(String input) {
         byte[] outputHash = null;
 
         try {
@@ -48,7 +48,18 @@ public class Utility {
             logger.log(Level.SEVERE, "No such algorithm exception: SHA256");
         }
 
-        return outputHash;
+        // Converts the hash byte array to a String
+        StringBuilder hexString = new StringBuilder(2 * outputHash.length);
+        for (int i = 0; i < outputHash.length; i++) {
+            String hex = Integer.toHexString(0xff & outputHash[i]);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+
+        // Returns the String version of the hash
+        return hexString.toString();
     }
 
     // Sets the input JTextFields to either editable or uneditable

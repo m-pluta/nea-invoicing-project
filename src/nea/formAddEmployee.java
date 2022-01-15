@@ -318,7 +318,7 @@ public class formAddEmployee extends javax.swing.JFrame {
                         pstmt.setString(10, txtEmailAddress.getText());
 
                         pstmt.setString(11, loginDetails[0]);
-                        pstmt.setBytes(12, Utility.hash(loginDetails[1]));
+                        pstmt.setString(12, Utility.hash(loginDetails[1]));
                         pstmt.setBoolean(13, cbAdmin.isSelected());
                         pstmt.setString(14, "0000-00-00 00:00:00");
 
