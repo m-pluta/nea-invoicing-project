@@ -4,9 +4,9 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,26 +63,26 @@ public class formLogin extends javax.swing.JFrame {
         txtUsername.addKeyListener(CapsLock);
         txtPassword.addKeyListener(CapsLock);
 
-        // Init
-        BufferedImage imgMainLogo = null;
-        BufferedImage imgLogos = null;
-        // Loads the company images
         try {
-            imgMainLogo = ImageIO.read(new File("Main Logo.png"));
-            imgLogos = ImageIO.read(new File("Logos.png"));
-        } catch (IOException e) {
+            // Fetches the images
+            URL urlMainLogo = new URL("https://i.imgur.com/SdoJaPo.png");
+            URL urlLogos = new URL("https://i.imgur.com/9MscbQE.png");
+            Image imageMainLogo = ImageIO.read(urlMainLogo);
+            Image imageLogos = ImageIO.read(urlLogos);
+
+            // Scales them
+            imageMainLogo = imageMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(), Image.SCALE_SMOOTH);
+            imageLogos = imageLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(), Image.SCALE_SMOOTH);
+
+            // Adds the image icons to the label.
+            lblMainLogo.setIcon(new ImageIcon(imageMainLogo));
+            lblLogos.setIcon(new ImageIcon(imageLogos));
+
+        } catch (MalformedURLException ex) {
+            logger.log(Level.SEVERE, "MalformedURLException");
+        } catch (IOException ex) {
             logger.log(Level.SEVERE, "IOException");
         }
-
-        // Scales the loaded buffered images and turns them into image icons
-        Image scaledMainLogo = imgMainLogo.getScaledInstance(lblMainLogo.getWidth(), lblMainLogo.getHeight(), Image.SCALE_SMOOTH);
-        Image scaledLogos = imgLogos.getScaledInstance(lblLogos.getWidth(), lblLogos.getHeight(), Image.SCALE_SMOOTH);
-        ImageIcon imageIcon1 = new ImageIcon(scaledMainLogo);
-        ImageIcon imageIcon2 = new ImageIcon(scaledLogos);
-
-        // Adds the image icons to the label.
-        lblMainLogo.setIcon(imageIcon1);
-        lblLogos.setIcon(imageIcon2);
     }
 
     /**

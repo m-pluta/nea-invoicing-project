@@ -6,6 +6,7 @@
 package nea;
 
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
@@ -81,6 +82,11 @@ public class formManageQuotations extends javax.swing.JFrame {
                     // form should open with the entire receipt.
                     formOneQuotation form = new formOneQuotation().getFrame();
                     form.setVisible(true);
+
+                    // Positions the opened form to the right of the current form
+                    Point locPoint = formManageQuotations.this.getLocationOnScreen();
+                    locPoint.translate(formManageQuotations.this.getWidth(), 0);
+                    form.setLocation(locPoint);
 
                     // Loads quotation into the other form and sets up previousForm variable
                     form.QuotationID = selectedID;

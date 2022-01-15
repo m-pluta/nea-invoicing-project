@@ -6,6 +6,7 @@
 package nea;
 
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
@@ -81,6 +82,11 @@ public class formManageInvoices extends javax.swing.JFrame {
                     // form should open with the entire receipt.
                     formOneInvoice form = new formOneInvoice().getFrame();
                     form.setVisible(true);
+
+                    // Positions the opened form to the right of the current form
+                    Point locPoint = formManageInvoices.this.getLocationOnScreen();
+                    locPoint.translate(formManageInvoices.this.getWidth(), 0);
+                    form.setLocation(locPoint);
 
                     // Loads invoice into the other form and sets up previousForm variable
                     form.InvoiceID = selectedID;

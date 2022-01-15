@@ -5,6 +5,7 @@
  */
 package nea;
 
+import java.awt.Point;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -551,6 +552,11 @@ public class formMainMenu extends javax.swing.JFrame {
         formOneEmployee form = new formOneEmployee().getFrame();
         form.setVisible(true);
         form.EmployeeID = LoggedInUser.getID();
+
+        // Positions the opened form to the right of the current form
+        Point locPoint = this.getLocationOnScreen();
+        locPoint.translate(this.getWidth(), 0);
+        form.setLocation(locPoint);
 
         // Loads all of the logged-in user's details ready for editing
         form.loadEmployee();

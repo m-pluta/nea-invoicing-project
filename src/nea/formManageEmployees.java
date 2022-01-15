@@ -6,6 +6,7 @@
 package nea;
 
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Connection;
@@ -80,6 +81,11 @@ public class formManageEmployees extends javax.swing.JFrame {
 
                     formOneEmployee form = new formOneEmployee().getFrame();
                     form.setVisible(true);
+
+                    // Positions the opened form to the right of the current form
+                    Point locPoint = formManageEmployees.this.getLocationOnScreen();
+                    locPoint.translate(formManageEmployees.this.getWidth(), 0);
+                    form.setLocation(locPoint);
 
                     // Loads employee into the other form and sets up previousForm variable
                     form.EmployeeID = selectedID;
