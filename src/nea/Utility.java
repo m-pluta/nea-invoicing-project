@@ -31,7 +31,7 @@ import javax.swing.JTextField;
  */
 public class Utility {
 
-    private static final Logger logger = java.util.logging.Logger.getLogger(Utility.class.getName());
+    private static final Logger logger = Logger.getLogger(Utility.class.getName());
 
     // Hashes any string input using SHA256
     public static String hash(String input) {
