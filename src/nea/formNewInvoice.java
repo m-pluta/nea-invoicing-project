@@ -278,7 +278,7 @@ public class formNewInvoice extends javax.swing.JFrame {
         //Updates the total
         double total = subtotal - payments;
 
-        if (total > 0) {
+        if (total >= 0) {
             txtTotal.setText(Utility.formatCurrency(total));
         } else {
             txtTotal.setText("ERROR");
